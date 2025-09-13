@@ -4793,10 +4793,16 @@ async def get_listing(listing_id: str, increment_view: bool = False):
         
         # Only increment view count when explicitly requested (actual page view)
         if increment_view:
-            await db.listings.update_one(
+            print(f"DEBUG: Incrementing view count for listing {listing_id}")
+            result = await db.listings.update_one(
                 {"id": listing_id},
                 {"$inc": {"views": 1}}
             )
+            print(f"DEBUG: View increment result - matched: {result.matched_count}, modified: {result.modified_count}")
+            # Refresh listing data to get updated view count
+            listing = await db.listings.find_one({"id": listing_id})
+            listing['_id'] = str(listing['_id'])
+            print(f"DEBUG: Updated view count: {listing.get('views', 0)}")
         
         # Add bid_info with highest_bidder_id for individual listing page
         if not listing.get('bid_info'):
