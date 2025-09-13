@@ -1,48 +1,55 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - FAVORITES AND VIEWS COUNTER FIXES TESTING
-Testing the critical fixes for favorites and views counter bugs as specifically requested by the user
+CATALORO MARKETPLACE - MESSAGE READ FUNCTIONALITY TESTING
+Testing the message read functionality and badge updating as specifically requested by the user
 
-CRITICAL FIXES BEING TESTED:
-1. **Favorites Fix**:
-   - Fixed field name inconsistency: changed item_id to listing_id in favorites endpoints to match database schema
-   - Removed duplicate favorites endpoints that were causing conflicts
-   - Fixed E11000 duplicate key error (listing_id field consistency fixed)
-   - All favorites should be returned (not just one)
+CRITICAL FUNCTIONALITY BEING TESTED:
+1. **Message Read Workflow**:
+   - Setup message scenario (admin sends message to demo user)
+   - Test message read endpoint: PUT /api/user/{user_id}/messages/{message_id}/read
+   - Verify message is marked as read on backend (is_read: true)
+   - Test unread count logic and badge updating
 
-2. **Views Counter Fix**:
-   - Added increment_view parameter to control when views are counted
-   - Views should only increment when increment_view=true is passed
-   - Background calls without increment_view should NOT increase views (no artificial inflation)
+2. **Potential Issues to Debug**:
+   - Authorization headers for mark read endpoint
+   - Message ID format correctness
+   - Database field inconsistency (read vs is_read)
+   - Timing issues with async operations
 
 FOCUS AREAS:
-1. **Test Favorites Fix**:
-   - Login as demo user 
-   - Add 2-3 different listings to favorites using corrected endpoint: POST /api/user/{user_id}/favorites/{listing_id}
-   - Verify no more database E11000 errors (listing_id field consistency fixed)
-   - Get favorites using GET /api/user/{user_id}/favorites
-   - Verify ALL favorites are returned (not just one)
+1. **Setup Message Scenario**:
+   - Login as admin user (sender)
+   - Login as demo user (recipient)
+   - Send a message from admin to demo user
+   - Verify message shows as unread for demo user
 
-2. **Test Views Counter Fix**:
-   - Get a test listing's current view count
-   - Make multiple calls to GET /api/listings/{listing_id} WITHOUT increment_view parameter
-   - Verify view count stays the same (no artificial inflation)
-   - Call GET /api/listings/{listing_id}?increment_view=true once
-   - Verify view count increases by exactly 1
+2. **Test Message Read Workflow**:
+   - Get demo user's messages/conversations
+   - Check if unread messages are properly marked (is_read: false)
+   - Call the mark message read endpoint: PUT /api/user/{user_id}/messages/{message_id}/read
+   - Verify message is marked as read on backend (is_read: true)
+
+3. **Test Unread Count Logic**:
+   - Get demo user's conversations/messages
+   - Check how unread counts are calculated
+   - Verify that opening a conversation should reduce unread count
+
+4. **Debug Potential Issues**:
+   - Check if authorization headers are correct for mark read endpoint
+   - Verify message ID format is correct
+   - Test if there are any database/timing issues
 
 TESTING ENDPOINTS:
-- POST /api/auth/login (demo user authentication)
-- POST /api/user/{user_id}/favorites/{listing_id} (add to favorites)
-- GET /api/user/{user_id}/favorites (get favorites)
-- DELETE /api/user/{user_id}/favorites/{listing_id} (remove from favorites)
-- GET /api/listings/{listing_id} (with and without increment_view parameter)
-- GET /api/marketplace/browse (get test listings)
+- POST /api/auth/login (admin and demo user authentication)
+- POST /api/user/{user_id}/messages (send message)
+- GET /api/user/{user_id}/messages (get messages)
+- PUT /api/user/{user_id}/messages/{message_id}/read (mark message as read)
 
 EXPECTED RESULTS:
-- Multiple favorites can be added and ALL are returned when fetched
-- No E11000 database errors when adding favorites
-- Views only increment when increment_view=true is explicitly passed
-- Background API calls do not artificially inflate view counts
+- Messages can be sent and received successfully
+- Mark read endpoint works with proper authorization
+- Message read status is properly updated in database
+- Badge/count updates correctly when messages are marked as read
 """
 
 import asyncio
