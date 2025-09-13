@@ -396,24 +396,30 @@ def serialize_doc(doc):
         del doc["_id"]
     return doc
 
-def format_time_remaining(total_seconds):
-    """Format time remaining in seconds to human readable string"""
-    if total_seconds <= 0:
-        return "EXPIRED"
+def optimize_images_for_response(images, listing_id):
+    """Optimize images for API response by replacing base64 with thumbnail URLs"""
+    if not images:
+        return ['/api/placeholder-image.jpg']
     
-    days = total_seconds // 86400
-    hours = (total_seconds % 86400) // 3600
-    minutes = (total_seconds % 3600) // 60
-    seconds = total_seconds % 60
+    optimized_images = []
+    for i, img in enumerate(images):
+        if isinstance(img, str):
+            # If it's a base64 data URL (from old uploads)
+            if img.startswith('data:'):
+                # Create a thumbnail URL instead of full base64
+                thumbnail_url = f'/api/listings/{listing_id}/thumbnail/{i}'
+                optimized_images.append(thumbnail_url)
+            elif img.startswith('/uploads/') or img.startswith('/static/'):
+                # Keep file URLs as they're already efficient
+                optimized_images.append(img)
+            else:
+                # For any other format, use placeholder
+                optimized_images.append('/api/placeholder-image.jpg')
+        else:
+            # Non-string image data, use placeholder
+            optimized_images.append('/api/placeholder-image.jpg')
     
-    if days > 0:
-        return f"{days}d {hours}h {minutes}m"
-    elif hours > 0:
-        return f"{hours}h {minutes}m"
-    elif minutes > 0:
-        return f"{minutes}m {seconds}s"
-    else:
-        return f"{seconds}s"
+    return optimized_images if optimized_images else ['/api/placeholder-image.jpg']
 
 async def check_user_active_status(user_id: str) -> dict:
     """
