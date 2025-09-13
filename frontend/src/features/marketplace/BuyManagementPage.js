@@ -836,8 +836,9 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, onE
 }
 
 // Bought Item Card Component
-function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket, onCreateBasket }) {
+function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket, onCreateBasket, onMarkComplete }) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   return (
     <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 relative">
