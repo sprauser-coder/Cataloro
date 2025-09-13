@@ -25,6 +25,7 @@ import { useNotifications } from '../../context/NotificationContext';
 // Import the existing components we'll use as tabs
 import TenderManagementPage from './TenderManagementPage';
 import MyListingsPage from './MyListingsPage';
+import { CompletedTransactionCard } from './BuyManagementPage';
 
 function SellPage() {
   const [activeTab, setActiveTab] = useState('tenders');
