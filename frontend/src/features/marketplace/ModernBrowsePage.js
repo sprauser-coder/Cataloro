@@ -847,10 +847,12 @@ function ModernBrowsePage() {
         }`}
       >
         <div className="flex items-center gap-4 text-gray-600 dark:text-gray-300">
-          <span className="text-lg font-semibold">
-            {filteredListings.length} Result{filteredListings.length !== 1 ? 's' : ''}
-            {searchQuery && ` for "${searchQuery}"`}
-          </span>
+          {/* Removed redundant results count since pagination shows "Showing X to Y of Z listings" */}
+          {searchQuery && (
+            <span className="text-lg font-semibold">
+              Search results for "{searchQuery}"
+            </span>
+          )}
           
           <button
             onClick={refreshListings}
