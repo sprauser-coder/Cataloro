@@ -114,21 +114,26 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
   };
 
   const fetchMyTenders = async () => {
-    if (!user) return;
+    if (!user?.id || myTendersLoading) return; // Prevent multiple concurrent calls
     
+    setMyTendersLoading(true);
     try {
-      setMyTendersLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/buyer/${user.id}`);
-      
+      const controller = new AbortController();
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/buyer/${user.id}`, {
+        signal: controller.signal
+      });
       if (response.ok) {
         const data = await response.json();
         setMyTenders(data);
       } else {
-        showToast('Failed to load your tenders', 'error');
+        console.error('Failed to fetch tenders');
+        setMyTenders([]);
       }
     } catch (error) {
-      console.error('Failed to fetch my tenders:', error);
-      showToast('Error loading tender data', 'error');
+      if (error.name !== 'AbortError') {
+        console.error('Failed to fetch my tenders:', error);
+        setMyTenders([]);
+      }
     } finally {
       setMyTendersLoading(false);
     }
