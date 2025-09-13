@@ -5558,8 +5558,13 @@ class BackendTester:
         
         try:
             headers = {"Authorization": f"Bearer {admin_token}"}
+            # The backend expects seller_id in the request body
+            acceptance_data = {
+                "seller_id": "admin_user_1"  # Admin user ID
+            }
             
-            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", headers=headers) as response:
+            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", 
+                                      json=acceptance_data, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
