@@ -9542,11 +9542,11 @@ class BackendTester:
 
 async def main():
     """Main test execution function"""
-    print("🚀 CATALORO MARKETPLACE - FRONTEND COMPATIBILITY FIX TESTING")
+    print("🚀 CATALORO MARKETPLACE - TENDER ACCEPTANCE WORKFLOW TESTING")
     print("=" * 80)
-    print("Testing the frontend compatibility fix by verifying the API response format")
-    print("Focus: Resolving 'allListings.filter is not a function' error")
-    print("Expected: API should return {listings: [...], total: X, page: Y, ...} format")
+    print("Testing the new tender acceptance workflow backend endpoints")
+    print("Focus: Accepted tenders, listing reactivation, bought items, complete workflow")
+    print("Expected: All tender acceptance features working correctly")
     print("=" * 80)
     
     async with BackendTester() as tester:
@@ -9556,9 +9556,9 @@ async def main():
             print("\n❌ Database connectivity failed - aborting tests")
             return
         
-        # Run frontend compatibility fix testing
-        print("\n🎯 STARTING FRONTEND COMPATIBILITY FIX TESTING...")
-        success = await tester.test_frontend_compatibility_fix()
+        # Run tender acceptance workflow testing
+        print("\n🎯 STARTING TENDER ACCEPTANCE WORKFLOW TESTING...")
+        success = await tester.test_tender_acceptance_workflow()
         
         # Print summary
         print("\n" + "=" * 80)
