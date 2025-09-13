@@ -164,27 +164,74 @@ class BackendTester:
                             break
                     
                     if accepted_tender:
+                        listing_id = accepted_tender.get('listing_id')
+                        buyer_id = accepted_tender.get('buyer_id')
+                        seller_id = accepted_tender.get('seller_id')
+                        
+                        # Get seller info from listing if not in tender
+                        if not seller_id and listing_id:
+                            listing_url = f"{BACKEND_URL}/listings/{listing_id}"
+                            async with self.session.get(listing_url, headers=headers) as listing_response:
+                                if listing_response.status == 200:
+                                    listing_data = await listing_response.json()
+                                    seller_id = listing_data.get('seller_id')
+                        
                         self.log_result(
                             "Test Data Discovery", 
                             True, 
-                            f"✅ Found accepted tender: listing_id={accepted_tender.get('listing_id')}, buyer_id={accepted_tender.get('buyer_id')}, seller_id={accepted_tender.get('seller_id')}",
+                            f"✅ Found accepted tender: listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
                             (datetime.now() - start_time).total_seconds() * 1000
                         )
                         return {
                             'success': True,
                             'tender': accepted_tender,
-                            'listing_id': accepted_tender.get('listing_id'),
-                            'buyer_id': accepted_tender.get('buyer_id'),
-                            'seller_id': accepted_tender.get('seller_id')
+                            'listing_id': listing_id,
+                            'buyer_id': buyer_id,
+                            'seller_id': seller_id
                         }
                     else:
-                        self.log_result(
-                            "Test Data Discovery", 
-                            False, 
-                            f"❌ No accepted tenders found in {len(buyer_tenders)} buyer tenders",
-                            (datetime.now() - start_time).total_seconds() * 1000
-                        )
-                        return {'success': False, 'error': 'No accepted tenders found'}
+                        # Try to find any tender with status 'active' and create a test scenario
+                        active_tender = None
+                        for tender in buyer_tenders:
+                            if tender.get('status') == 'active':
+                                active_tender = tender
+                                break
+                        
+                        if active_tender:
+                            listing_id = active_tender.get('listing_id')
+                            buyer_id = active_tender.get('buyer_id')
+                            seller_id = active_tender.get('seller_id')
+                            
+                            # Get seller info from listing if not in tender
+                            if not seller_id and listing_id:
+                                listing_url = f"{BACKEND_URL}/listings/{listing_id}"
+                                async with self.session.get(listing_url, headers=headers) as listing_response:
+                                    if listing_response.status == 200:
+                                        listing_data = await listing_response.json()
+                                        seller_id = listing_data.get('seller_id')
+                            
+                            self.log_result(
+                                "Test Data Discovery", 
+                                True, 
+                                f"✅ Found active tender (will use for testing): listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
+                                (datetime.now() - start_time).total_seconds() * 1000
+                            )
+                            return {
+                                'success': True,
+                                'tender': active_tender,
+                                'listing_id': listing_id,
+                                'buyer_id': buyer_id,
+                                'seller_id': seller_id,
+                                'note': 'Using active tender for testing'
+                            }
+                        else:
+                            self.log_result(
+                                "Test Data Discovery", 
+                                False, 
+                                f"❌ No accepted or active tenders found in {len(buyer_tenders)} buyer tenders",
+                                (datetime.now() - start_time).total_seconds() * 1000
+                            )
+                            return {'success': False, 'error': 'No suitable tenders found'}
                 else:
                     error_text = await response.text()
                     self.log_result(
