@@ -30,14 +30,20 @@ import { marketplaceService } from '../../services/marketplaceService';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
-function TenderManagementPage() {
+function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false }) {
   const { user } = useAuth();
   const { showToast } = useNotifications();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Tab management
-  const [activeTab, setActiveTab] = useState('sell');
+  // Tab management - default to appropriate tab based on props
+  const getDefaultTab = () => {
+    if (showBuyTabOnly) return 'buy';
+    if (showSellTabOnly) return 'sell';
+    return 'sell'; // Default behavior
+  };
+  
+  const [activeTab, setActiveTab] = useState(getDefaultTab());
 
   // Tender Management State
   const [tendersOverview, setTendersOverview] = useState([]);
