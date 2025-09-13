@@ -6172,7 +6172,8 @@ class BackendTester:
                 
                 if response.status == 200:
                     listing = await response.json()
-                    view_count = listing.get('view_count', 0)
+                    # Check both 'views' and 'view_count' fields for compatibility
+                    view_count = listing.get('views', listing.get('view_count', 0))
                     
                     self.log_result(
                         f"Get Initial View Count (listing {listing_id[:8]}...)", 
