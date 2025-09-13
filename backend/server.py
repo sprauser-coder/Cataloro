@@ -6145,7 +6145,7 @@ async def get_buyer_tenders(buyer_id: str):
                     "id": listing.get("id", ""),
                     "title": listing.get("title", ""),
                     "price": listing.get("price", 0),
-                    "images": listing.get("images", [])
+                    "images": optimize_images_for_response(listing.get("images", []), listing.get("id", ""))
                 },
                 "seller": {
                     "id": seller.get("id", "") if seller else "",
