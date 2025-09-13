@@ -703,11 +703,15 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                         ? 'bg-blue-600/20 dark:bg-white/20 text-blue-900 dark:text-white shadow-lg backdrop-blur-md border border-blue-200 dark:border-white/20'
                         : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
                     }`}
-                    style={isActive ? {
+                    style={isActive ? (darkMode ? {
                       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
                       backdropFilter: 'blur(20px)',
                       boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
-                    } : {}}
+                    } : {
+                      background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
+                      backdropFilter: 'blur(20px)',
+                      boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)'
+                    }) : {}}
                   >
                     <IconComponent className="w-4 h-4" />
                     <span className="font-medium">{item.label}</span>
@@ -729,11 +733,15 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                         ? 'bg-blue-600/20 dark:bg-white/20 text-blue-900 dark:text-white shadow-lg backdrop-blur-md border border-blue-200 dark:border-white/20'
                         : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
                     }`}
-                    style={isActive ? {
+                    style={isActive ? (darkMode ? {
                       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
                       backdropFilter: 'blur(20px)',
                       boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
-                    } : {}}
+                    } : {
+                      background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
+                      backdropFilter: 'blur(20px)',
+                      boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)'
+                    }) : {}}
                   >
                     <Icon className="w-4 h-4" />
                     <span className="font-medium">{item.label}</span>
