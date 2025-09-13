@@ -1714,8 +1714,8 @@ async def browse_listings(
                 "total_pages": total_pages,
                 "total_count": total_count,
                 "page_size": limit,
-                "has_next": current_page < total_pages,
-                "has_prev": current_page > 1
+                "has_next": current_page < total_pages if limit > 0 else False,
+                "has_prev": current_page > 1 if limit > 0 else False
             }
         }
         
