@@ -4775,8 +4775,14 @@ async def check_listing_expiration(listing_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to check expiration: {str(e)}")
 
 @app.get("/api/listings/{listing_id}")
-async def get_listing(listing_id: str):
-    """Get a specific listing by ID - returns full details including images and bid_info"""
+async def get_listing(listing_id: str, increment_view: bool = False):
+    """Get a specific listing by ID - returns full details including images and bid_info
+    
+    Args:
+        listing_id: The listing ID to fetch
+        increment_view: Whether to increment the view counter (default: False)
+                       Set to True only when user actually views the listing page
+    """
     try:
         listing = await db.listings.find_one({"id": listing_id})
         
@@ -4785,11 +4791,12 @@ async def get_listing(listing_id: str):
         
         listing['_id'] = str(listing['_id'])
         
-        # Increment view count
-        await db.listings.update_one(
-            {"id": listing_id},
-            {"$inc": {"views": 1}}
-        )
+        # Only increment view count when explicitly requested (actual page view)
+        if increment_view:
+            await db.listings.update_one(
+                {"id": listing_id},
+                {"$inc": {"views": 1}}
+            )
         
         # Add bid_info with highest_bidder_id for individual listing page
         if not listing.get('bid_info'):
