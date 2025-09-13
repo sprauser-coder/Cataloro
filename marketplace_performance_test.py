@@ -228,9 +228,9 @@ class MarketplacePerformanceTester:
                     performance_ok = response_time < self.performance_threshold_ms
                     
                     # Data structure check
-                    if isinstance(data, dict) and 'listings' in data:
-                        listings = data['listings']
-                        total_count = data.get('total', len(listings))
+                    if isinstance(data, list):
+                        listings = data
+                        total_count = len(listings)
                         
                         # Image optimization analysis
                         image_analysis = self.analyze_image_optimization(listings, "Admin Listings")
