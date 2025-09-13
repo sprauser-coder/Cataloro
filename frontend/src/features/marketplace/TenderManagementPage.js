@@ -214,8 +214,8 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     navigate('/create-listing');
   };
 
-  // Filter listings based on active filter (for Listings Management)
-  const getFilteredListings = () => {
+  // Filter listings based on active filter (for Listings Management) - Memoized for performance
+  const filteredListings = React.useMemo(() => {
     switch (activeFilter) {
       case 'active':
         return listings.filter(l => l.status === 'active');
@@ -226,7 +226,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
       default:
         return listings;
     }
-  };
+  }, [listings, activeFilter]);
 
   const handleAcceptTender = async (tenderId, listingTitle, offerAmount) => {
     if (!user) return;
