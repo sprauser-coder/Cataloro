@@ -42,15 +42,18 @@ function MobileBrowsePage() {
       if (!response.ok) throw new Error('Failed to fetch');
       
       const data = await response.json();
-      console.log('📱 Mobile browse: Loaded', data.length, 'listings');
       
-      setListings(data);
-      setFilteredListings(data); // Initialize filtered listings
+      // Handle new API response format {listings: [...], pagination: {...}}
+      const listingsArray = data.listings || (Array.isArray(data) ? data : []);
+      console.log('📱 Mobile browse: Loaded', listingsArray.length, 'listings');
+      
+      setListings(listingsArray);
+      setFilteredListings(listingsArray); // Initialize filtered listings
       
       // Calculate quick stats
       const stats = {
-        totalListings: data.length,
-        newToday: data.filter(item => {
+        totalListings: listingsArray.length,
+        newToday: listingsArray.filter(item => {
           const createdDate = new Date(item.created_at);
           const today = new Date();
           return createdDate.toDateString() === today.toDateString();
