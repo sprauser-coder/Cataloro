@@ -56,7 +56,15 @@ class MarketplaceService {
 
   async getMyListings(userId) {
     try {
-      const response = await axios.get(API_ENDPOINTS.USER.MY_LISTINGS.replace('{user_id}', userId));
+      // Get all listings by setting a high limit to match tenders overview behavior
+      // This ensures both "Tenders" tab and "Listings" tab show the same count
+      const response = await axios.get(API_ENDPOINTS.USER.MY_LISTINGS.replace('{user_id}', userId), {
+        params: {
+          status: 'all', // Get all statuses, let frontend filter
+          limit: 1000, // High limit to get all listings
+          page: 1
+        }
+      });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to fetch your listings');
