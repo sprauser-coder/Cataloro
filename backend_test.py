@@ -5767,6 +5767,15 @@ class BackendTester:
 async def main():
     """Main test execution function"""
     async with BackendTester() as tester:
+        print("🚀 CATALORO MARKETPLACE - TENDER ACCEPTANCE TO CLOSED TAB WORKFLOW TESTING")
+        print("=" * 80)
+        print("Testing the complete tender acceptance to Closed tab workflow fix:")
+        print("1. Create test scenario (admin seller, demo buyer, listing, bid)")
+        print("2. Accept tender with Authorization header (simulating frontend)")
+        print("3. Verify listing status changes to 'sold'")
+        print("4. Verify listing appears in Closed tab filter")
+        print("=" * 80)
+        
         # Test database connectivity first
         await tester.test_database_connectivity()
         
