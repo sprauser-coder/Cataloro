@@ -2046,18 +2046,6 @@ async def get_my_listings(user_id: str, status: str = "all", page: int = 1, limi
     Note: Default status changed to 'all' and limit increased to 1000 to match tenders overview
     """
     return await get_seller_listings(user_id, status, page, limit)
-        
-        # Ensure consistent ID format - minimal processing
-        for listing in listings:
-            if 'id' not in listing and '_id' in listing:
-                listing['id'] = str(listing['_id'])
-            listing.pop('_id', None)
-        
-        return listings
-    except HTTPException:
-        raise  # Re-raise HTTPException (like 403 for suspended users)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch user listings: {str(e)}")
 
 # Management Center Seller Endpoints
 @app.get("/api/marketplace/seller/{seller_id}/listings")
