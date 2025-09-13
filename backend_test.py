@@ -595,98 +595,109 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_different_user_ids(self, token):
-        """Test with different user IDs to see data variation"""
+    async def test_authentication_requirements(self, seller_id):
+        """Test that all endpoints require proper authentication"""
         try:
-            test_user_ids = ["admin_user_1", "demo_user_1", "68bfff790e4e46bc28d43631"]
-            results = {}
+            print("      Testing authentication requirements...")
             
-            for user_id in test_user_ids:
-                print(f"      Testing with user ID: {user_id}")
-                
-                # Test buyer tenders
-                buyer_result = await self.test_buyer_tenders_endpoint(user_id, token)
-                
-                # Test seller overview
-                seller_result = await self.test_seller_tenders_overview_endpoint(user_id, token)
-                
-                results[user_id] = {
-                    'buyer': buyer_result,
-                    'seller': seller_result
-                }
+            # Test endpoints without authentication
+            endpoints_to_test = [
+                f"/tenders/seller/{seller_id}/accepted",
+                f"/user/complete-transaction", 
+                f"/user/completed-transactions/{seller_id}"
+            ]
             
-            # Analyze variation
-            user_data_summary = []
-            for user_id, result in results.items():
-                buyer_count = result['buyer'].get('tender_count', 0) if result['buyer'].get('success') else 0
-                seller_count = result['seller'].get('listing_count', 0) if result['seller'].get('success') else 0
-                seller_tenders = result['seller'].get('total_tenders', 0) if result['seller'].get('success') else 0
+            auth_failures = []
+            auth_successes = []
+            
+            for endpoint in endpoints_to_test:
+                url = f"{BACKEND_URL}{endpoint}"
                 
-                user_data_summary.append(f"{user_id}: {buyer_count} buyer tenders, {seller_count} listings, {seller_tenders} seller tenders")
+                try:
+                    if endpoint == "/user/complete-transaction":
+                        # POST request
+                        async with self.session.post(url, json={"listing_id": "test"}) as response:
+                            if response.status == 401 or response.status == 403:
+                                auth_successes.append(f"{endpoint} (POST) properly requires auth")
+                            else:
+                                auth_failures.append(f"{endpoint} (POST) allows access without auth (status: {response.status})")
+                    else:
+                        # GET request
+                        async with self.session.get(url) as response:
+                            if response.status == 401 or response.status == 403:
+                                auth_successes.append(f"{endpoint} (GET) properly requires auth")
+                            else:
+                                auth_failures.append(f"{endpoint} (GET) allows access without auth (status: {response.status})")
+                                
+                except Exception as e:
+                    auth_failures.append(f"{endpoint} test failed: {str(e)}")
             
-            self.log_result(
-                "Different User IDs Test", 
-                True, 
-                f"✅ USER VARIATION CONFIRMED: {'; '.join(user_data_summary)}"
-            )
-            
-            return {
-                'success': True,
-                'results': results,
-                'summary': user_data_summary
-            }
+            if auth_failures:
+                self.log_result(
+                    "Authentication Requirements", 
+                    False, 
+                    f"❌ AUTH ISSUES: {'; '.join(auth_failures)}"
+                )
+                return {'success': False, 'failures': auth_failures}
+            else:
+                self.log_result(
+                    "Authentication Requirements", 
+                    True, 
+                    f"✅ AUTH WORKING: All endpoints properly require authentication ({len(auth_successes)} endpoints tested)"
+                )
+                return {'success': True, 'successes': auth_successes}
             
         except Exception as e:
             self.log_result(
-                "Different User IDs Test", 
+                "Authentication Requirements", 
                 False, 
-                f"❌ USER TESTING FAILED: {str(e)}"
+                f"❌ AUTH TEST EXCEPTION: {str(e)}"
             )
             return {'success': False, 'error': str(e)}
     
-    async def analyze_tender_management_results(self, buyer_result, seller_result, structure_result, users_result):
-        """Analyze the effectiveness of the tender management API testing"""
-        print("      Final analysis of tender management API testing:")
+    async def analyze_complete_order_results(self, accepted_result, workflow_result, consistency_result, auth_result):
+        """Analyze the effectiveness of the complete order functionality testing"""
+        print("      Final analysis of complete order functionality testing:")
         
         working_features = []
         failing_features = []
         
-        # Check buyer tenders endpoint
-        if buyer_result.get('success') and buyer_result.get('has_proper_structure'):
-            working_features.append(f"✅ Buyer tenders endpoint working ({buyer_result.get('tender_count', 0)} tenders)")
+        # Check seller accepted tenders filtering
+        if accepted_result.get('success') and accepted_result.get('completed_tenders_found', 0) == 0:
+            working_features.append(f"✅ Seller accepted tenders filtering working ({accepted_result.get('accepted_count', 0)} pending tenders)")
         else:
-            failing_features.append("❌ Buyer tenders endpoint issues")
+            failing_features.append("❌ Seller accepted tenders filtering issues")
         
-        # Check seller overview endpoint
-        if seller_result.get('success') and seller_result.get('has_proper_structure'):
-            working_features.append(f"✅ Seller overview endpoint working ({seller_result.get('listing_count', 0)} listings)")
+        # Check complete order workflow
+        if workflow_result.get('success'):
+            working_features.append("✅ Complete transaction workflow working")
         else:
-            failing_features.append("❌ Seller overview endpoint issues")
+            failing_features.append("❌ Complete transaction workflow issues")
         
-        # Check data structure
-        if structure_result.get('success'):
-            working_features.append("✅ Data structure and content verification passed")
+        # Check data consistency
+        if consistency_result.get('success'):
+            working_features.append("✅ Data consistency verification passed")
         else:
-            failing_features.append("❌ Data structure issues found")
+            failing_features.append("❌ Data consistency issues found")
         
-        # Check user variation
-        if users_result.get('success'):
-            working_features.append("✅ Different user IDs show data variation")
+        # Check authentication
+        if auth_result.get('success'):
+            working_features.append("✅ Authentication requirements working")
         else:
-            failing_features.append("❌ User ID testing failed")
+            failing_features.append("❌ Authentication issues found")
         
         # Final assessment
         if not failing_features:
             self.log_result(
-                "Tender Management API Analysis", 
+                "Complete Order Functionality Analysis", 
                 True, 
-                f"✅ ALL TENDER APIS WORKING: {'; '.join(working_features)}"
+                f"✅ ALL COMPLETE ORDER FEATURES WORKING: {'; '.join(working_features)}"
             )
         else:
             self.log_result(
-                "Tender Management API Analysis", 
+                "Complete Order Functionality Analysis", 
                 False, 
-                f"❌ TENDER API ISSUES FOUND: {len(working_features)} working, {len(failing_features)} failing. Issues: {'; '.join(failing_features)}"
+                f"❌ COMPLETE ORDER ISSUES FOUND: {len(working_features)} working, {len(failing_features)} failing. Issues: {'; '.join(failing_features)}"
             )
         
         return len(failing_features) == 0
