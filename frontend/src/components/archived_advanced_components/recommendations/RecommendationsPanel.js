@@ -64,7 +64,9 @@ function RecommendationsPanel({ className = "", limit = 6 }) {
 
       if (response.ok) {
         const data = await response.json();
-        setRecommendations(Array.isArray(data) ? data.slice(0, limit) : []);
+        // Handle new API response format {listings: [...], pagination: {...}}
+        const listingsArray = data.listings || (Array.isArray(data) ? data : []);
+        setRecommendations(listingsArray.slice(0, limit));
         setUserProfile({ preferred_categories: [], average_price: 0, interaction_count: 0 });
       } else {
         throw new Error('Failed to load popular items');
