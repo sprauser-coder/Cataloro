@@ -757,6 +757,7 @@ function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentF
               onAssignToBasket={onAssignToBasket}
               onUnassignFromBasket={onUnassignFromBasket}
               onCreateBasket={onCreateBasket}
+              onMarkComplete={onMarkComplete}
             />
           ))}
         </div>
