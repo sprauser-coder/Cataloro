@@ -628,6 +628,7 @@ function ModernBrowsePage() {
   };
 
   const updateFilters = (newFilters) => {
+    console.log('🔥 updateFilters called with:', newFilters);
     setGlobalFilters(newFilters);
   };
 
