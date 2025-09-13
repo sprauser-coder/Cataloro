@@ -21,7 +21,8 @@ const initialState = {
     priceTo: 10000,
     rating: 0,
     location: 'all',
-    bidFilter: 'all' // New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
+    bidFilter: 'all', // New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
+    hotDeals: 'all' // New filter: "all", "hot_deals", "expiring_soon", "no_time_limit"
   },
   
   // Products & Listings
