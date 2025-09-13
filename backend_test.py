@@ -5662,7 +5662,8 @@ class BackendTester:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
-                    listings = await response.json()
+                    data = await response.json()
+                    listings = data.get("listings", [])  # The endpoint returns {"listings": [...]}
                     
                     # Find our specific listing
                     target_listing = None
@@ -5693,7 +5694,7 @@ class BackendTester:
                         self.log_result(
                             "Verify My-Listings Shows 'Sold'", 
                             False, 
-                            f"❌ Listing {listing_id} not found in my-listings response",
+                            f"❌ Listing {listing_id} not found in my-listings response ({len(listings)} listings total)",
                             response_time
                         )
                         return False
