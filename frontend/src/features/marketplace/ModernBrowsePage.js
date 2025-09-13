@@ -1512,7 +1512,7 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           {item.views}
         </div>
 
-        {/* Hot Deal Badge */}
+        {/* Hot Deal Badge - Bottom Left Corner */}
         {(() => {
           const timeInfo = item.time_info;
           if (!timeInfo?.has_time_limit || timeInfo.is_expired) return null;
@@ -1522,13 +1522,13 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           
           if (timeRemainingHours > 0 && timeRemainingHours <= 24) {
             return (
-              <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center z-20 shadow-lg animate-pulse">
+              <div className="absolute bottom-2 left-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center z-20 shadow-lg animate-pulse">
                 🔥 HOT DEAL
               </div>
             );
           } else if (timeRemainingHours > 24 && timeRemainingHours <= 48) {
             return (
-              <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-400 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center z-20 shadow-lg">
+              <div className="absolute bottom-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-400 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center z-20 shadow-lg">
                 ⏰ ENDS SOON
               </div>
             );
