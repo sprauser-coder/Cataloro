@@ -1,29 +1,26 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - TENDER ACCEPTANCE WORKFLOW TESTING
-Testing the new tender acceptance workflow backend endpoints
+CATALORO MARKETPLACE - TENDER MANAGEMENT API TESTING
+Testing the tender management API endpoints to verify they are working correctly
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Accepted Tenders Endpoint**: GET /api/tenders/seller/{seller_id}/accepted - verify enriched data
-2. **Test Listing Reactivation Endpoint**: PUT /api/listings/{listing_id}/reactivate - verify reactivation and notifications
-3. **Test Bought Item Creation**: Verify bought_item records are created when tenders are accepted
-4. **Test Complete Transaction Workflow**: Test marking transactions as complete from seller side
-5. **Test Complete Workflow**: Accept tender → Check accepted tenders → Complete order → Set back online
+1. **Test Buyer Tenders Endpoint**: GET /api/tenders/buyer/admin_user_1 - verify tender list with listing info
+2. **Test Seller Tenders Overview Endpoint**: GET /api/tenders/seller/admin_user_1/overview - verify overview with listings
+3. **Verify Data Structure**: Check tender IDs, offer_amounts, status, listing titles, prices, images
+4. **Test Different User IDs**: Try other user IDs to see data variation
+5. **Verify Enrichment**: Check buyer/seller information is properly enriched
 
 CRITICAL ENDPOINTS BEING TESTED:
 - POST /api/auth/login (user authentication)
-- GET /api/tenders/seller/{seller_id}/accepted (get accepted tenders with enriched data)
-- PUT /api/listings/{listing_id}/reactivate (reactivate listing and cancel accepted tenders)
-- POST /api/user/complete-transaction (mark transaction as complete)
-- GET /api/user/completed-transactions/{user_id} (get completed transactions)
-- GET /api/user/bought-items/{user_id} (verify bought items creation)
+- GET /api/tenders/buyer/{buyer_id} (get buyer's submitted tenders with listing details)
+- GET /api/tenders/seller/{seller_id}/overview (get seller's listings with associated tenders)
 
 EXPECTED RESULTS:
-- ✅ Accepted tenders endpoint returns enriched data with listing and buyer info
-- ✅ Listing reactivation works and sends notifications to affected buyers
-- ✅ Bought items are created automatically when tenders are accepted
-- ✅ Complete order workflow functions properly from seller side
-- ✅ Set back online functionality works correctly
+- ✅ Buyer tenders endpoint returns list of tenders with listing information
+- ✅ Seller tenders overview returns listings with associated tender data
+- ✅ Data structure includes proper IDs, offer_amounts, status fields
+- ✅ Listings have proper titles, prices, images
+- ✅ Buyer/seller information is properly enriched
 """
 
 import asyncio
