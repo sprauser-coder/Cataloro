@@ -5791,7 +5791,601 @@ class BackendTester:
             )
             return False
 
+    async def test_favorites_fix(self):
+        """Test the favorites fix - field consistency and multiple favorites support"""
+        print("\n❤️ FAVORITES FIX TESTING:")
+        
+        # Login as demo user
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if not demo_token:
+            self.log_result(
+                "Favorites Fix - Demo Login", 
+                False, 
+                "Could not login as demo user for favorites testing"
+            )
+            return False
+        
+        self.log_result(
+            "Favorites Fix - Demo Login", 
+            True, 
+            f"Successfully logged in as demo user (ID: {demo_user_id})"
+        )
+        
+        # Get some test listings to add to favorites
+        test_listings = await self.get_test_listings_for_favorites()
+        
+        if not test_listings or len(test_listings) < 2:
+            self.log_result(
+                "Favorites Fix - Get Test Listings", 
+                False, 
+                f"Need at least 2 listings for testing, found {len(test_listings) if test_listings else 0}"
+            )
+            return False
+        
+        # Clear existing favorites first
+        await self.clear_existing_favorites(demo_user_id, demo_token)
+        
+        # Test adding multiple favorites
+        added_favorites = []
+        for i, listing in enumerate(test_listings[:3]):  # Test with 3 listings
+            listing_id = listing.get('id')
+            success = await self.test_add_single_favorite(demo_user_id, listing_id, demo_token, i+1)
+            if success:
+                added_favorites.append(listing_id)
+        
+        # Test getting all favorites
+        retrieved_favorites = await self.test_get_all_favorites(demo_user_id, demo_token, len(added_favorites))
+        
+        # Test removing favorites
+        if retrieved_favorites:
+            await self.test_remove_favorite(demo_user_id, retrieved_favorites[0].get('listing_id'), demo_token)
+        
+        # Final verification
+        final_favorites = await self.test_get_all_favorites(demo_user_id, demo_token, len(added_favorites) - 1)
+        
+        return len(added_favorites) >= 2 and retrieved_favorites is not None
+
+    async def get_test_listings_for_favorites(self):
+        """Get test listings for favorites testing"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=10") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listings = await response.json()
+                    
+                    self.log_result(
+                        "Get Test Listings for Favorites", 
+                        True, 
+                        f"Retrieved {len(listings)} listings for favorites testing",
+                        response_time
+                    )
+                    
+                    return listings
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Get Test Listings for Favorites", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Get Test Listings for Favorites", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def clear_existing_favorites(self, user_id, token):
+        """Clear existing favorites to start with clean state"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Get current favorites
+            async with self.session.get(f"{BACKEND_URL}/user/{user_id}/favorites", headers=headers) as response:
+                if response.status == 200:
+                    favorites = await response.json()
+                    
+                    # Remove each favorite
+                    for favorite in favorites:
+                        listing_id = favorite.get('listing_id')
+                        if listing_id:
+                            async with self.session.delete(f"{BACKEND_URL}/user/{user_id}/favorites/{listing_id}", headers=headers) as del_response:
+                                pass  # Don't log individual deletions
+                    
+                    response_time = (datetime.now() - start_time).total_seconds() * 1000
+                    self.log_result(
+                        "Clear Existing Favorites", 
+                        True, 
+                        f"Cleared {len(favorites)} existing favorites for clean testing",
+                        response_time
+                    )
+                else:
+                    response_time = (datetime.now() - start_time).total_seconds() * 1000
+                    self.log_result(
+                        "Clear Existing Favorites", 
+                        True, 
+                        f"No existing favorites to clear (status {response.status})",
+                        response_time
+                    )
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Clear Existing Favorites", 
+                False, 
+                f"Failed to clear favorites: {str(e)}",
+                response_time
+            )
+
+    async def test_add_single_favorite(self, user_id, listing_id, token, sequence_num):
+        """Test adding a single favorite using corrected endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Use the corrected endpoint: POST /api/user/{user_id}/favorites/{listing_id}
+            async with self.session.post(f"{BACKEND_URL}/user/{user_id}/favorites/{listing_id}", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    self.log_result(
+                        f"Add Favorite #{sequence_num} (listing {listing_id[:8]}...)", 
+                        True, 
+                        f"✅ Successfully added to favorites - NO E11000 error (field consistency fixed)",
+                        response_time
+                    )
+                    return True
+                elif response.status == 400:
+                    error_text = await response.text()
+                    if "E11000" in error_text or "duplicate key" in error_text.lower():
+                        self.log_result(
+                            f"Add Favorite #{sequence_num} (listing {listing_id[:8]}...)", 
+                            False, 
+                            f"❌ E11000 DUPLICATE KEY ERROR STILL EXISTS: {error_text}",
+                            response_time
+                        )
+                        return False
+                    else:
+                        self.log_result(
+                            f"Add Favorite #{sequence_num} (listing {listing_id[:8]}...)", 
+                            False, 
+                            f"Failed with 400 error: {error_text}",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Add Favorite #{sequence_num} (listing {listing_id[:8]}...)", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Add Favorite #{sequence_num} (listing {listing_id[:8]}...)", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def test_get_all_favorites(self, user_id, token, expected_count):
+        """Test getting all favorites - verify ALL are returned (not just one)"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{user_id}/favorites", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    favorites = await response.json()
+                    actual_count = len(favorites)
+                    
+                    if actual_count == expected_count:
+                        self.log_result(
+                            "Get All Favorites", 
+                            True, 
+                            f"✅ ALL FAVORITES RETURNED: Expected {expected_count}, got {actual_count} - duplicate endpoint conflict FIXED",
+                            response_time
+                        )
+                        return favorites
+                    elif actual_count == 1 and expected_count > 1:
+                        self.log_result(
+                            "Get All Favorites", 
+                            False, 
+                            f"❌ DUPLICATE ENDPOINT CONFLICT PERSISTS: Expected {expected_count}, got only {actual_count} favorite",
+                            response_time
+                        )
+                        return favorites
+                    else:
+                        self.log_result(
+                            "Get All Favorites", 
+                            False, 
+                            f"⚠️ UNEXPECTED COUNT: Expected {expected_count}, got {actual_count} favorites",
+                            response_time
+                        )
+                        return favorites
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Get All Favorites", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Get All Favorites", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def test_remove_favorite(self, user_id, listing_id, token):
+        """Test removing a favorite"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.delete(f"{BACKEND_URL}/user/{user_id}/favorites/{listing_id}", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    self.log_result(
+                        f"Remove Favorite (listing {listing_id[:8]}...)", 
+                        True, 
+                        f"✅ Successfully removed from favorites",
+                        response_time
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Remove Favorite (listing {listing_id[:8]}...)", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Remove Favorite (listing {listing_id[:8]}...)", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def test_views_counter_fix(self):
+        """Test the views counter fix - increment_view parameter functionality"""
+        print("\n👁️ VIEWS COUNTER FIX TESTING:")
+        
+        # Get a test listing
+        test_listing = await self.get_test_listing_for_views()
+        
+        if not test_listing:
+            self.log_result(
+                "Views Counter Fix - Get Test Listing", 
+                False, 
+                "Could not get test listing for views counter testing"
+            )
+            return False
+        
+        listing_id = test_listing.get('id')
+        
+        # Get initial view count
+        initial_views = await self.get_listing_view_count(listing_id)
+        
+        if initial_views is None:
+            return False
+        
+        # Test multiple calls WITHOUT increment_view parameter (should NOT increment)
+        await self.test_background_calls_no_increment(listing_id, initial_views)
+        
+        # Test single call WITH increment_view=true (should increment by 1)
+        await self.test_increment_view_parameter(listing_id, initial_views)
+        
+        return True
+
+    async def get_test_listing_for_views(self):
+        """Get a test listing for views counter testing"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=1") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listings = await response.json()
+                    
+                    if listings:
+                        listing = listings[0]
+                        self.log_result(
+                            "Get Test Listing for Views", 
+                            True, 
+                            f"Retrieved test listing {listing.get('id', 'unknown')[:8]}... for views testing",
+                            response_time
+                        )
+                        return listing
+                    else:
+                        self.log_result(
+                            "Get Test Listing for Views", 
+                            False, 
+                            "No listings available for views testing",
+                            response_time
+                        )
+                        return None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Get Test Listing for Views", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Get Test Listing for Views", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def get_listing_view_count(self, listing_id):
+        """Get current view count of a listing"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing = await response.json()
+                    view_count = listing.get('view_count', 0)
+                    
+                    self.log_result(
+                        f"Get Initial View Count (listing {listing_id[:8]}...)", 
+                        True, 
+                        f"Current view count: {view_count}",
+                        response_time
+                    )
+                    
+                    return view_count
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Get Initial View Count (listing {listing_id[:8]}...)", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Get Initial View Count (listing {listing_id[:8]}...)", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def test_background_calls_no_increment(self, listing_id, initial_views):
+        """Test multiple background calls WITHOUT increment_view parameter"""
+        start_time = datetime.now()
+        
+        try:
+            # Make 5 calls without increment_view parameter
+            for i in range(5):
+                async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                    if response.status != 200:
+                        self.log_result(
+                            f"Background Call #{i+1} (no increment_view)", 
+                            False, 
+                            f"Failed with status {response.status}"
+                        )
+                        return False
+            
+            # Check view count after background calls
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing = await response.json()
+                    final_views = listing.get('view_count', 0)
+                    
+                    if final_views == initial_views:
+                        self.log_result(
+                            "Background Calls (no increment_view)", 
+                            True, 
+                            f"✅ VIEW COUNT UNCHANGED: {initial_views} → {final_views} after 5 background calls - NO ARTIFICIAL INFLATION",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Background Calls (no increment_view)", 
+                            False, 
+                            f"❌ VIEW COUNT ARTIFICIALLY INFLATED: {initial_views} → {final_views} after background calls",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Background Calls (no increment_view)", 
+                        False, 
+                        f"Failed to check final view count: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Background Calls (no increment_view)", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def test_increment_view_parameter(self, listing_id, initial_views):
+        """Test single call WITH increment_view=true parameter"""
+        start_time = datetime.now()
+        
+        try:
+            # Make call with increment_view=true
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}?increment_view=true") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing = await response.json()
+                    final_views = listing.get('view_count', 0)
+                    expected_views = initial_views + 1
+                    
+                    if final_views == expected_views:
+                        self.log_result(
+                            "Increment View Parameter Test", 
+                            True, 
+                            f"✅ VIEW COUNT INCREMENTED CORRECTLY: {initial_views} → {final_views} (increment_view=true working)",
+                            response_time
+                        )
+                        return True
+                    elif final_views == initial_views:
+                        self.log_result(
+                            "Increment View Parameter Test", 
+                            False, 
+                            f"❌ VIEW COUNT NOT INCREMENTED: {initial_views} → {final_views} (increment_view=true not working)",
+                            response_time
+                        )
+                        return False
+                    else:
+                        self.log_result(
+                            "Increment View Parameter Test", 
+                            False, 
+                            f"⚠️ UNEXPECTED VIEW COUNT: Expected {expected_views}, got {final_views}",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Increment View Parameter Test", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Increment View Parameter Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
 async def main():
+    """Main test execution function for FAVORITES AND VIEWS COUNTER FIXES"""
+    async with BackendTester() as tester:
+        print("🚀 CATALORO MARKETPLACE - FAVORITES AND VIEWS COUNTER FIXES TESTING")
+        print("=" * 80)
+        print("Testing the critical fixes for favorites and views counter bugs:")
+        print("1. **Favorites Fix**: Field consistency (listing_id), no E11000 errors, all favorites returned")
+        print("2. **Views Counter Fix**: increment_view parameter, no artificial inflation")
+        print("=" * 80)
+        print()
+        
+        # Test database connectivity first
+        db_healthy = await tester.test_database_connectivity()
+        if not db_healthy:
+            print("❌ Database connectivity failed - aborting tests")
+            return
+        
+        # Test favorites fix
+        favorites_success = await tester.test_favorites_fix()
+        
+        # Test views counter fix
+        views_success = await tester.test_views_counter_fix()
+        
+        # Summary
+        print("\n" + "=" * 80)
+        print("🏁 FAVORITES AND VIEWS COUNTER FIXES TESTING SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(tester.test_results)
+        passed_tests = len([r for r in tester.test_results if r['success']])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"📊 OVERALL RESULTS:")
+        print(f"   Total Tests: {total_tests}")
+        print(f"   ✅ Passed: {passed_tests}")
+        print(f"   ❌ Failed: {failed_tests}")
+        print(f"   Success Rate: {(passed_tests/total_tests*100):.1f}%")
+        print()
+        
+        print(f"🎯 CRITICAL FIXES STATUS:")
+        print(f"   ❤️ Favorites Fix: {'✅ WORKING' if favorites_success else '❌ ISSUES FOUND'}")
+        print(f"   👁️ Views Counter Fix: {'✅ WORKING' if views_success else '❌ ISSUES FOUND'}")
+        print()
+        
+        if failed_tests > 0:
+            print("❌ FAILED TESTS:")
+            for result in tester.test_results:
+                if not result['success']:
+                    print(f"   - {result['test']}: {result['details']}")
+            print()
+        
+        print("🔍 KEY FINDINGS:")
+        if favorites_success:
+            print("   ✅ Favorites: Field consistency fixed, multiple favorites supported, no E11000 errors")
+        else:
+            print("   ❌ Favorites: Critical issues remain - check E11000 errors and duplicate endpoint conflicts")
+            
+        if views_success:
+            print("   ✅ Views Counter: increment_view parameter working, no artificial inflation")
+        else:
+            print("   ❌ Views Counter: Issues with increment_view parameter or artificial inflation")
+        
+        print("\n" + "=" * 80)
+        
+        # Return success status
+        return favorites_success and views_success
     """Main test execution function"""
     async with BackendTester() as tester:
         print("🚀 CATALORO MARKETPLACE - TENDER ACCEPTANCE TO CLOSED TAB WORKFLOW TESTING")
