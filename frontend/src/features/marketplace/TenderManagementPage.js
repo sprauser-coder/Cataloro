@@ -67,7 +67,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
       // Only fetch data for the active tab or all data if showing all tabs
       if (showBuyTabOnly) {
         // Only fetch buyer tenders for Buy tab
-        fechMyTenders();
+        fetchMyTenders();
       } else if (showSellTabOnly) {
         // Only fetch seller data for Sell tab
         fetchTendersOverview();
