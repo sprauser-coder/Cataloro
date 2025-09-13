@@ -70,11 +70,13 @@ export function useMenuSettings() {
     
     const menuItem = menuSection[itemKey];
     
-    // If item is not in the settings, show default items
-    // This provides fallback for new menu items like buy/sell
+    // If item is not in the settings, show default items for new menu items only
+    // This provides fallback for new menu items like buy/sell that might not be in backend settings yet
     if (!menuItem) {
-      const defaultVisibleItems = ['browse', 'about', 'buy', 'sell', 'messages', 'favorites', 'notifications'];
-      return defaultVisibleItems.includes(itemKey);
+      // Only show new items (buy/sell) that might not be configured yet
+      // Traditional items should be explicitly configured in admin settings
+      const newMenuItems = ['buy', 'sell'];
+      return newMenuItems.includes(itemKey);
     }
     
     // Check if item is explicitly enabled
