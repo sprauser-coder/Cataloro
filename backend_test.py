@@ -7301,6 +7301,7 @@ async def main():
         
         print(f"🎯 CRITICAL FIX STATUS:")
         print(f"   📧 Message Field Consistency Fix: {'✅ WORKING' if field_consistency_success else '❌ ISSUES FOUND'}")
+        print(f"   🔄 Multiple Messages Workflow: {'✅ WORKING' if workflow_success else '❌ ISSUES FOUND'}")
         print()
         
         if failed_tests > 0:
