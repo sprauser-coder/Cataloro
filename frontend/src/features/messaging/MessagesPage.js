@@ -674,7 +674,8 @@ function MessagesPage() {
               </div>
             </div>
             
-            <div className="overflow-y-auto flex-1">
+            {/* Scrollable conversations area */}
+            <div className="flex-1 overflow-y-auto min-h-0">
               {loading ? (
                 <div className="p-6 text-center">
                   <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
