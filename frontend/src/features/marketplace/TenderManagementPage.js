@@ -316,7 +316,6 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
 
   const totalTenders = tendersOverview.reduce((sum, item) => sum + item.tender_count, 0);
   const totalHighestBids = tendersOverview.reduce((sum, item) => sum + (item.highest_offer || 0), 0);
-  const filteredListings = getFilteredListings();
 
   return (
     <div className="space-y-8">
