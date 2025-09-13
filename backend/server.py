@@ -1696,7 +1696,19 @@ async def browse_listings(
                 listing['created_at'] = datetime.utcnow().isoformat()
         
         logger.info(f"📋 Simple optimized returned {len(listings)} listings (without heavy images)")
-        return listings
+        
+        # Return listings with pagination metadata
+        return {
+            "listings": listings,
+            "pagination": {
+                "current_page": current_page,
+                "total_pages": total_pages,
+                "total_count": total_count,
+                "page_size": limit,
+                "has_next": current_page < total_pages,
+                "has_prev": current_page > 1
+            }
+        }
         
     except Exception as e:
         logger.error(f"❌ Browse error: {e}")
