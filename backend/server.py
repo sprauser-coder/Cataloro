@@ -1513,6 +1513,7 @@ async def update_profile(user_id: str, profile_data: dict):
 async def browse_listings(
     status: str = "active", 
     limit: int = 50, 
+    offset: int = 0,
     user_id: str = None,
     bid_filter: str = "all"  # New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
 ):
