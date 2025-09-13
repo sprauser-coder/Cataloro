@@ -588,21 +588,21 @@ class BackendTester:
             )
             return False
     
-    async def test_tender_acceptance_workflow(self):
-        """Test the complete tender acceptance workflow"""
-        print("\n🔄 TENDER ACCEPTANCE WORKFLOW TESTING:")
+    async def test_new_tender_acceptance_workflow(self):
+        """Test the new tender acceptance workflow endpoints"""
+        print("\n🔄 NEW TENDER ACCEPTANCE WORKFLOW TESTING:")
         print("   Testing new tender acceptance workflow backend endpoints")
         print("   Testing accepted tenders, listing reactivation, bought items, and complete workflow")
         
         # Step 1: Setup - Login as admin and demo user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Tender Acceptance Workflow Setup", False, "Failed to login as admin")
+            self.log_result("New Tender Acceptance Workflow Setup", False, "Failed to login as admin")
             return False
         
         demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
         if not demo_token:
-            self.log_result("Tender Acceptance Workflow Setup", False, "Failed to login as demo user")
+            self.log_result("New Tender Acceptance Workflow Setup", False, "Failed to login as demo user")
             return False
         
         print(f"   Testing with admin user ID: {admin_user_id}")
