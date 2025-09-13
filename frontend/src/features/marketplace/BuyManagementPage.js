@@ -1471,3 +1471,4 @@ function BasketModal({ title, form, setForm, onSave, onClose }) {
 }
 
 export default BuyManagementPage;
+export { CompletedTransactionCard };
