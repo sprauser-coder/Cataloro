@@ -1988,8 +1988,7 @@ async def get_my_listings(user_id: str, limit: int = 50, skip: int = 0):
         
         # Optimized query using indexes and pagination
         listings = await db.listings.find({
-            "seller_id": {"$in": associated_ids}, 
-            "status": "active"
+            "seller_id": {"$in": associated_ids}
         }).sort("created_at", -1).skip(skip).limit(limit).to_list(length=limit)
         
         # Ensure consistent ID format - minimal processing
