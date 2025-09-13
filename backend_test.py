@@ -1,41 +1,53 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - MESSAGE READ FUNCTIONALITY CRITICAL FIX TESTING
-Testing the critical fix for message read functionality and badge updating
+CATALORO MARKETPLACE - UNIQUE VIEW TRACKING FIX TESTING
+Testing the unique view tracking fix for listing views
 
 CRITICAL FIX BEING TESTED:
-The fix applied changed message creation from "read": False to "is_read": False 
-to ensure field consistency with the mark read endpoint which uses "is_read": True.
+The fix implemented creates a listing_views collection to track unique user views.
+Only authenticated users who haven't viewed the listing before will increment the view count.
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Message Field Consistency**:
-   - Login as admin and demo users
-   - Send a message from admin to demo user
-   - Verify the message is created with "is_read": false (consistent field name)
-   - Get demo user's messages and confirm the field is properly set
+1. **Test Unique View Tracking**:
+   - Login as admin user
+   - Get a specific listing details using GET /api/listings/{listing_id}?increment_view=true multiple times
+   - Verify that the view count only increases by 1 despite multiple requests from the same user
+   - Check that subsequent requests from the same user don't increment the view count
 
-2. **Test Mark Read Functionality**:
-   - Call PUT /api/user/{user_id}/messages/{message_id}/read for the demo user
-   - Verify the message is marked as "is_read": true on the backend
-   - Confirm the field consistency fix resolved the badge update issue
+2. **Test Different Users**:
+   - Login as admin user and view a listing (should increment view count)
+   - Login as demo user and view the same listing (should increment view count again)
+   - Have admin user view the same listing again (should NOT increment)
+   - Have demo user view the same listing again (should NOT increment)
 
-3. **Test Complete Workflow**:
-   - Send multiple messages
-   - Mark some as read
-   - Verify unread count calculation works correctly
-   - Test that the frontend can now properly detect read/unread status
+3. **Test View Tracking Database**:
+   - Verify that views are being recorded in the listing_views collection
+   - Check that each user-listing combination is only recorded once
+   - Verify the view records contain proper user_id, listing_id, and timestamp
+
+4. **Test Backend Logging**:
+   - Monitor backend logs for view tracking messages:
+     - "📊 New unique view recorded" for first-time views
+     - "📊 Duplicate view skipped" for repeat views from same user
+     - "📊 View increment requested but user not authenticated" for unauthenticated requests
+
+5. **Test Edge Cases**:
+   - Test increment_view=true without authentication (should not increment)
+   - Test increment_view=false (should never increment regardless of user)
+   - Test with invalid user tokens
 
 CRITICAL ENDPOINTS BEING TESTED:
 - POST /api/auth/login (admin and demo user authentication)
-- POST /api/user/{user_id}/messages (send message with is_read: false)
-- GET /api/user/{user_id}/messages (get messages with is_read field)
-- PUT /api/user/{user_id}/messages/{message_id}/read (mark message as is_read: true)
+- GET /api/listings/{listing_id}?increment_view=true (view tracking with authentication)
+- GET /api/listings/{listing_id}?increment_view=false (no view tracking)
+- GET /api/listings/{listing_id} (default no view tracking)
 
 EXPECTED RESULTS AFTER FIX:
-- Messages are created with "is_read": false (not "read": false)
-- Mark read endpoint updates "is_read": true (consistent field name)
-- Unread count calculation works correctly using "is_read" field
-- Frontend badge logic can now properly detect read/unread status changes
+- View count only increments for authenticated users who haven't viewed the listing before
+- Multiple views from the same user only count as 1 view
+- listing_views collection tracks unique user-listing combinations
+- Proper logging for debugging view tracking behavior
+- Unauthenticated requests don't increment view count
 """
 
 import asyncio
