@@ -700,7 +700,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     to={item.url}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
                       isActive
-                        ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
+                        ? 'bg-blue-600/20 dark:bg-white/20 text-blue-900 dark:text-white shadow-lg backdrop-blur-md border border-blue-200 dark:border-white/20'
                         : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
                     }`}
                     style={isActive ? {
@@ -726,7 +726,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     to={item.path}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
                       isActive
-                        ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
+                        ? 'bg-blue-600/20 dark:bg-white/20 text-blue-900 dark:text-white shadow-lg backdrop-blur-md border border-blue-200 dark:border-white/20'
                         : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
                     }`}
                     style={isActive ? {
