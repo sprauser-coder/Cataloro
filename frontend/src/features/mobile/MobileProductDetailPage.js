@@ -47,7 +47,7 @@ function MobileProductDetailPage() {
         console.log('🔍 Loading product details:', productId);
         
         // First try to get detailed product info from individual listing endpoint
-        const detailResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${productId}`);
+        const detailResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${productId}?increment_view=true`);
         if (detailResponse.ok) {
           const productDetail = await detailResponse.json();
           
