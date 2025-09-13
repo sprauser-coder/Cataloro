@@ -164,17 +164,10 @@ class BackendTester:
                             break
                     
                     if accepted_tender:
-                        listing_id = accepted_tender.get('listing_id')
-                        buyer_id = accepted_tender.get('buyer_id')
-                        seller_id = accepted_tender.get('seller_id')
-                        
-                        # Get seller info from listing if not in tender
-                        if not seller_id and listing_id:
-                            listing_url = f"{BACKEND_URL}/listings/{listing_id}"
-                            async with self.session.get(listing_url, headers=headers) as listing_response:
-                                if listing_response.status == 200:
-                                    listing_data = await listing_response.json()
-                                    seller_id = listing_data.get('seller_id')
+                        # Extract data from enriched structure
+                        listing_id = accepted_tender.get('listing', {}).get('id')
+                        buyer_id = 'admin_user_1'  # We know this from the endpoint
+                        seller_id = accepted_tender.get('seller', {}).get('id')
                         
                         self.log_result(
                             "Test Data Discovery", 
@@ -198,17 +191,10 @@ class BackendTester:
                                 break
                         
                         if active_tender:
-                            listing_id = active_tender.get('listing_id')
-                            buyer_id = active_tender.get('buyer_id')
-                            seller_id = active_tender.get('seller_id')
-                            
-                            # Get seller info from listing if not in tender
-                            if not seller_id and listing_id:
-                                listing_url = f"{BACKEND_URL}/listings/{listing_id}"
-                                async with self.session.get(listing_url, headers=headers) as listing_response:
-                                    if listing_response.status == 200:
-                                        listing_data = await listing_response.json()
-                                        seller_id = listing_data.get('seller_id')
+                            # Extract data from enriched structure
+                            listing_id = active_tender.get('listing', {}).get('id')
+                            buyer_id = 'admin_user_1'  # We know this from the endpoint
+                            seller_id = active_tender.get('seller', {}).get('id')
                             
                             self.log_result(
                                 "Test Data Discovery", 
