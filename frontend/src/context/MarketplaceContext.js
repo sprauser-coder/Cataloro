@@ -898,7 +898,7 @@ export function MarketplaceProvider({ children }) {
 
     // Apply hot deals filter
     if (filters.hotDeals && filters.hotDeals !== 'all') {
-      console.log(`🔥 Applying hot deals filter: ${filters.hotDeals}, starting with ${filtered.length} products`);
+      console.log(`⏰ Applying time filter: ${filters.hotDeals}, starting with ${filtered.length} products`);
       
       // Debug: Show what time_info data we have
       filtered.forEach((product, index) => {
