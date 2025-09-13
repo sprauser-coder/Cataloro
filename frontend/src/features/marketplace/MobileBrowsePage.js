@@ -69,8 +69,8 @@ function MobileBrowsePage() {
           
           return isHotDeal || isExpiringIn24Hours;
         }).length,
-        avgPrice: data.length > 0 
-          ? Math.round(data.reduce((sum, item) => sum + (item.price || 0), 0) / data.length)
+        avgPrice: listingsArray.length > 0 
+          ? Math.round(listingsArray.reduce((sum, item) => sum + (item.price || 0), 0) / listingsArray.length)
           : 0
       };
       setQuickStats(stats);
