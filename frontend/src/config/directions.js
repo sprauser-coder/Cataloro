@@ -72,8 +72,10 @@ export const APP_ROUTES = {
   HOME: '/',
   BROWSE: '/browse',
   MY_LISTINGS: '/my-listings',
-  TENDERS: '/tenders',
+  TENDERS: '/tenders', // Keep for backward compatibility
   MY_TENDERS: '/my-tenders',
+  BUY: '/buy', // New Buy menu
+  SELL: '/sell', // New Sell menu
   ADMIN_PANEL: '/admin',
   FAVORITES: '/favorites',
   NOTIFICATIONS: '/notifications',
