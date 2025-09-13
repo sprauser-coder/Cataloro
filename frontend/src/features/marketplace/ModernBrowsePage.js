@@ -894,7 +894,7 @@ function ModernBrowsePage() {
               </label>
               <div className="flex space-x-4">
                 <button
-                  onClick={() => updateFilters({type: 'all', priceFrom: 0, priceTo: 10000, location: 'all', rating: 0, bidFilter: 'all'})}
+                  onClick={() => updateFilters({type: 'all', priceFrom: 0, priceTo: 10000, location: 'all', rating: 0, bidFilter: 'all', hotDeals: 'all'})}
                   className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors h-10"
                 >
                   Clear All Filters
