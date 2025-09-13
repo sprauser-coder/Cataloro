@@ -6134,23 +6134,30 @@ async def get_listing_tenders(listing_id: str):
 
 @app.get("/api/tenders/buyer/{buyer_id}")
 async def get_buyer_tenders(buyer_id: str):
-    """Get all tenders submitted by a buyer (OPTIMIZED)"""
+    """Get all tenders submitted by a buyer (OPTIMIZED with seller enrichment)"""
     try:
         tenders = await db.tenders.find({
             "buyer_id": buyer_id
         }).sort("created_at", -1).to_list(length=None)
         
-        # OPTIMIZATION: Collect all listing IDs to minimize database queries
+        # OPTIMIZATION: Collect all listing IDs and seller IDs to minimize database queries
         listing_ids = list(set(tender["listing_id"] for tender in tenders))
+        seller_ids = list(set(tender["seller_id"] for tender in tenders))
         
         # OPTIMIZATION: Single query to get all listing information
         listings_list = await db.listings.find({"id": {"$in": listing_ids}}).to_list(length=None)
         listings_dict = {listing['id']: listing for listing in listings_list}
         
-        # Enrich with listing information from cached lookup
+        # OPTIMIZATION: Single query to get all seller information
+        sellers_list = await db.users.find({"id": {"$in": seller_ids}}).to_list(length=None)
+        sellers_dict = {seller['id']: seller for seller in sellers_list}
+        
+        # Enrich with listing and seller information from cached lookup
         enriched_tenders = []
         for tender in tenders:
             listing = listings_dict.get(tender["listing_id"])
+            seller = sellers_dict.get(tender["seller_id"])
+            
             if not listing:
                 continue
                 
@@ -6164,6 +6171,13 @@ async def get_buyer_tenders(buyer_id: str):
                     "title": listing.get("title", ""),
                     "price": listing.get("price", 0),
                     "images": listing.get("images", [])
+                },
+                "seller": {
+                    "id": seller.get("id", "") if seller else "",
+                    "username": seller.get("username", "Unknown") if seller else "Unknown",
+                    "full_name": seller.get("full_name", "") if seller else "",
+                    "is_business": seller.get("is_business", False) if seller else False,
+                    "business_name": seller.get("business_name", "") if seller else ""
                 }
             }
             enriched_tenders.append(enriched_tender)
