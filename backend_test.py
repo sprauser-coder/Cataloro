@@ -5067,7 +5067,7 @@ class BackendTester:
                 
                 if response.status == 200:
                     data = await response.json()
-                    tender_id = data.get("id")
+                    tender_id = data.get("id") or data.get("tender_id")
                     
                     self.log_result(
                         "Place Bid for Tender Acceptance", 
@@ -5075,6 +5075,9 @@ class BackendTester:
                         f"Successfully placed bid ${tender_data['amount']} (Tender ID: {tender_id})",
                         response_time
                     )
+                    
+                    # Log the full response for debugging
+                    print(f"   Full tender response: {data}")
                     
                     return tender_id
                 else:
