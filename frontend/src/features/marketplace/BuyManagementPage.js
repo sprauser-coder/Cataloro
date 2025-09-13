@@ -653,6 +653,7 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
                 onUnassignFromBasket={unassignItemFromBasket}
                 onCreateBasket={() => setShowCreateBasket(true)}
                 onMarkComplete={markTransactionComplete}
+                isItemCompleted={isItemCompleted}
                 loading={loading}
               />
             )}
