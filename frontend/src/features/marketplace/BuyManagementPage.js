@@ -918,11 +918,16 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
         <div className="space-y-2">
           {/* Mark as Completed Button */}
           <button
-            onClick={() => setShowCompleteModal(true)}
-            className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-green-300 text-green-700 bg-green-50 hover:bg-green-100 focus:ring-green-500 dark:border-green-600 dark:text-green-400 dark:bg-green-900 dark:hover:bg-green-800"
+            onClick={() => isCompleted ? null : setShowCompleteModal(true)}
+            disabled={isCompleted}
+            className={`w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${
+              isCompleted 
+                ? 'border-gray-300 text-gray-500 bg-gray-100 cursor-not-allowed dark:border-gray-600 dark:text-gray-400 dark:bg-gray-800'
+                : 'border-green-300 text-green-700 bg-green-50 hover:bg-green-100 focus:ring-green-500 dark:border-green-600 dark:text-green-400 dark:bg-green-900 dark:hover:bg-green-800'
+            }`}
           >
             <Check className="w-4 h-4 mr-2" />
-            Mark as Completed
+            {isCompleted ? 'Completed' : 'Mark as Completed'}
           </button>
 
           {/* Assignment Dropdown - Using simple relative positioning */}
