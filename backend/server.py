@@ -5028,7 +5028,14 @@ async def add_to_favorites(user_id: str, listing_id: str):
 async def remove_from_favorites(user_id: str, listing_id: str):
     """Remove listing from user's favorites"""
     try:
-        result = await db.user_favorites.delete_one({"user_id": user_id, "listing_id": listing_id})
+        # Remove from favorites (handle both field names for compatibility)
+        result = await db.user_favorites.delete_one({
+            "user_id": user_id, 
+            "$or": [
+                {"listing_id": listing_id},
+                {"item_id": listing_id}
+            ]
+        })
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Favorite not found")
