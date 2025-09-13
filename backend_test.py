@@ -4948,14 +4948,393 @@ class BackendTester:
             )
             return False
 
+    async def test_tender_acceptance_closed_tab_workflow(self):
+        """Test the specific tender acceptance workflow for Closed tab appearance"""
+        print("\n🎯 TENDER ACCEPTANCE CLOSED TAB WORKFLOW TEST")
+        print("=" * 80)
+        print("Testing if listings appear in Closed tab after tender acceptance")
+        print("Frontend filters: status === 'sold' || status === 'closed'")
+        print("Backend sets status to 'sold' when accepting tenders")
+        print()
+        
+        # Step 1: Setup - Login as admin (seller)
+        print("📋 STEP 1: Setup Test Scenario")
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        if not admin_token:
+            self.log_result("Tender Acceptance Test Setup", False, "Failed to login as admin (seller)")
+            return False
+        
+        # Step 2: Create a test listing
+        listing_id = await self.create_test_listing_for_tender_acceptance(admin_token)
+        if not listing_id:
+            self.log_result("Tender Acceptance Test Setup", False, "Failed to create test listing")
+            return False
+        
+        # Step 3: Login as demo user (buyer)
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        if not demo_token:
+            self.log_result("Tender Acceptance Test Setup", False, "Failed to login as demo user (buyer)")
+            return False
+        
+        # Step 4: Place a bid on the listing
+        tender_id = await self.place_bid_for_tender_acceptance(listing_id, demo_token, demo_user_id)
+        if not tender_id:
+            self.log_result("Tender Acceptance Test Setup", False, "Failed to place bid on listing")
+            return False
+        
+        # Step 5: Accept the tender (as admin/seller)
+        acceptance_success = await self.accept_tender_and_verify_status(tender_id, admin_token, listing_id)
+        if not acceptance_success:
+            self.log_result("Tender Acceptance Test", False, "Failed to accept tender or verify status change")
+            return False
+        
+        # Step 6: Check if listing appears in seller's listings with 'sold' status
+        closed_tab_success = await self.verify_listing_in_closed_tab(admin_user_id, admin_token, listing_id)
+        if not closed_tab_success:
+            self.log_result("Closed Tab Verification", False, "Listing does not appear in Closed tab filter")
+            return False
+        
+        # Step 7: Test the seller listings endpoint specifically
+        seller_listings_success = await self.test_seller_listings_endpoint(admin_user_id, admin_token, listing_id)
+        
+        print("\n✅ TENDER ACCEPTANCE CLOSED TAB WORKFLOW COMPLETED")
+        return acceptance_success and closed_tab_success and seller_listings_success
+    
+    async def create_test_listing_for_tender_acceptance(self, token):
+        """Create a test listing specifically for tender acceptance testing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            listing_data = {
+                "title": "Tender Acceptance Test Item - Closed Tab Verification",
+                "description": "This listing is created to test if accepted tenders appear in the Closed tab",
+                "price": 100.00,
+                "category": "Test",
+                "condition": "New",
+                "has_time_limit": False  # No time limit for this test
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create Test Listing for Tender Acceptance", 
+                        True, 
+                        f"Successfully created test listing {listing_id}",
+                        response_time
+                    )
+                    
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test Listing for Tender Acceptance", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test Listing for Tender Acceptance", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def place_bid_for_tender_acceptance(self, listing_id, token, buyer_id):
+        """Place a bid on the test listing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 125.00,
+                "message": "Test bid for tender acceptance workflow"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        "Place Bid for Tender Acceptance", 
+                        True, 
+                        f"Successfully placed bid ${tender_data['amount']} (Tender ID: {tender_id})",
+                        response_time
+                    )
+                    
+                    return tender_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Place Bid for Tender Acceptance", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Place Bid for Tender Acceptance", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def accept_tender_and_verify_status(self, tender_id, token, listing_id):
+        """Accept the tender and verify listing status changes to 'sold'"""
+        start_time = datetime.now()
+        
+        try:
+            # First, get the listing status BEFORE acceptance
+            listing_before = await self.get_listing_details(listing_id)
+            status_before = listing_before.get('status', 'unknown') if listing_before else 'unknown'
+            
+            # Accept the tender
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    message = data.get("message", "No message")
+                    
+                    self.log_result(
+                        "Accept Tender", 
+                        True, 
+                        f"Successfully accepted tender {tender_id}: {message}",
+                        response_time
+                    )
+                    
+                    # Now verify the listing status changed to 'sold'
+                    await asyncio.sleep(1)  # Give it a moment to update
+                    listing_after = await self.get_listing_details(listing_id)
+                    
+                    if listing_after:
+                        status_after = listing_after.get('status', 'unknown')
+                        sold_price = listing_after.get('sold_price')
+                        sold_at = listing_after.get('sold_at')
+                        
+                        if status_after == 'sold':
+                            self.log_result(
+                                "Verify Listing Status Change", 
+                                True, 
+                                f"✅ Listing status changed from '{status_before}' to '{status_after}', sold_price: ${sold_price}, sold_at: {sold_at}"
+                            )
+                            return True
+                        else:
+                            self.log_result(
+                                "Verify Listing Status Change", 
+                                False, 
+                                f"❌ Listing status is '{status_after}' (expected 'sold'), was '{status_before}' before acceptance"
+                            )
+                            return False
+                    else:
+                        self.log_result(
+                            "Verify Listing Status Change", 
+                            False, 
+                            "Could not retrieve listing details after tender acceptance"
+                        )
+                        return False
+                        
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Accept Tender", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Accept Tender", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def get_listing_details(self, listing_id):
+        """Get detailed listing information"""
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    return None
+        except Exception as e:
+            print(f"Error getting listing details: {e}")
+            return None
+    
+    async def verify_listing_in_closed_tab(self, seller_id, token, listing_id):
+        """Verify that the listing appears in what would be the Closed tab"""
+        start_time = datetime.now()
+        
+        try:
+            # Query seller's listings with status filter to see all statuses
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?status=all&user_id={seller_id}&bid_filter=own_listings", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listings = await response.json()
+                    
+                    # Find our specific listing
+                    target_listing = None
+                    for listing in listings:
+                        if listing.get('id') == listing_id:
+                            target_listing = listing
+                            break
+                    
+                    if target_listing:
+                        status = target_listing.get('status')
+                        
+                        # Check if it would be included in Closed tab filter
+                        # Frontend filter: l.status === 'sold' || l.status === 'closed'
+                        would_appear_in_closed_tab = status in ['sold', 'closed']
+                        
+                        if would_appear_in_closed_tab:
+                            self.log_result(
+                                "Verify Listing in Closed Tab Filter", 
+                                True, 
+                                f"✅ Listing has status '{status}' - WOULD appear in Closed tab (sold OR closed filter)",
+                                response_time
+                            )
+                            return True
+                        else:
+                            self.log_result(
+                                "Verify Listing in Closed Tab Filter", 
+                                False, 
+                                f"❌ Listing has status '{status}' - would NOT appear in Closed tab (needs 'sold' or 'closed')",
+                                response_time
+                            )
+                            return False
+                    else:
+                        self.log_result(
+                            "Verify Listing in Closed Tab Filter", 
+                            False, 
+                            f"❌ Listing {listing_id} not found in seller's listings ({len(listings)} listings checked)",
+                            response_time
+                        )
+                        return False
+                        
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify Listing in Closed Tab Filter", 
+                        False, 
+                        f"Failed to get seller's listings: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify Listing in Closed Tab Filter", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_seller_listings_endpoint(self, seller_id, token, listing_id):
+        """Test the seller listings endpoint specifically"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/marketplace/my-listings", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listings = await response.json()
+                    
+                    # Find our specific listing
+                    target_listing = None
+                    for listing in listings:
+                        if listing.get('id') == listing_id:
+                            target_listing = listing
+                            break
+                    
+                    if target_listing:
+                        status = target_listing.get('status')
+                        
+                        self.log_result(
+                            "Test Seller Listings Endpoint", 
+                            True, 
+                            f"✅ Accepted listing appears in my-listings with status '{status}'",
+                            response_time
+                        )
+                        
+                        # Log additional details
+                        print(f"   Listing Details in my-listings:")
+                        print(f"   - ID: {target_listing.get('id')}")
+                        print(f"   - Title: {target_listing.get('title')}")
+                        print(f"   - Status: {status}")
+                        print(f"   - Sold Price: {target_listing.get('sold_price')}")
+                        print(f"   - Sold At: {target_listing.get('sold_at')}")
+                        
+                        return True
+                    else:
+                        self.log_result(
+                            "Test Seller Listings Endpoint", 
+                            False, 
+                            f"❌ Accepted listing does not appear in my-listings ({len(listings)} listings found)",
+                            response_time
+                        )
+                        return False
+                        
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Test Seller Listings Endpoint", 
+                        False, 
+                        f"Failed to get my-listings: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Test Seller Listings Endpoint", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
 async def main():
     """Main test execution function"""
     async with BackendTester() as tester:
         # Test database connectivity first
         await tester.test_database_connectivity()
         
-        # Run tender acceptance workflow test
-        await tester.test_tender_acceptance_workflow()
+        # Run the specific tender acceptance closed tab workflow test
+        await tester.test_tender_acceptance_closed_tab_workflow()
         
         # Print summary
         tester.print_summary()
