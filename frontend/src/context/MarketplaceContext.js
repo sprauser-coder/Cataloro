@@ -914,7 +914,7 @@ export function MarketplaceProvider({ children }) {
         const timeInfo = product.time_info;
         
         if (!timeInfo) {
-          console.log(`🔥 ${product.title}: No time_info, filter=${filters.hotDeals}, result=${filters.hotDeals === 'no_time_limit'}`);
+          console.log(`⏰ ${product.title}: No time_info, filter=${filters.hotDeals}, result=${filters.hotDeals === 'no_time_limit'}`);
           return filters.hotDeals === 'no_time_limit';
         }
         
