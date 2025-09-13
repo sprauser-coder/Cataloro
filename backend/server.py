@@ -5684,53 +5684,8 @@ async def get_listing_tenders(listing_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get listing tenders: {str(e)}")
 
-@app.get("/api/tenders/buyer/{buyer_id}")
-async def get_buyer_tenders(buyer_id: str):
-    """Get all tenders submitted by a buyer"""
-    try:
-        tenders = await db.tenders.find({
-            "buyer_id": buyer_id
-        }).sort("created_at", -1).to_list(length=None)
-        
-        # Enrich with listing and seller information
-        enriched_tenders = []
-        for tender in tenders:
-            listing = await db.listings.find_one({"id": tender["listing_id"]})
-            if not listing:
-                continue
-            
-            # Get seller information
-            seller = await db.users.find_one({"id": listing.get("seller_id")})
-            seller_info = {
-                "id": seller.get("id", ""),
-                "username": seller.get("username", "Unknown"),
-                "full_name": seller.get("full_name", ""),
-                "email": seller.get("email", ""),
-                "is_business": seller.get("is_business", False),
-                "business_name": seller.get("business_name", ""),
-                "created_at": seller.get("created_at", "")
-            } if seller else {}
-                
-            enriched_tender = {
-                "id": tender["id"],
-                "offer_amount": tender["offer_amount"],
-                "status": tender["status"],
-                "created_at": tender["created_at"].isoformat() if tender.get("created_at") else "",
-                "listing": {
-                    "id": listing.get("id", ""),
-                    "title": listing.get("title", ""),
-                    "price": listing.get("price", 0),
-                    "images": listing.get("images", []),
-                    "seller_id": listing.get("seller_id", "")
-                },
-                "seller": seller_info
-            }
-            enriched_tenders.append(enriched_tender)
-        
-        return enriched_tenders
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get buyer tenders: {str(e)}")
+# REMOVED: Duplicate slow Buy Tenders endpoint (was causing N+1 query performance issue)
+# The optimized version is implemented at line 6135 with batch queries
 
 @app.put("/api/tenders/{tender_id}/accept")
 async def accept_tender(tender_id: str, acceptance_data: dict):
