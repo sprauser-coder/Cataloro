@@ -143,104 +143,64 @@ class BackendTester:
             )
             return None, None, None
     
-    async def test_seller_accepted_tenders_endpoint(self, seller_id, token):
-        """Test GET /api/tenders/seller/{seller_id}/accepted endpoint - should filter out completed tenders"""
+    async def get_test_tender_data(self, token):
+        """Get test tender data for completion workflow testing"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/tenders/seller/{seller_id}/accepted"
             
-            async with self.session.get(url, headers=headers) as response:
-                response_time = (datetime.now() - start_time).total_seconds() * 1000
-                
+            # Get buyer tenders for admin_user_1
+            buyer_url = f"{BACKEND_URL}/tenders/buyer/admin_user_1"
+            async with self.session.get(buyer_url, headers=headers) as response:
                 if response.status == 200:
-                    data = await response.json()
+                    buyer_tenders = await response.json()
                     
-                    if isinstance(data, list):
-                        accepted_count = len(data)
-                        
-                        # Check if accepted tenders have proper structure
-                        has_proper_structure = True
-                        structure_details = []
-                        completed_tenders_found = 0
-                        
-                        if accepted_count > 0:
-                            sample_tender = data[0]
-                            required_fields = ['id', 'listing_id', 'buyer_id', 'offer_amount', 'status']
-                            enrichment_fields = ['listing_title', 'listing_image', 'listing_price', 'buyer_name', 'buyer_email']
-                            
-                            # Check tender fields
-                            missing_tender_fields = [field for field in required_fields if field not in sample_tender]
-                            if missing_tender_fields:
-                                has_proper_structure = False
-                                structure_details.append(f"Missing tender fields: {missing_tender_fields}")
-                            
-                            # Check enrichment fields
-                            missing_enrichment_fields = [field for field in enrichment_fields if field not in sample_tender]
-                            if missing_enrichment_fields:
-                                structure_details.append(f"Missing enrichment fields: {missing_enrichment_fields}")
-                            
-                            # Check for completed tenders (should not be present)
-                            for tender in data:
-                                if tender.get('seller_confirmed_at') or tender.get('completed_at'):
-                                    completed_tenders_found += 1
-                        
-                        if completed_tenders_found > 0:
-                            self.log_result(
-                                "Seller Accepted Tenders Filtering", 
-                                False, 
-                                f"❌ FILTERING FAILED: Found {completed_tenders_found} completed tenders in accepted list (should be filtered out)",
-                                response_time
-                            )
-                        elif has_proper_structure:
-                            self.log_result(
-                                "Seller Accepted Tenders Filtering", 
-                                True, 
-                                f"✅ FILTERING WORKING: Returns {accepted_count} pending accepted tenders (completed tenders properly filtered out)",
-                                response_time
-                            )
-                        else:
-                            self.log_result(
-                                "Seller Accepted Tenders Filtering", 
-                                False, 
-                                f"❌ STRUCTURE ISSUES: Returns {accepted_count} tenders but has structure problems: {'; '.join(structure_details)}",
-                                response_time
-                            )
-                        
+                    # Find an accepted tender
+                    accepted_tender = None
+                    for tender in buyer_tenders:
+                        if tender.get('status') == 'accepted':
+                            accepted_tender = tender
+                            break
+                    
+                    if accepted_tender:
+                        self.log_result(
+                            "Test Data Discovery", 
+                            True, 
+                            f"✅ Found accepted tender: listing_id={accepted_tender.get('listing_id')}, buyer_id={accepted_tender.get('buyer_id')}, seller_id={accepted_tender.get('seller_id')}",
+                            (datetime.now() - start_time).total_seconds() * 1000
+                        )
                         return {
                             'success': True,
-                            'accepted_count': accepted_count,
-                            'data': data,
-                            'has_proper_structure': has_proper_structure,
-                            'structure_details': structure_details,
-                            'completed_tenders_found': completed_tenders_found
+                            'tender': accepted_tender,
+                            'listing_id': accepted_tender.get('listing_id'),
+                            'buyer_id': accepted_tender.get('buyer_id'),
+                            'seller_id': accepted_tender.get('seller_id')
                         }
                     else:
                         self.log_result(
-                            "Seller Accepted Tenders Filtering", 
+                            "Test Data Discovery", 
                             False, 
-                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
-                            response_time
+                            f"❌ No accepted tenders found in {len(buyer_tenders)} buyer tenders",
+                            (datetime.now() - start_time).total_seconds() * 1000
                         )
-                        return {'success': False, 'error': 'Wrong response format'}
+                        return {'success': False, 'error': 'No accepted tenders found'}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Seller Accepted Tenders Filtering", 
+                        "Test Data Discovery", 
                         False, 
-                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
-                        response_time
+                        f"❌ Failed to get buyer tenders: {response.status} - {error_text}",
+                        (datetime.now() - start_time).total_seconds() * 1000
                     )
-                    return {'success': False, 'error': error_text}
+                    return {'success': False, 'error': f'Failed to get buyer tenders: {error_text}'}
                     
         except Exception as e:
-            response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Seller Accepted Tenders Filtering", 
+                "Test Data Discovery", 
                 False, 
-                f"❌ REQUEST FAILED: {str(e)}",
-                response_time
+                f"❌ Exception getting test data: {str(e)}",
+                (datetime.now() - start_time).total_seconds() * 1000
             )
             return {'success': False, 'error': str(e)}
     
