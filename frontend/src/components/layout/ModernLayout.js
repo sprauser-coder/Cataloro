@@ -106,10 +106,13 @@ function ModernLayout() {
   }
 
   // Allow public access to certain routes like public profiles
-  const publicRoutes = ['/profile/'];
+  const publicRoutes = ['/profile/', '/login', '/register', '/info'];
   const isPublicRoute = publicRoutes.some(route => location.pathname.startsWith(route));
   
-  if (!isAuthenticated && !isPublicRoute) {
+  console.log('🔐 Route check - path:', location.pathname, 'isPublic:', isPublicRoute, 'isAuth:', isAuthenticated, 'isLoading:', isLoading);
+  
+  if (!isLoading && !isAuthenticated && !isPublicRoute) {
+    console.log('🔐 Redirecting to login - not authenticated');
     return <Navigate to="/login" replace />;
   }
 
