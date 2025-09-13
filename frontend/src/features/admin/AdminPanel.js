@@ -499,6 +499,13 @@ function AdminPanel() {
         />
       )}
       
+      {activeTab === 'completed' && (
+        <CompletedTransactionsTab 
+          showToast={showToast}
+          permissions={permissions}
+        />
+      )}
+      
       {activeTab === 'cats' && (
         <CatDatabaseTab 
           showToast={showToast}
