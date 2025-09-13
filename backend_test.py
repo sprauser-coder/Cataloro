@@ -1,35 +1,34 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - FAVORITES AND VIEWS COUNTER BUGS TESTING
-Testing the fixes for favorites and views counter bugs as specifically requested by the user
+CATALORO MARKETPLACE - FAVORITES AND VIEWS COUNTER FIXES TESTING
+Testing the critical fixes for favorites and views counter bugs as specifically requested by the user
 
 CRITICAL FIXES BEING TESTED:
 1. **Favorites Fix**:
-   - Removed duplicate favorites endpoints that were causing data conflicts
-   - Fixed favorites persistence - all favorites should be returned (not just one)
-   - Test that there are no duplicate endpoint conflicts
+   - Fixed field name inconsistency: changed item_id to listing_id in favorites endpoints to match database schema
+   - Removed duplicate favorites endpoints that were causing conflicts
+   - Fixed E11000 duplicate key error (listing_id field consistency fixed)
+   - All favorites should be returned (not just one)
 
 2. **Views Counter Fix**:
-   - Added increment_view parameter to listings endpoint to control view counting
+   - Added increment_view parameter to control when views are counted
    - Views should only increment when increment_view=true is passed
-   - Background calls without increment_view should NOT increase views
+   - Background calls without increment_view should NOT increase views (no artificial inflation)
 
 FOCUS AREAS:
 1. **Test Favorites Fix**:
-   - Login as demo user
-   - Add multiple items to favorites using POST /api/user/{user_id}/favorites/{listing_id}
-   - Verify favorites are added correctly
+   - Login as demo user 
+   - Add 2-3 different listings to favorites using corrected endpoint: POST /api/user/{user_id}/favorites/{listing_id}
+   - Verify no more database E11000 errors (listing_id field consistency fixed)
    - Get favorites using GET /api/user/{user_id}/favorites
    - Verify ALL favorites are returned (not just one)
-   - Test edge cases: duplicates, non-existent listings, remove favorites
 
 2. **Test Views Counter Fix**:
    - Get a test listing's current view count
-   - Call GET /api/listings/{listing_id} WITHOUT increment_view parameter (should NOT increment)
-   - Verify view count stays the same
-   - Call GET /api/listings/{listing_id}?increment_view=true (should increment)
-   - Verify view count increases by 1
-   - Test multiple background calls without increment_view (should not increase views)
+   - Make multiple calls to GET /api/listings/{listing_id} WITHOUT increment_view parameter
+   - Verify view count stays the same (no artificial inflation)
+   - Call GET /api/listings/{listing_id}?increment_view=true once
+   - Verify view count increases by exactly 1
 
 TESTING ENDPOINTS:
 - POST /api/auth/login (demo user authentication)
@@ -41,6 +40,7 @@ TESTING ENDPOINTS:
 
 EXPECTED RESULTS:
 - Multiple favorites can be added and ALL are returned when fetched
+- No E11000 database errors when adding favorites
 - Views only increment when increment_view=true is explicitly passed
 - Background API calls do not artificially inflate view counts
 """
