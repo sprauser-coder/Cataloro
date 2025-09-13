@@ -5818,12 +5818,45 @@ async def accept_tender(tender_id: str, acceptance_data: dict):
         # Clean up favorites for sold listing
         try:
             await db.user_favorites.delete_many({"item_id": tender["listing_id"]})
-            print(f"DEBUG: Cleaned up favorites for sold listing {tender['listing_id']}")
-        except Exception as fav_error:
-            print(f"Warning: Failed to clean up favorites for sold listing: {fav_error}")
+            logger.info(f"🗑️ Cleaned up favorites for sold listing {tender['listing_id']}")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to clean up favorites for listing {tender['listing_id']}: {e}")
         
         # Get listing details for notifications
         listing = await db.listings.find_one({"id": tender["listing_id"]})
+        
+        # Create bought item for the buyer
+        bought_item_id = generate_id()
+        bought_item = {
+            "id": bought_item_id,
+            "user_id": tender["buyer_id"],
+            "listing_id": tender["listing_id"],
+            "tender_id": tender_id,
+            "title": listing.get("title", "Unknown Item") if listing else "Unknown Item",
+            "description": listing.get("description", "") if listing else "",
+            "price": tender["offer_amount"],
+            "original_price": listing.get("price", 0) if listing else 0,
+            "images": listing.get("images", []) if listing else [],
+            "seller_id": tender["seller_id"],
+            "purchased_at": current_time.isoformat(),
+            "status": "purchased",
+            "basket_id": None,  # Can be assigned later
+            
+            # Preserve catalyst data
+            "ceramic_weight": listing.get("ceramic_weight", 0.0) if listing else 0.0,
+            "pt_ppm": listing.get("pt_ppm", 0.0) if listing else 0.0,
+            "pd_ppm": listing.get("pd_ppm", 0.0) if listing else 0.0,
+            "rh_ppm": listing.get("rh_ppm", 0.0) if listing else 0.0,
+            "pt_g": listing.get("pt_g", 0.0) if listing else 0.0,
+            "pd_g": listing.get("pd_g", 0.0) if listing else 0.0,
+            "rh_g": listing.get("rh_g", 0.0) if listing else 0.0,
+            
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat()
+        }
+        
+        await db.bought_items.insert_one(bought_item)
+        logger.info(f"✅ Created bought item {bought_item_id} for buyer {tender['buyer_id']}")
         
         # Create notification for winning buyer
         winning_notification = {
