@@ -84,6 +84,12 @@ function SellPage() {
       description: 'Manage received offers and bids'
     },
     {
+      id: 'accepted',
+      label: 'Accepted Tenders',
+      icon: CheckCircle,
+      description: 'Manage accepted tenders and orders'
+    },
+    {
       id: 'listings',
       label: 'My Listings',
       icon: Package,
