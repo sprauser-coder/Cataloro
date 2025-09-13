@@ -147,7 +147,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     }
   };
 
-  const fetchMyTenders = async () => {
+  const fetchMyTenders = React.useCallback(async () => {
     if (!user?.id || myTendersLoading) return; // Prevent multiple concurrent calls
     
     setMyTendersLoading(true);
@@ -172,7 +172,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     } finally {
       setMyTendersLoading(false);
     }
-  };
+  }, [user?.id, myTendersLoading]);
 
   // Listings Management Functions (exact duplicate from MyListingsPage)
   const fetchMyListings = async () => {
