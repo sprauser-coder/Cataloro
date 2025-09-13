@@ -27,9 +27,28 @@ class MarketplaceService {
       
       console.log('🌐 API call to browse - page:', page, 'pageSize:', pageSize, 'filters:', filters);
       
-      // Use the browse endpoint that returns array format instead of listings endpoint
+      // Use the browse endpoint that now returns {listings: [], pagination: {}}
       const response = await axios.get(`${ENV_CONFIG.API_BASE_URL}/api/marketplace/browse?${params}`);
-      return response.data;
+      
+      // The API now returns {listings: [], pagination: {}} instead of just an array
+      if (response.data && response.data.listings) {
+        console.log('🌐 API response - listings:', response.data.listings.length, 'pagination:', response.data.pagination);
+        return response.data; // Return the full response with pagination metadata
+      } else {
+        // Fallback for old API format (just array)
+        console.log('🌐 API response - fallback array format:', response.data.length);
+        return {
+          listings: response.data,
+          pagination: {
+            current_page: page,
+            total_pages: 1,
+            total_count: response.data.length,
+            page_size: pageSize,
+            has_next: false,
+            has_prev: false
+          }
+        };
+      }
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to fetch listings');
     }
