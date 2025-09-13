@@ -677,20 +677,6 @@ export function MarketplaceProvider({ children }) {
     }
   };
 
-  // Function to change page
-  const changePage = async (newPage) => {
-    if (newPage < 1 || newPage > state.totalPages || newPage === state.currentPage) {
-      return;
-    }
-
-    console.log('📄 Changing to page:', newPage);
-    dispatch({ type: ACTIONS.SET_CURRENT_PAGE, payload: newPage });
-    
-    // Reload products for the new page
-    await loadInitialProducts(state.activeFilters, null, newPage);
-  };
-  };
-
   // Action creators
   const actions = {
     // Favorites actions with live API
