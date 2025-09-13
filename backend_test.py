@@ -5276,7 +5276,21 @@ class BackendTester:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
-                    listings = await response.json()
+                    data = await response.json()
+                    
+                    # Handle both list and dict responses
+                    if isinstance(data, list):
+                        listings = data
+                    elif isinstance(data, dict) and 'listings' in data:
+                        listings = data['listings']
+                    else:
+                        self.log_result(
+                            "Test Seller Listings Endpoint", 
+                            False, 
+                            f"Unexpected response format: {type(data)}",
+                            response_time
+                        )
+                        return False
                     
                     # Find our specific listing
                     target_listing = None
