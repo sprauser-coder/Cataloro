@@ -635,7 +635,7 @@ export function MarketplaceProvider({ children }) {
           filters.bidFilter !== undefined) {
         await loadInitialProducts(newFilters);
       } else {
-        // For other filters (search, sorting), use local filtering
+        // For other filters (search, sorting, hotDeals), use local filtering
         applyFiltersAndSearch(state.searchQuery, newFilters, state.sortBy);
       }
     },
