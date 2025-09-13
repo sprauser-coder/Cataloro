@@ -883,7 +883,7 @@ class BackendTester:
             }
     
     async def verify_count_consistency(self, tenders_result, my_listings_result):
-        """Verify that both endpoints now return consistent counts"""
+        """Verify that both endpoints now return consistent counts for active listings"""
         print("      Checking consistency between Tenders and My-Listings:")
         
         if not tenders_result.get('success') or not my_listings_result.get('default', {}).get('success'):
@@ -895,21 +895,33 @@ class BackendTester:
             return False
         
         tenders_count = tenders_result['count']
-        my_listings_count = my_listings_result['default']['count']
+        my_listings_default_count = my_listings_result['default'].get('total_count', my_listings_result['default']['count'])
         
-        if tenders_count == my_listings_count:
+        # Since my-listings now defaults to status="all", we need to compare with active count for consistency
+        my_listings_active_count = my_listings_result.get('active', {}).get('total_count', 0)
+        
+        # Check if both endpoints return the same count for active listings
+        if my_listings_active_count > 0 and tenders_count == my_listings_active_count:
             self.log_result(
                 "Count Consistency Verification", 
                 True, 
-                f"✅ CONSISTENCY FIX WORKING: Tenders ({tenders_count}) == My-Listings ({my_listings_count}) - counts now match!"
+                f"✅ CONSISTENCY FIX WORKING: Tenders ({tenders_count}) == My-Listings active ({my_listings_active_count}) - active counts now match!"
+            )
+            return True
+        elif tenders_count == my_listings_default_count:
+            self.log_result(
+                "Count Consistency Verification", 
+                True, 
+                f"✅ CONSISTENCY FIX WORKING: Tenders ({tenders_count}) == My-Listings default ({my_listings_default_count}) - counts now match!"
             )
             return True
         else:
-            difference = abs(tenders_count - my_listings_count)
+            difference_active = abs(tenders_count - my_listings_active_count) if my_listings_active_count > 0 else "N/A"
+            difference_default = abs(tenders_count - my_listings_default_count)
             self.log_result(
                 "Count Consistency Verification", 
                 False, 
-                f"❌ CONSISTENCY FIX INCOMPLETE: Tenders ({tenders_count}) != My-Listings ({my_listings_count}) - difference: {difference}"
+                f"❌ CONSISTENCY CHECK: Tenders ({tenders_count}) vs My-Listings default ({my_listings_default_count}) vs My-Listings active ({my_listings_active_count}). Differences: default={difference_default}, active={difference_active}"
             )
             return False
     
