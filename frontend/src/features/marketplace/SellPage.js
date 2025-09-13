@@ -51,7 +51,7 @@ function SellPage() {
 
   // Load completed transactions for seller
   const loadCompletedTransactions = async () => {
-    if (!user?.id || activeTab !== 'completed') return;
+    if (!user?.id) return;
     
     try {
       setLoading(true);
