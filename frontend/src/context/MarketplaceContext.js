@@ -700,6 +700,8 @@ export function MarketplaceProvider({ children }) {
           currentPage: page 
         } 
       });
+      
+      console.log('✅ Fallback to demo data - page:', page, 'showing:', paginatedDemoData.length, 'of', demoProducts.length);
     } finally {
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       dispatch({ type: ACTIONS.SET_LOADING_PAGE, payload: false });
