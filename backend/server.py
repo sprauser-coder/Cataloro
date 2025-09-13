@@ -5954,8 +5954,17 @@ async def reject_tender(tender_id: str, rejection_data: dict):
 async def get_seller_tenders_overview(seller_id: str):
     """Get overview of all tenders for all seller's listings (OPTIMIZED)"""
     try:
-        # Get all seller's active listings (sorted by newest first)
+        # Get all seller's active listings (sorted by newest first) - NO LIMIT for accurate count
         listings = await db.listings.find({"seller_id": seller_id, "status": "active"}).sort("created_at", -1).to_list(length=None)
+        
+        logger.info(f"📊 Seller {seller_id} has {len(listings)} active listings (unlimited query)")
+        
+        # Verify count matches database
+        db_count = await db.listings.count_documents({"seller_id": seller_id, "status": "active"})
+        if len(listings) != db_count:
+            logger.warning(f"⚠️ Count mismatch! Query returned {len(listings)} but count_documents returned {db_count}")
+        else:
+            logger.info(f"✅ Count verified: {len(listings)} active listings")
         
         # Get seller information
         seller = await db.users.find_one({"id": seller_id})
