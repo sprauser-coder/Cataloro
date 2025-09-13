@@ -4987,8 +4987,8 @@ async def get_user_favorites(user_id: str):
             listing = await db.listings.find_one({"id": listing_id})
             if listing:
                 listing['_id'] = str(listing['_id'])
-                # Add favorite metadata
-                favorite_record = next((fav for fav in favorites if fav["listing_id"] == listing_id), None)
+                # Add favorite metadata (handle both field names)
+                favorite_record = next((fav for fav in favorites if fav.get("listing_id") == listing_id or fav.get("item_id") == listing_id), None)
                 if favorite_record:
                     listing['favorited_at'] = favorite_record.get('created_at')
                 favorite_listings.append(listing)
