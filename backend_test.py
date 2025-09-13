@@ -611,6 +611,10 @@ class BackendTester:
         """Test the listing count consistency fixes applied by the main agent"""
         print("\n📊 LISTING COUNT CONSISTENCY FIXES TESTING:")
         print("   Testing fixes applied to resolve Tenders vs My-Listings count discrepancy")
+        print("   Recent changes made:")
+        print("   - Updated tenders overview to use `associated_ids` logic (same as my-listings)")
+        print("   - Updated my-listings endpoint to default to `status='all'` and `limit=1000`")
+        print("   - Updated frontend to pass `status='all'` and `limit=1000` parameters")
         
         # Step 1: Login as admin user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
@@ -624,7 +628,7 @@ class BackendTester:
         print("\n   🎯 Testing Fixed Tenders Overview Count:")
         tenders_result = await self.test_fixed_tenders_overview_count(admin_user_id, admin_token)
         
-        # Step 3: Test Fixed My-Listings Count (should now default to status="active")
+        # Step 3: Test Fixed My-Listings Count (should now default to status="all" with limit=1000)
         print("\n   📋 Testing Fixed My-Listings Count:")
         my_listings_result = await self.test_fixed_my_listings_count(admin_user_id, admin_token)
         
@@ -632,9 +636,9 @@ class BackendTester:
         print("\n   ⚖️ Verifying Count Consistency:")
         consistency_result = await self.verify_count_consistency(tenders_result, my_listings_result)
         
-        # Step 5: Test Other Status Filters
-        print("\n   🔍 Testing Other Status Filters:")
-        filters_result = await self.test_other_status_filters(admin_user_id, admin_token)
+        # Step 5: Test Status Filtering (verify that when filtering for 'active' status, both endpoints return consistent counts)
+        print("\n   🔍 Testing Status Filtering:")
+        filters_result = await self.test_status_filtering_consistency(admin_user_id, admin_token)
         
         # Step 6: Verify Database Counts
         print("\n   💾 Verifying Database Counts:")
