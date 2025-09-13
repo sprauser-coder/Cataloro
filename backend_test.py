@@ -977,7 +977,7 @@ class BackendTester:
         # Send multiple messages
         message_ids = []
         for i in range(3):
-            message_id = await self.send_test_message(admin_user_id, admin_token, demo_user_id, f"Test Message {i+1}")
+            message_id = await self.send_simple_message(admin_user_id, admin_token, demo_user_id, f"Test Message {i+1}")
             if message_id:
                 message_ids.append(message_id)
         
