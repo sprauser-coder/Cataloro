@@ -183,6 +183,8 @@ function SellPage() {
             <AcceptedTendersTab 
               user={user}
               onRefresh={loadCompletedTransactions}
+              onCompleteOrder={loadCompletedTransactions}
+              onSwitchToCompleted={() => handleTabChange('completed')}
             />
           )}
           
