@@ -325,7 +325,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     // Load notifications if user is available
     if (user?.id) {
       loadNotifications();
-      requestNotificationPermission();
+      // Disabled automatic notification permission request to avoid browser errors
+      // requestNotificationPermission(); // Only request on user interaction
       
       // Set up real-time notification polling every 5 minutes (reduced from 2 minutes to prevent rate limiting)
       const notificationInterval = setInterval(() => {
