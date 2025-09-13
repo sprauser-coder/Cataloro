@@ -178,7 +178,9 @@ function MobileProductDetailPage() {
       // Refresh product data to show updated bid info
       const refreshResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
       if (refreshResponse.ok) {
-        const allProducts = await refreshResponse.json();
+        const data = await refreshResponse.json();
+        // Handle new API response format {listings: [...], pagination: {...}}
+        const allProducts = data.listings || (Array.isArray(data) ? data : []);
         const updatedProduct = allProducts.find(p => p.id === productId);
         if (updatedProduct) {
           setProduct(updatedProduct);
