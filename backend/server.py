@@ -6045,7 +6045,7 @@ async def get_seller_tenders_overview(seller_id: str):
                     "id": listing["id"],
                     "title": listing["title"],
                     "price": listing["price"],
-                    "images": listing.get("images", []),
+                    "images": optimize_images_for_response(listing.get("images", []), listing.get("id", "")),
                     "seller_id": listing.get("seller_id", "")
                 },
                 "seller": seller_info,
