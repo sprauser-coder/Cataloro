@@ -120,12 +120,12 @@ function BuyPage() {
 
         {/* Tab Content */}
         <div className="p-6">
-          {activeTab === 'tenders' && (
+          <div style={{ display: activeTab === 'tenders' ? 'block' : 'none' }}>
             <TenderManagementPage showBuyTabOnly={true} />
-          )}
+          </div>
           
           {(activeTab === 'bought-items' || activeTab === 'baskets' || activeTab === 'completed') && (
-            <BuyManagementPage initialTab={activeTab} hideNavigation={true} showOnlyTab={activeTab} />
+            <BuyManagementPage key={activeTab} initialTab={activeTab} hideNavigation={true} showOnlyTab={activeTab} />
           )}
         </div>
       </div>
