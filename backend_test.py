@@ -1,27 +1,31 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - TENDER ACCEPTANCE TO CLOSED TAB WORKFLOW TESTING
-Testing the complete tender acceptance to Closed tab workflow fix as requested by the user
+CATALORO MARKETPLACE - CRITICAL FIX FOR CLOSED TAB LISTINGS TESTING
+Testing the critical fix for Closed tab listings as specifically requested by the user
+
+CRITICAL FIX BEING TESTED:
+- Removed hardcoded `"status": "active"` filter from /api/user/my-listings/{user_id} endpoint
+- This endpoint now returns ALL listing statuses (active, sold, draft, closed)
+- Frontend can now properly filter listings into Active/Closed/Drafts tabs
 
 FOCUS AREAS:
 1. SETUP TEST SCENARIO - Login as admin (seller), create test listing, login as demo user (buyer), place bid
-2. ACCEPT THE TENDER - Simulate frontend tender acceptance flow with PUT /api/tenders/{tender_id}/accept
-3. TEST LISTINGS REFRESH - Call GET /api/marketplace/my-listings for seller, verify status "sold"
-4. END-TO-END VERIFICATION - Confirm listing appears in Closed tab filter (status === 'sold' || status === 'closed')
+2. ACCEPT THE TENDER - Accept tender to change listing status to "sold", verify status update works
+3. TEST THE FIXED MY-LISTINGS ENDPOINT - Call GET /api/user/my-listings/{user_id} for seller, verify listings with status "sold" are returned
+4. VERIFY CLOSED TAB LOGIC - Confirm listings with status "sold" would appear in Closed tab filter
 
 TESTING ENDPOINTS:
 - POST /api/auth/login (admin and demo user authentication)
 - POST /api/listings (create test listing)
 - POST /api/tenders/submit (place bid)
-- PUT /api/tenders/{tender_id}/accept (accept tender with Authorization header)
-- GET /api/marketplace/my-listings (verify listing status change to "sold")
+- PUT /api/tenders/{tender_id}/accept (accept tender)
+- GET /api/user/my-listings/{user_id} (THE CRITICAL FIXED ENDPOINT)
 - GET /api/listings/{listing_id} (verify individual listing status)
 
-FIXES BEING TESTED:
-- Added fetchMyListings() call after successful tender acceptance to refresh listings data
-- Added Authorization header to tender acceptance and rejection requests
-- Listing status changes from "active" to "sold" after tender acceptance
-- Listings with "sold" status appear in Closed tab filter
+EXPECTED RESULTS:
+- Tender acceptance changes listing status from "active" to "sold"
+- GET /api/user/my-listings/{user_id} returns listings with status "sold" (this was the bug!)
+- Frontend Closed tab filter (status === 'sold' || status === 'closed') would now show the item
 """
 
 import asyncio
