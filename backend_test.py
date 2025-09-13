@@ -9557,8 +9557,8 @@ async def main():
             return
         
         # Run tender acceptance workflow testing
-        print("\n🎯 STARTING TENDER ACCEPTANCE WORKFLOW TESTING...")
-        success = await tester.test_tender_acceptance_workflow()
+        print("\n🎯 STARTING NEW TENDER ACCEPTANCE WORKFLOW TESTING...")
+        success = await tester.test_new_tender_acceptance_workflow()
         
         # Print summary
         print("\n" + "=" * 80)
