@@ -1544,7 +1544,11 @@ async def browse_listings(
         logger.info(f"📋 Pagination info - total: {total_count}, page: {current_page}/{total_pages}, offset: {offset}, limit: {limit}")
         
         # Get paginated listings with proper offset and limit
-        listings = await db.listings.find(query).sort("created_at", -1).skip(offset).limit(limit).to_list(length=limit)
+        if limit <= 0:
+            # Handle edge case: return empty results for limit=0 or negative
+            listings = []
+        else:
+            listings = await db.listings.find(query).sort("created_at", -1).skip(offset).limit(limit).to_list(length=limit)
         
         logger.info(f"📋 Found {len(listings)} listings for current page")
         
