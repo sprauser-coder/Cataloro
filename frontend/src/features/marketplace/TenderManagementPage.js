@@ -207,7 +207,8 @@ function TenderManagementPage() {
 
       if (response.ok) {
         showToast(`Tender offer of €${offerAmount.toFixed(2)} accepted!`, 'success');
-        fetchTendersOverview(); // Refresh data
+        fetchTendersOverview(); // Refresh tenders data
+        fetchMyListings(); // Refresh listings data so it appears in Closed tab
       } else {
         const errorData = await response.json();
         showToast(errorData.detail || 'Failed to accept tender', 'error');
