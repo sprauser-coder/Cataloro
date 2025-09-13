@@ -934,7 +934,7 @@ export function MarketplaceProvider({ children }) {
         
         if (filters.hotDeals === 'expiring_soon') {
           const isExpiringSoon = timeRemainingHours > 0 && timeRemainingHours <= 48;
-          console.log(`🔥 ${product.title}: ${timeRemainingHours.toFixed(1)}h remaining, isExpiringSoon=${isExpiringSoon}`);
+          console.log(`⏰ ${product.title}: ${timeRemainingHours.toFixed(1)}h remaining, isExpiringSoon=${isExpiringSoon}`);
           return isExpiringSoon;
         }
         
