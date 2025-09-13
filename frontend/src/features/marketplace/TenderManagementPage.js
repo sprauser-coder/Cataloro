@@ -114,7 +114,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
       fetchMyTenders();
     } else if ((activeTab === 'sell' || activeTab === 'listings') && tendersOverview.length === 0) {
       fetchTendersOverview();
-      if (myListings.length === 0) {
+      if (listings.length === 0) {
         fetchMyListings();
       }
     }
