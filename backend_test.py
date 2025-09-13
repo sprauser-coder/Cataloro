@@ -1,53 +1,47 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - UNIQUE VIEW TRACKING FIX TESTING
-Testing the unique view tracking fix for listing views
+CATALORO MARKETPLACE - LISTING COUNT DISCREPANCY INVESTIGATION
+Testing to identify the source of listing count discrepancy between Tenders and Listings sections
 
-CRITICAL FIX BEING TESTED:
-The fix implemented creates a listing_views collection to track unique user views.
-Only authenticated users who haven't viewed the listing before will increment the view count.
+CRITICAL ISSUE BEING INVESTIGATED:
+- Tenders section shows 62 active listings
+- Listings section shows 34 listings  
+- Need to identify why there's a discrepancy of 28 listings
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Unique View Tracking**:
-   - Login as admin user
-   - Get a specific listing details using GET /api/listings/{listing_id}?increment_view=true multiple times
-   - Verify that the view count only increases by 1 despite multiple requests from the same user
-   - Check that subsequent requests from the same user don't increment the view count
+1. **Test Tenders Section Count**:
+   - Call GET /api/tenders/seller/{admin_user_id}/overview 
+   - Count the number of listings returned
+   - Verify these are all status="active" listings
 
-2. **Test Different Users**:
-   - Login as admin user and view a listing (should increment view count)
-   - Login as demo user and view the same listing (should increment view count again)
-   - Have admin user view the same listing again (should NOT increment)
-   - Have demo user view the same listing again (should NOT increment)
+2. **Test Listings Section Count**:
+   - Call GET /api/marketplace/my-listings with admin user authentication
+   - Check what status filter is being applied by default
+   - Count the total listings returned
+   - Call with explicit status="active" to see active count
+   - Call with status="all" to see total count
 
-3. **Test View Tracking Database**:
-   - Verify that views are being recorded in the listing_views collection
-   - Check that each user-listing combination is only recorded once
-   - Verify the view records contain proper user_id, listing_id, and timestamp
+3. **Verify the Actual Database Counts**:
+   - Query the database directly for admin user's listings:
+     - Total listings: count all regardless of status
+     - Active listings: count only status="active" 
+     - Other statuses: count sold, expired, draft, etc.
 
-4. **Test Backend Logging**:
-   - Monitor backend logs for view tracking messages:
-     - "📊 New unique view recorded" for first-time views
-     - "📊 Duplicate view skipped" for repeat views from same user
-     - "📊 View increment requested but user not authenticated" for unauthenticated requests
-
-5. **Test Edge Cases**:
-   - Test increment_view=true without authentication (should not increment)
-   - Test increment_view=false (should never increment regardless of user)
-   - Test with invalid user tokens
+4. **Compare All Numbers**:
+   - Tenders overview count vs Database active count (should match)
+   - My-listings default count vs Database counts
+   - Identify exactly why the numbers don't match
 
 CRITICAL ENDPOINTS BEING TESTED:
-- POST /api/auth/login (admin and demo user authentication)
-- GET /api/listings/{listing_id}?increment_view=true (view tracking with authentication)
-- GET /api/listings/{listing_id}?increment_view=false (no view tracking)
-- GET /api/listings/{listing_id} (default no view tracking)
+- POST /api/auth/login (admin user authentication)
+- GET /api/tenders/seller/{admin_user_id}/overview (tenders count)
+- GET /api/marketplace/my-listings (listings with different status filters)
+- GET /api/marketplace/browse (to verify database counts)
 
-EXPECTED RESULTS AFTER FIX:
-- View count only increments for authenticated users who haven't viewed the listing before
-- Multiple views from the same user only count as 1 view
-- listing_views collection tracks unique user-listing combinations
-- Proper logging for debugging view tracking behavior
-- Unauthenticated requests don't increment view count
+EXPECTED RESULTS:
+- Identify the exact source of the discrepancy
+- Understand what filters are being applied differently
+- Determine if the issue is in frontend logic or backend data
 """
 
 import asyncio
