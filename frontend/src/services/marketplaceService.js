@@ -63,7 +63,15 @@ class MarketplaceService {
           limit: 1000 // High limit to get all listings (matching tenders overview unlimited behavior)
         }
       });
-      return response.data;
+      
+      // Handle new backend response format {listings: [...], total: X, ...}
+      const data = response.data;
+      if (data && typeof data === 'object' && Array.isArray(data.listings)) {
+        return data.listings; // Extract just the listings array
+      }
+      
+      // Fallback for old format (direct array)
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to fetch your listings');
     }
