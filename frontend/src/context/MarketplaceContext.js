@@ -24,6 +24,14 @@ const initialState = {
     bidFilter: 'all', // New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
     hotDeals: 'all' // New filter: "all", "hot_deals", "expiring_soon", "no_time_limit"
   },
+  sortBy: 'newest',
+
+  // Pagination State
+  currentPage: 1,
+  pageSize: 40,
+  totalPages: 1,
+  totalListings: 0,
+  isLoadingPage: false,
   
   // Products & Listings
   allProducts: [],
@@ -37,7 +45,6 @@ const initialState = {
   
   // UI State
   viewMode: 'grid',
-  sortBy: 'newest',
   isLoading: false,
   
   // Promo Codes
