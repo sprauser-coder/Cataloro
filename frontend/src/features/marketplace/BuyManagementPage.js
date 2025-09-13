@@ -1320,8 +1320,8 @@ function CompletedTransactionCard({ transaction, onUndoCompletion }) {
 
 // Completion Modal Component
 function CompletionModal({ item, onComplete, onClose }) {
-  const [notes, setNotes] = useState('');
-  const [method, setMethod] = useState('meeting');
+  const [notes, setNotes] = React.useState('');
+  const [method, setMethod] = React.useState('meeting');
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
