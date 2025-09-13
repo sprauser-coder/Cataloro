@@ -823,8 +823,8 @@ function ModernBrowsePage() {
                 disabled={!user}
               >
                 <option value="all">All Listings</option>
-                <option value="placed_bid">Placed a Bid</option>
-                <option value="not_placed_bid">Not Placed a Bid</option>
+                <option value="placed_bid">I Placed a Bid</option>
+                <option value="not_placed_bid">I Haven't Bid Yet</option>
                 <option value="own_listings">My Listings</option>
               </select>
               {!user && (
@@ -832,6 +832,26 @@ function ModernBrowsePage() {
                   Login to filter by your activity
                 </p>
               )}
+            </div>
+
+            {/* NEW: Hot Deals Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Special Deals
+              </label>
+              <select
+                value={filters.hotDeals || 'all'}
+                onChange={(e) => updateFilters({...filters, hotDeals: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white h-10 leading-none"
+              >
+                <option value="all">All Items</option>
+                <option value="hot_deals">🔥 Hot Deals (< 24h left)</option>
+                <option value="expiring_soon">⏰ Expiring Soon (< 48h)</option>
+                <option value="no_time_limit">♾️ No Time Limit</option>
+              </select>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Find items ending soon for better deals
+              </p>
             </div>
 
             {/* Price Range (from-to inputs) */}
