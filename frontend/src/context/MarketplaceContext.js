@@ -751,6 +751,7 @@ export function MarketplaceProvider({ children }) {
   };
 
   const applyFiltersAndSearch = (query, filters, sortBy) => {
+    console.log('🔍 applyFiltersAndSearch called with:', { query, filters, sortBy, allProductsCount: state.allProducts.length });
     let filtered = [...state.allProducts];
 
     // Apply search
