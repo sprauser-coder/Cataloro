@@ -7280,6 +7280,9 @@ async def main():
         # Test the critical message field consistency fix
         field_consistency_success = await tester.test_message_field_consistency_fix()
         
+        # Test multiple messages workflow
+        workflow_success = await tester.test_multiple_messages_workflow()
+        
         # Summary
         print("\n" + "=" * 80)
         print("🏁 MESSAGE READ FUNCTIONALITY CRITICAL FIX TESTING SUMMARY")
