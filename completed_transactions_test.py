@@ -159,15 +159,15 @@ class CompletedTransactionsTester:
             )
             return False
     
-    async def find_accepted_tender_for_testing(self, admin_token):
+    async def find_accepted_tender_for_testing(self, admin_token, admin_user_id):
         """Find an accepted tender for testing completed transactions"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {admin_token}"}
             
-            # Get tenders with accepted status
-            async with self.session.get(f"{BACKEND_URL}/tenders", headers=headers) as response:
+            # Get buyer tenders for admin user to find accepted ones
+            async with self.session.get(f"{BACKEND_URL}/tenders/buyer/{admin_user_id}", headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
@@ -177,27 +177,25 @@ class CompletedTransactionsTester:
                     accepted_tenders = []
                     if isinstance(tenders_data, list):
                         accepted_tenders = [t for t in tenders_data if t.get('status') == 'accepted']
-                    elif isinstance(tenders_data, dict) and 'tenders' in tenders_data:
-                        accepted_tenders = [t for t in tenders_data['tenders'] if t.get('status') == 'accepted']
                     
                     if accepted_tenders:
                         test_tender = accepted_tenders[0]  # Use first accepted tender
                         self.log_result(
                             "Find Accepted Tender", 
                             True, 
-                            f"Found accepted tender: {test_tender.get('id')} for listing {test_tender.get('listing_id')}",
+                            f"Found accepted tender: {test_tender.get('id')} for listing {test_tender.get('listing', {}).get('id')}",
                             response_time
                         )
                         return test_tender
                     else:
                         # If no accepted tenders, try to create one for testing
-                        return await self.create_test_tender_for_completion_testing(admin_token)
+                        return await self.create_test_tender_for_completion_testing(admin_token, admin_user_id)
                 else:
                     error_text = await response.text()
                     self.log_result(
                         "Find Accepted Tender", 
                         False, 
-                        f"Failed to get tenders: Status {response.status}: {error_text}",
+                        f"Failed to get buyer tenders: Status {response.status}: {error_text}",
                         response_time
                     )
                     return None
