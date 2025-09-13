@@ -741,45 +741,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 );
               })}
               
-              {/* Buy Link - Menu settings visibility */}
-              {isMenuItemVisible('desktop_menu', 'buy') && (
-                <Link
-                  to={APP_ROUTES.BUY}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
-                    location.pathname === '/buy'
-                      ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
-                      : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
-                  }`}
-                  style={location.pathname === '/buy' ? {
-                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
-                    backdropFilter: 'blur(20px)',
-                    boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
-                  } : {}}
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  <span className="font-medium">Buy</span>
-                </Link>
-              )}
-
-              {/* Sell Link - Menu settings visibility */}
-              {isMenuItemVisible('desktop_menu', 'sell') && (
-                <Link
-                  to={APP_ROUTES.SELL}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
-                    location.pathname === '/sell'
-                      ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
-                      : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
-                  }`}
-                  style={location.pathname === '/sell' ? {
-                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
-                    backdropFilter: 'blur(20px)',
-                    boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
-                  } : {}}
-                >
-                  <Package className="w-4 h-4" />
-                  <span className="font-medium">Sell</span>
-                </Link>
-              )}
+              {/* Buy and Sell links removed from sidebar - they are now in main navigation */}
               
               {/* Admin Link - Menu settings visibility */}
               {isMenuItemVisible('desktop_menu', 'admin_panel') && (
