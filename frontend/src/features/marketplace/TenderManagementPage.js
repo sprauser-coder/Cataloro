@@ -125,6 +125,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     
     setTendersLoading(true);
     try {
+      // eslint-disable-next-line no-undef
       const controller = new AbortController();
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/seller/${user.id}/overview`, {
         signal: controller.signal
