@@ -727,6 +727,36 @@ export function MarketplaceProvider({ children }) {
       filtered = filtered.filter(product => (product.rating || 0) >= filters.rating);
     }
 
+    // Apply hot deals filter
+    if (filters.hotDeals && filters.hotDeals !== 'all') {
+      filtered = filtered.filter(product => {
+        const timeInfo = product.time_info;
+        
+        if (!timeInfo) return filters.hotDeals === 'no_time_limit';
+        
+        if (filters.hotDeals === 'no_time_limit') {
+          return !timeInfo.has_time_limit;
+        }
+        
+        if (!timeInfo.has_time_limit || timeInfo.is_expired) {
+          return false;
+        }
+        
+        const timeRemainingHours = timeInfo.time_remaining_seconds ? 
+          timeInfo.time_remaining_seconds / 3600 : 0;
+        
+        if (filters.hotDeals === 'hot_deals') {
+          return timeRemainingHours > 0 && timeRemainingHours <= 24;
+        }
+        
+        if (filters.hotDeals === 'expiring_soon') {
+          return timeRemainingHours > 0 && timeRemainingHours <= 48;
+        }
+        
+        return true;
+      });
+    }
+
     // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
