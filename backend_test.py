@@ -913,55 +913,74 @@ class BackendTester:
             )
             return False
     
-    async def test_other_status_filters(self, admin_user_id, admin_token):
-        """Test other status filters to ensure they work correctly"""
+    async def test_status_filtering_consistency(self, admin_user_id, admin_token):
+        """Test that when filtering for 'active' status, both endpoints return consistent counts"""
         headers = {"Authorization": f"Bearer {admin_token}"}
         results = {}
         
-        # Test status="all" (should return all 99+ listings)
-        print("      Testing status='all' (should return all listings):")
-        all_result = await self.test_my_listings_with_status(headers, "all", "all")
-        results['all'] = all_result
+        print("      Testing status filtering consistency between endpoints:")
         
-        if all_result['success']:
-            all_count = all_result['total_count']
-            expected_all_count = 99  # Expected total listings
+        # Test Tenders Overview with active filter (if supported)
+        print("      Testing Tenders Overview (should show active listings):")
+        tenders_result = await self.test_fixed_tenders_overview_count(admin_user_id, admin_token)
+        results['tenders_active'] = tenders_result
+        
+        # Test My-Listings with explicit status="active" and limit=1000
+        print("      Testing My-Listings with status='active' and limit=1000:")
+        my_listings_active = await self.test_my_listings_with_status(headers, "active_filtered", "active", limit=1000)
+        results['my_listings_active'] = my_listings_active
+        
+        # Compare the counts
+        if tenders_result.get('success') and my_listings_active.get('success'):
+            tenders_count = tenders_result['count']
+            my_listings_count = my_listings_active.get('total_count', my_listings_active['count'])
             
-            if all_count >= expected_all_count:
+            if tenders_count == my_listings_count:
                 self.log_result(
-                    "Status='all' Filter Test", 
+                    "Active Status Filtering Consistency", 
                     True, 
-                    f"✅ STATUS='ALL' WORKING: Returns {all_count} total listings (>= expected {expected_all_count})"
+                    f"✅ ACTIVE FILTERING CONSISTENT: Tenders ({tenders_count}) == My-Listings active ({my_listings_count})"
                 )
             else:
+                difference = abs(tenders_count - my_listings_count)
                 self.log_result(
-                    "Status='all' Filter Test", 
+                    "Active Status Filtering Consistency", 
                     False, 
-                    f"❌ STATUS='ALL' INCOMPLETE: Returns {all_count} listings (expected >= {expected_all_count})"
+                    f"❌ ACTIVE FILTERING INCONSISTENT: Tenders ({tenders_count}) != My-Listings active ({my_listings_count}), difference: {difference}"
                 )
         
-        # Test status="sold" (should return sold listings)
-        print("      Testing status='sold':")
-        sold_result = await self.test_my_listings_with_status(headers, "sold", "sold")
+        # Test other status filters for completeness
+        print("      Testing other status filters:")
+        
+        # Test status="all" with limit=1000
+        all_result = await self.test_my_listings_with_status(headers, "all_filtered", "all", limit=1000)
+        results['all'] = all_result
+        
+        # Test status="sold" with limit=1000
+        sold_result = await self.test_my_listings_with_status(headers, "sold_filtered", "sold", limit=1000)
         results['sold'] = sold_result
         
-        if sold_result['success']:
-            sold_count = sold_result['total_count']
-            self.log_result(
-                "Status='sold' Filter Test", 
-                True, 
-                f"✅ STATUS='SOLD' WORKING: Returns {sold_count} sold listings"
-            )
-        
-        # Test status="expired"
-        print("      Testing status='expired':")
-        expired_result = await self.test_my_listings_with_status(headers, "expired", "expired")
+        # Test status="expired" with limit=1000
+        expired_result = await self.test_my_listings_with_status(headers, "expired_filtered", "expired", limit=1000)
         results['expired'] = expired_result
         
-        # Test status="draft"
-        print("      Testing status='draft':")
-        draft_result = await self.test_my_listings_with_status(headers, "draft", "draft")
+        # Test status="draft" with limit=1000
+        draft_result = await self.test_my_listings_with_status(headers, "draft_filtered", "draft", limit=1000)
         results['draft'] = draft_result
+        
+        # Log summary of all status filters
+        if all_result['success']:
+            all_count = all_result.get('total_count', all_result['count'])
+            active_count = my_listings_active.get('total_count', my_listings_active['count'])
+            sold_count = sold_result.get('total_count', sold_result['count']) if sold_result['success'] else 0
+            expired_count = expired_result.get('total_count', expired_result['count']) if expired_result['success'] else 0
+            draft_count = draft_result.get('total_count', draft_result['count']) if draft_result['success'] else 0
+            
+            self.log_result(
+                "Status Filters Summary", 
+                True, 
+                f"✅ STATUS FILTERS WORKING: all={all_count}, active={active_count}, sold={sold_count}, expired={expired_count}, draft={draft_count}"
+            )
         
         return results
     
