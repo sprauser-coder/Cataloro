@@ -2128,11 +2128,11 @@ async def get_seller_listings(seller_id: str, status: str = "all", page: int = 1
         raise HTTPException(status_code=500, detail=f"Failed to fetch seller listings: {str(e)}")
 
 @app.get("/api/marketplace/my-listings")
-async def get_my_listings_marketplace(current_user: dict = Depends(get_current_user), status: str = "active", page: int = 1, limit: int = 100):
+async def get_my_listings_marketplace(current_user: dict = Depends(get_current_user), status: str = "all", page: int = 1, limit: int = 1000):
     """Get current user's listings for Management Center - with authentication
     
-    Note: Changed default status from 'all' to 'active' to match tenders overview
-    Note: Increased default limit from 50 to 100 to show more listings
+    Note: Changed default status back to 'all' for frontend filtering consistency
+    Note: Increased default limit to 1000 to get all listings (matching tenders overview unlimited behavior)
     """
     user_id = current_user.get("id")
     return await get_seller_listings(user_id, status, page, limit)
