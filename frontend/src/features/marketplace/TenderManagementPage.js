@@ -205,10 +205,10 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     }
   };
 
-  // Handle tile clicks for filtering (for Listings Management)
-  const handleTileClick = (filter) => {
+  // Handle tile clicks for filtering (for Listings Management) - Debounced for performance
+  const handleTileClick = React.useCallback((filter) => {
     setActiveFilter(filter);
-  };
+  }, []);
 
   // Handle create new listing (for Listings Management)
   const handleCreateListing = () => {
