@@ -855,7 +855,7 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, onE
 }
 
 // Bought Item Card Component
-function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket, onCreateBasket, onMarkComplete }) {
+function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket, onCreateBasket, onMarkComplete, isCompleted }) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
 
