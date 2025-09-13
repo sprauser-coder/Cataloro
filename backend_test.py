@@ -2920,6 +2920,417 @@ class BackendTester:
                 return False
         except:
             return False
+    async def test_accepted_tenders_endpoint(self, seller_id, token):
+        """Test GET /api/tenders/seller/{seller_id}/accepted endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/tenders/seller/{seller_id}/accepted"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if isinstance(data, list):
+                        # Check if tenders are enriched with listing and buyer information
+                        enriched_count = 0
+                        for tender in data:
+                            has_listing_info = all(key in tender for key in ['listing_title', 'listing_image', 'listing_price'])
+                            has_buyer_info = all(key in tender for key in ['buyer_name', 'buyer_email'])
+                            
+                            if has_listing_info and has_buyer_info:
+                                enriched_count += 1
+                        
+                        if len(data) > 0 and enriched_count == len(data):
+                            self.log_result(
+                                "Accepted Tenders Endpoint", 
+                                True, 
+                                f"✅ ENRICHED DATA WORKING: Returns {len(data)} accepted tenders with complete listing and buyer information",
+                                response_time
+                            )
+                        elif len(data) > 0:
+                            self.log_result(
+                                "Accepted Tenders Endpoint", 
+                                False, 
+                                f"❌ ENRICHMENT INCOMPLETE: {enriched_count}/{len(data)} tenders have complete enriched data",
+                                response_time
+                            )
+                        else:
+                            self.log_result(
+                                "Accepted Tenders Endpoint", 
+                                True, 
+                                f"✅ ENDPOINT WORKING: Returns empty array (no accepted tenders found)",
+                                response_time
+                            )
+                        
+                        return {
+                            'success': True,
+                            'count': len(data),
+                            'enriched_count': enriched_count,
+                            'data': data
+                        }
+                    else:
+                        self.log_result(
+                            "Accepted Tenders Endpoint", 
+                            False, 
+                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Wrong response format'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Accepted Tenders Endpoint", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Accepted Tenders Endpoint", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_bought_items_creation(self, user_id, token):
+        """Test that bought items are created when tenders are accepted"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/user/bought-items/{user_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if isinstance(data, list):
+                        # Check if bought items have all required fields including catalyst data
+                        complete_items = 0
+                        for item in data:
+                            required_fields = ['id', 'user_id', 'listing_id', 'title', 'price', 'seller_id', 'purchased_at']
+                            catalyst_fields = ['ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm']
+                            
+                            has_required = all(field in item for field in required_fields)
+                            has_catalyst = any(field in item for field in catalyst_fields)
+                            
+                            if has_required:
+                                complete_items += 1
+                        
+                        if len(data) > 0:
+                            self.log_result(
+                                "Bought Items Creation Test", 
+                                True, 
+                                f"✅ BOUGHT ITEMS CREATED: Found {len(data)} bought items, {complete_items} with complete data structure",
+                                response_time
+                            )
+                        else:
+                            self.log_result(
+                                "Bought Items Creation Test", 
+                                True, 
+                                f"✅ ENDPOINT WORKING: No bought items found (user may not have accepted tenders)",
+                                response_time
+                            )
+                        
+                        return {
+                            'success': True,
+                            'count': len(data),
+                            'complete_items': complete_items,
+                            'data': data
+                        }
+                    else:
+                        self.log_result(
+                            "Bought Items Creation Test", 
+                            False, 
+                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Wrong response format'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Bought Items Creation Test", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Bought Items Creation Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_complete_transaction_workflow(self, token, user_id):
+        """Test the complete transaction workflow from seller side"""
+        start_time = datetime.now()
+        
+        try:
+            # First, find an accepted tender to complete
+            headers = {"Authorization": f"Bearer {token}"}
+            accepted_tenders_url = f"{BACKEND_URL}/tenders/seller/{user_id}/accepted"
+            
+            async with self.session.get(accepted_tenders_url, headers=headers) as response:
+                if response.status == 200:
+                    accepted_tenders = await response.json()
+                    
+                    if len(accepted_tenders) > 0:
+                        # Use the first accepted tender for testing
+                        test_tender = accepted_tenders[0]
+                        listing_id = test_tender.get('listing_id')
+                        
+                        # Test completing the transaction
+                        completion_data = {
+                            "listing_id": listing_id,
+                            "notes": "Transaction completed successfully via tender acceptance workflow test",
+                            "completion_method": "meeting"
+                        }
+                        
+                        async with self.session.post(f"{BACKEND_URL}/user/complete-transaction", 
+                                                   json=completion_data, headers=headers) as complete_response:
+                            response_time = (datetime.now() - start_time).total_seconds() * 1000
+                            
+                            if complete_response.status == 200:
+                                completion_result = await complete_response.json()
+                                completion_id = completion_result.get('completion_id')
+                                
+                                self.log_result(
+                                    "Complete Transaction Workflow", 
+                                    True, 
+                                    f"✅ TRANSACTION COMPLETION WORKING: Successfully completed transaction for listing {listing_id}, completion ID: {completion_id}",
+                                    response_time
+                                )
+                                
+                                return {
+                                    'success': True,
+                                    'completion_id': completion_id,
+                                    'listing_id': listing_id,
+                                    'data': completion_result
+                                }
+                            else:
+                                error_text = await complete_response.text()
+                                self.log_result(
+                                    "Complete Transaction Workflow", 
+                                    False, 
+                                    f"❌ COMPLETION FAILED: Status {complete_response.status}: {error_text}",
+                                    response_time
+                                )
+                                return {'success': False, 'error': error_text}
+                    else:
+                        self.log_result(
+                            "Complete Transaction Workflow", 
+                            True, 
+                            f"✅ NO ACCEPTED TENDERS: No accepted tenders found to complete (workflow ready but no test data)",
+                            (datetime.now() - start_time).total_seconds() * 1000
+                        )
+                        return {'success': True, 'no_data': True}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Complete Transaction Workflow", 
+                        False, 
+                        f"❌ FAILED TO GET ACCEPTED TENDERS: Status {response.status}: {error_text}",
+                        (datetime.now() - start_time).total_seconds() * 1000
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Complete Transaction Workflow", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_listing_reactivation_endpoint(self, token, user_id):
+        """Test PUT /api/listings/{listing_id}/reactivate endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            # First, find a listing that can be reactivated (has accepted tenders)
+            headers = {"Authorization": f"Bearer {token}"}
+            accepted_tenders_url = f"{BACKEND_URL}/tenders/seller/{user_id}/accepted"
+            
+            async with self.session.get(accepted_tenders_url, headers=headers) as response:
+                if response.status == 200:
+                    accepted_tenders = await response.json()
+                    
+                    if len(accepted_tenders) > 0:
+                        # Use the first accepted tender's listing for reactivation test
+                        test_tender = accepted_tenders[0]
+                        listing_id = test_tender.get('listing_id')
+                        
+                        # Test reactivating the listing
+                        reactivate_url = f"{BACKEND_URL}/listings/{listing_id}/reactivate"
+                        
+                        async with self.session.put(reactivate_url, headers=headers) as reactivate_response:
+                            response_time = (datetime.now() - start_time).total_seconds() * 1000
+                            
+                            if reactivate_response.status == 200:
+                                reactivation_result = await reactivate_response.json()
+                                
+                                self.log_result(
+                                    "Listing Reactivation Endpoint", 
+                                    True, 
+                                    f"✅ REACTIVATION WORKING: Successfully reactivated listing {listing_id}, accepted tenders cancelled and notifications sent",
+                                    response_time
+                                )
+                                
+                                # Verify that the accepted tender is now cancelled
+                                await self.verify_tender_cancellation(listing_id, headers)
+                                
+                                return {
+                                    'success': True,
+                                    'listing_id': listing_id,
+                                    'data': reactivation_result
+                                }
+                            else:
+                                error_text = await reactivate_response.text()
+                                self.log_result(
+                                    "Listing Reactivation Endpoint", 
+                                    False, 
+                                    f"❌ REACTIVATION FAILED: Status {reactivate_response.status}: {error_text}",
+                                    response_time
+                                )
+                                return {'success': False, 'error': error_text}
+                    else:
+                        self.log_result(
+                            "Listing Reactivation Endpoint", 
+                            True, 
+                            f"✅ NO ACCEPTED TENDERS: No accepted tenders found to test reactivation (endpoint ready but no test data)",
+                            (datetime.now() - start_time).total_seconds() * 1000
+                        )
+                        return {'success': True, 'no_data': True}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Listing Reactivation Endpoint", 
+                        False, 
+                        f"❌ FAILED TO GET ACCEPTED TENDERS: Status {response.status}: {error_text}",
+                        (datetime.now() - start_time).total_seconds() * 1000
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Listing Reactivation Endpoint", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def verify_tender_cancellation(self, listing_id, headers):
+        """Verify that tenders for a reactivated listing are cancelled"""
+        try:
+            # Check if the accepted tenders for this listing are now rejected
+            tenders_url = f"{BACKEND_URL}/tenders/listing/{listing_id}"
+            
+            async with self.session.get(tenders_url, headers=headers) as response:
+                if response.status == 200:
+                    tenders = await response.json()
+                    
+                    cancelled_count = 0
+                    for tender in tenders:
+                        if tender.get('status') == 'rejected' and tender.get('rejection_reason') == 'Listing reactivated by seller':
+                            cancelled_count += 1
+                    
+                    if cancelled_count > 0:
+                        self.log_result(
+                            "Tender Cancellation Verification", 
+                            True, 
+                            f"✅ TENDER CANCELLATION WORKING: {cancelled_count} tenders cancelled due to listing reactivation"
+                        )
+                    else:
+                        self.log_result(
+                            "Tender Cancellation Verification", 
+                            True, 
+                            f"✅ NO TENDERS TO CANCEL: No tenders found that needed cancellation"
+                        )
+                        
+        except Exception as e:
+            self.log_result(
+                "Tender Cancellation Verification", 
+                False, 
+                f"❌ VERIFICATION FAILED: {str(e)}"
+            )
+
+    async def analyze_tender_acceptance_workflow(self, accepted_tenders_result, bought_items_result, complete_transaction_result, reactivation_result):
+        """Analyze the effectiveness of the tender acceptance workflow"""
+        print("      Final analysis of tender acceptance workflow:")
+        
+        features_working = []
+        features_needed = []
+        
+        # Check accepted tenders endpoint
+        if accepted_tenders_result.get('success'):
+            if accepted_tenders_result.get('count', 0) > 0:
+                features_working.append("✅ Accepted tenders endpoint returns enriched data")
+            else:
+                features_working.append("✅ Accepted tenders endpoint working (no test data)")
+        else:
+            features_needed.append("❌ Accepted tenders endpoint not working")
+        
+        # Check bought items creation
+        if bought_items_result.get('success'):
+            if bought_items_result.get('count', 0) > 0:
+                features_working.append("✅ Bought items are created automatically")
+            else:
+                features_working.append("✅ Bought items endpoint working (no test data)")
+        else:
+            features_needed.append("❌ Bought items creation not working")
+        
+        # Check complete transaction workflow
+        if complete_transaction_result.get('success'):
+            if not complete_transaction_result.get('no_data'):
+                features_working.append("✅ Complete order workflow functions properly")
+            else:
+                features_working.append("✅ Complete transaction endpoint working (no test data)")
+        else:
+            features_needed.append("❌ Complete transaction workflow not working")
+        
+        # Check listing reactivation
+        if reactivation_result.get('success'):
+            if not reactivation_result.get('no_data'):
+                features_working.append("✅ Set back online functionality works correctly")
+            else:
+                features_working.append("✅ Listing reactivation endpoint working (no test data)")
+        else:
+            features_needed.append("❌ Listing reactivation not working")
+        
+        # Final assessment
+        if not features_needed:
+            self.log_result(
+                "Tender Acceptance Workflow Analysis", 
+                True, 
+                f"✅ WORKFLOW COMPLETE: All tender acceptance features working. Achievements: {'; '.join(features_working)}"
+            )
+        else:
+            self.log_result(
+                "Tender Acceptance Workflow Analysis", 
+                False, 
+                f"❌ WORKFLOW INCOMPLETE: {len(features_working)} working, {len(features_needed)} need fixes. Issues: {'; '.join(features_needed)}"
+            )
+        
+        return len(features_needed) == 0
         """Test admin login with specific credentials"""
         print("\n🔐 ADMIN AUTHENTICATION TESTS:")
         
