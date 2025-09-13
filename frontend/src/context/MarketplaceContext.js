@@ -510,7 +510,15 @@ export function MarketplaceProvider({ children }) {
         reviewCount: 245,
         tags: ['Luxury', 'Authentic', 'Designer'],
         inStock: true,
-        quantity: 1
+        quantity: 1,
+        // Add time_info for hot deals filtering - HOT DEAL (18 hours left)
+        time_info: {
+          has_time_limit: true,
+          is_expired: false,
+          time_remaining_seconds: 64800, // 18 hours
+          time_limit_hours: 24,
+          expires_at: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString()
+        }
       },
       {
         id: '4',
