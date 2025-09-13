@@ -64,11 +64,25 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
 
   useEffect(() => {
     if (user) {
-      fetchTendersOverview();
-      fetchMyListings();
-      fetchMyTenders();
+      // Only fetch data for the active tab or all data if showing all tabs
+      if (showBuyTabOnly) {
+        // Only fetch buyer tenders for Buy tab
+        fechMyTenders();
+      } else if (showSellTabOnly) {
+        // Only fetch seller data for Sell tab
+        fetchTendersOverview();
+        fetchMyListings();
+      } else {
+        // Fetch based on active tab when showing all tabs
+        if (activeTab === 'buy') {
+          fetchMyTenders();
+        } else if (activeTab === 'sell' || activeTab === 'listings') {
+          fetchTendersOverview();
+          fetchMyListings();
+        }
+      }
     }
-  }, [user]);
+  }, [user, activeTab, showBuyTabOnly, showSellTabOnly]);
 
   // Update URL parameters when activeFilter changes (for Sell Tab)
   useEffect(() => {
