@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - MY-LISTINGS ENDPOINT CONSISTENCY TESTING
-Testing the user my-listings endpoint that the frontend actually uses to verify the fix is working
+CATALORO MARKETPLACE - COMPLETED TRANSACTIONS FUNCTIONALITY TESTING
+Testing the completed transactions functionality in the backend
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Old Endpoint with New Parameters**: Call GET /api/user/my-listings/admin_user_1 with the new parameters (status=all, limit=1000)
-2. **Test Default Behavior**: Call GET /api/user/my-listings/admin_user_1 without parameters to verify defaults work
-3. **Test Active Status Filter**: Call GET /api/user/my-listings/admin_user_1?status=active to verify it returns 62 listings (matching tenders)
-4. **Compare with Tenders**: Verify the count matches the tenders overview count
-5. **Verify Consistency**: Both endpoints (/api/user/my-listings and /api/tenders/seller/overview) should now return consistent active counts
-
-The user's screenshot shows Active: 34 instead of the expected 62, so this endpoint fix should resolve the frontend display issue.
+1. **Test Transaction Completion Endpoint**: POST /api/user/complete-transaction with valid listing_id, notes, and method
+2. **Test Get Completed Transactions**: GET /api/user/completed-transactions/{user_id} to retrieve user's completed transactions
+3. **Test Undo Completion**: DELETE /api/user/completed-transactions/{completion_id} to undo a completion
+4. **Test Admin Overview**: GET /api/admin/completed-transactions to get admin view of all completions
+5. **Test Dual Party Completion**: Have both buyer and seller mark the same transaction as complete
 
 CRITICAL ENDPOINTS BEING TESTED:
-- POST /api/auth/login (admin user authentication)
-- GET /api/user/my-listings/{admin_user_id} (the endpoint frontend actually uses)
-- GET /api/tenders/seller/{admin_user_id}/overview (for comparison)
+- POST /api/auth/login (user authentication)
+- POST /api/user/complete-transaction (mark transaction as complete)
+- GET /api/user/completed-transactions/{user_id} (get user's completed transactions)
+- DELETE /api/user/completed-transactions/{completion_id} (undo completion)
+- GET /api/admin/completed-transactions (admin view of all completions)
 
 EXPECTED RESULTS:
-- Both endpoints now return the same count for active listings (62)
-- Resolves the user's reported discrepancy of Active: 34 vs expected 62
-- My-listings endpoint with status=active should match tenders overview count
+- Transaction completion creates proper records and sends notifications
+- Users can retrieve their completed transactions with proper role context
+- Users can undo their completion confirmations
+- Admin can view all completions with proper status information
+- Dual party completion sets is_fully_completed to true
 """
 
 import asyncio
