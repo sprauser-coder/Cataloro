@@ -5350,6 +5350,420 @@ class BackendTester:
             )
             return False
 
+    async def test_tender_acceptance_closed_tab_workflow(self):
+        """Test the complete tender acceptance to Closed tab workflow"""
+        print("\n🎯 TENDER ACCEPTANCE TO CLOSED TAB WORKFLOW TESTING:")
+        print("Testing the specific workflow fix: tender acceptance → listing status update → appears in Closed tab")
+        
+        # Step 1: Setup Test Scenario
+        print("\n📋 STEP 1: SETUP TEST SCENARIO")
+        admin_info = await self.setup_admin_seller()
+        if not admin_info:
+            return False
+            
+        demo_info = await self.setup_demo_buyer()
+        if not demo_info:
+            return False
+            
+        listing_id = await self.create_test_listing_for_tender(admin_info['token'])
+        if not listing_id:
+            return False
+            
+        tender_id = await self.place_test_bid(demo_info['token'], listing_id)
+        if not tender_id:
+            return False
+        
+        # Step 2: Accept the Tender (Frontend Perspective)
+        print("\n✅ STEP 2: ACCEPT THE TENDER FROM FRONTEND PERSPECTIVE")
+        acceptance_success = await self.accept_tender_with_auth(admin_info['token'], tender_id)
+        if not acceptance_success:
+            return False
+        
+        # Step 3: Test Listings Refresh
+        print("\n🔄 STEP 3: TEST LISTINGS REFRESH")
+        listing_status_updated = await self.verify_listing_status_sold(admin_info['token'], listing_id)
+        if not listing_status_updated:
+            return False
+            
+        my_listings_updated = await self.verify_my_listings_shows_sold(admin_info['token'], listing_id)
+        if not my_listings_updated:
+            return False
+        
+        # Step 4: End-to-End Verification
+        print("\n🎯 STEP 4: END-TO-END VERIFICATION")
+        closed_tab_verification = await self.verify_closed_tab_filter_logic(listing_id)
+        if not closed_tab_verification:
+            return False
+        
+        print("\n🎉 TENDER ACCEPTANCE TO CLOSED TAB WORKFLOW: ✅ COMPLETE SUCCESS")
+        self.log_result(
+            "Tender Acceptance to Closed Tab Workflow", 
+            True, 
+            "✅ Complete workflow verified: tender acceptance → listing status 'sold' → appears in Closed tab"
+        )
+        
+        return True
+
+    async def setup_admin_seller(self):
+        """Setup admin user as seller"""
+        print("   🔐 Setting up admin user (seller)...")
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        
+        if admin_token and admin_user_id:
+            self.log_result(
+                "Admin Seller Setup", 
+                True, 
+                f"Admin logged in successfully: {admin_user.get('full_name')} (ID: {admin_user_id})"
+            )
+            return {
+                'token': admin_token,
+                'user_id': admin_user_id,
+                'user': admin_user
+            }
+        else:
+            self.log_result(
+                "Admin Seller Setup", 
+                False, 
+                "Failed to login admin user"
+            )
+            return None
+
+    async def setup_demo_buyer(self):
+        """Setup demo user as buyer"""
+        print("   👤 Setting up demo user (buyer)...")
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if demo_token and demo_user_id:
+            self.log_result(
+                "Demo Buyer Setup", 
+                True, 
+                f"Demo user logged in successfully: {demo_user.get('full_name')} (ID: {demo_user_id})"
+            )
+            return {
+                'token': demo_token,
+                'user_id': demo_user_id,
+                'user': demo_user
+            }
+        else:
+            self.log_result(
+                "Demo Buyer Setup", 
+                False, 
+                "Failed to login demo user"
+            )
+            return None
+
+    async def create_test_listing_for_tender(self, admin_token):
+        """Create a test listing for tender acceptance testing"""
+        print("   📝 Creating test listing...")
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            listing_data = {
+                "title": "Tender Acceptance Test Item - Closed Tab Workflow",
+                "description": "Test listing for verifying tender acceptance to Closed tab workflow",
+                "price": 100.00,
+                "category": "Test",
+                "condition": "New",
+                "has_time_limit": False  # No time limit for this test
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create Test Listing", 
+                        True, 
+                        f"Test listing created successfully: ID={listing_id}, Price=${listing_data['price']}",
+                        response_time
+                    )
+                    
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test Listing", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test Listing", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def place_test_bid(self, demo_token, listing_id):
+        """Place a test bid on the listing"""
+        print("   💰 Placing test bid...")
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {demo_token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 125.00,
+                "message": "Test bid for tender acceptance workflow testing"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        "Place Test Bid", 
+                        True, 
+                        f"Test bid placed successfully: Tender ID={tender_id}, Amount=${tender_data['amount']}",
+                        response_time
+                    )
+                    
+                    return tender_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Place Test Bid", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Place Test Bid", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def accept_tender_with_auth(self, admin_token, tender_id):
+        """Accept the tender with proper Authorization header (simulating frontend)"""
+        print("   ✅ Accepting tender with Authorization header...")
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    message = data.get("message", "No message")
+                    
+                    self.log_result(
+                        "Accept Tender with Authorization", 
+                        True, 
+                        f"Tender accepted successfully: {message}",
+                        response_time
+                    )
+                    
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Accept Tender with Authorization", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Accept Tender with Authorization", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def verify_listing_status_sold(self, admin_token, listing_id):
+        """Verify that the listing status changed to 'sold'"""
+        print("   🔍 Verifying listing status changed to 'sold'...")
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing_data = await response.json()
+                    status = listing_data.get("status")
+                    sold_price = listing_data.get("sold_price")
+                    sold_at = listing_data.get("sold_at")
+                    
+                    if status == "sold":
+                        self.log_result(
+                            "Verify Listing Status 'Sold'", 
+                            True, 
+                            f"✅ Listing status correctly changed to 'sold' (Price: ${sold_price}, Sold at: {sold_at})",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Verify Listing Status 'Sold'", 
+                            False, 
+                            f"❌ Listing status is '{status}', expected 'sold'",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify Listing Status 'Sold'", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify Listing Status 'Sold'", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def verify_my_listings_shows_sold(self, admin_token, listing_id):
+        """Verify that GET /api/marketplace/my-listings shows the listing with 'sold' status"""
+        print("   📋 Verifying my-listings endpoint shows sold status...")
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/marketplace/my-listings", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listings = await response.json()
+                    
+                    # Find our specific listing
+                    target_listing = None
+                    for listing in listings:
+                        if listing.get('id') == listing_id:
+                            target_listing = listing
+                            break
+                    
+                    if target_listing:
+                        status = target_listing.get("status")
+                        if status == "sold":
+                            self.log_result(
+                                "Verify My-Listings Shows 'Sold'", 
+                                True, 
+                                f"✅ My-listings endpoint correctly shows listing with 'sold' status",
+                                response_time
+                            )
+                            return True
+                        else:
+                            self.log_result(
+                                "Verify My-Listings Shows 'Sold'", 
+                                False, 
+                                f"❌ My-listings shows status '{status}', expected 'sold'",
+                                response_time
+                            )
+                            return False
+                    else:
+                        self.log_result(
+                            "Verify My-Listings Shows 'Sold'", 
+                            False, 
+                            f"❌ Listing {listing_id} not found in my-listings response",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify My-Listings Shows 'Sold'", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify My-Listings Shows 'Sold'", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def verify_closed_tab_filter_logic(self, listing_id):
+        """Verify that the listing would appear in Closed tab filter (status === 'sold' || status === 'closed')"""
+        print("   🎯 Verifying Closed tab filter logic...")
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing_data = await response.json()
+                    status = listing_data.get("status")
+                    
+                    # Frontend filter logic: l.status === 'sold' || l.status === 'closed'
+                    would_appear_in_closed_tab = (status == 'sold' or status == 'closed')
+                    
+                    if would_appear_in_closed_tab:
+                        self.log_result(
+                            "Verify Closed Tab Filter Logic", 
+                            True, 
+                            f"✅ Listing with status '{status}' WOULD appear in Closed tab (sold OR closed filter)",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Verify Closed Tab Filter Logic", 
+                            False, 
+                            f"❌ Listing with status '{status}' would NOT appear in Closed tab",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify Closed Tab Filter Logic", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify Closed Tab Filter Logic", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
 async def main():
     """Main test execution function"""
     async with BackendTester() as tester:
