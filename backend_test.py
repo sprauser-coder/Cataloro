@@ -7312,11 +7312,11 @@ async def main():
             print()
         
         print("🔍 KEY FINDINGS:")
-        if field_consistency_success:
+        if field_consistency_success and workflow_success:
             print("   ✅ CRITICAL FIX WORKING: Message field consistency resolved")
             print("   ✅ Messages created with 'is_read': false (not 'read': false)")
             print("   ✅ Mark read endpoint updates 'is_read': true consistently")
-            print("   ✅ Unread count calculation works correctly")
+            print("   ✅ Multiple messages workflow working correctly")
             print("   ✅ Frontend badge logic can now properly detect read/unread status")
         else:
             print("   ❌ CRITICAL FIX ISSUES: Field consistency problems detected")
@@ -7329,7 +7329,7 @@ async def main():
         print("\n" + "=" * 80)
         
         # Return success status
-        return field_consistency_success
+        return field_consistency_success and workflow_success
 
 
 if __name__ == "__main__":
