@@ -634,6 +634,7 @@ function BuyManagementPage() {
                 onAssignToBasket={assignItemToBasket}
                 onUnassignFromBasket={unassignItemFromBasket}
                 onCreateBasket={() => setShowCreateBasket(true)}
+                onMarkComplete={markTransactionComplete}
                 loading={loading}
               />
             )}
