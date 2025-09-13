@@ -632,59 +632,312 @@ class BackendTester:
         
         return True
     
-    async def get_test_listing_id(self):
-        """Get a listing ID for testing"""
+    async def test_tenders_overview_count(self, admin_user_id, admin_token):
+        """Test GET /api/tenders/seller/{admin_user_id}/overview to get tenders count"""
         start_time = datetime.now()
         
         try:
-            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=1") as response:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/tenders/seller/{admin_user_id}/overview", headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
                     data = await response.json()
-                    if isinstance(data, dict) and 'listings' in data:
-                        # New pagination format
-                        listings = data['listings']
-                    else:
-                        # Old format - direct array
-                        listings = data
                     
-                    if listings and len(listings) > 0:
-                        listing_id = listings[0].get('id')
-                        self.log_result(
-                            "Get Test Listing ID", 
-                            True, 
-                            f"Found test listing ID: {listing_id}",
-                            response_time
+                    # Extract tenders count - could be in different formats
+                    tenders_count = 0
+                    if isinstance(data, dict):
+                        # Check for various possible field names
+                        tenders_count = (
+                            data.get('total_tenders', 0) or 
+                            data.get('active_tenders', 0) or 
+                            data.get('tenders_count', 0) or
+                            len(data.get('tenders', []))
                         )
-                        return listing_id
-                    else:
-                        self.log_result(
-                            "Get Test Listing ID", 
-                            False, 
-                            "No listings available for testing",
-                            response_time
-                        )
-                        return None
+                        
+                        # Log the full structure for analysis
+                        print(f"   Tenders Overview Response Structure: {list(data.keys())}")
+                        if 'tenders' in data:
+                            print(f"   Tenders array length: {len(data['tenders'])}")
+                        
+                    elif isinstance(data, list):
+                        tenders_count = len(data)
+                    
+                    self.log_result(
+                        "Tenders Overview Count", 
+                        True, 
+                        f"Tenders section shows {tenders_count} listings",
+                        response_time
+                    )
+                    
+                    return {
+                        'count': tenders_count,
+                        'data': data,
+                        'success': True
+                    }
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Get Test Listing ID", 
+                        "Tenders Overview Count", 
                         False, 
                         f"Failed with status {response.status}: {error_text}",
                         response_time
                     )
-                    return None
+                    return {'count': 0, 'success': False, 'error': error_text}
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Get Test Listing ID", 
+                "Tenders Overview Count", 
                 False, 
                 f"Request failed with exception: {str(e)}",
                 response_time
             )
-            return None
+            return {'count': 0, 'success': False, 'error': str(e)}
+    
+    async def test_my_listings_counts(self, admin_user_id, admin_token):
+        """Test GET /api/marketplace/my-listings with different status filters"""
+        headers = {"Authorization": f"Bearer {admin_token}"}
+        results = {}
+        
+        # Test different status filters
+        status_filters = [
+            ("default", None),  # No status parameter
+            ("all", "all"),
+            ("active", "active"),
+            ("sold", "sold"),
+            ("expired", "expired"),
+            ("draft", "draft")
+        ]
+        
+        for filter_name, status_value in status_filters:
+            start_time = datetime.now()
+            
+            try:
+                url = f"{BACKEND_URL}/marketplace/my-listings"
+                if status_value:
+                    url += f"?status={status_value}"
+                
+                async with self.session.get(url, headers=headers) as response:
+                    response_time = (datetime.now() - start_time).total_seconds() * 1000
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        # Handle different response formats
+                        listings_count = 0
+                        if isinstance(data, dict):
+                            if 'listings' in data:
+                                # Pagination format
+                                listings_count = len(data['listings'])
+                                total_count = data.get('pagination', {}).get('total_count', listings_count)
+                                print(f"   My-Listings ({filter_name}): {listings_count} listings on page, {total_count} total")
+                            else:
+                                # Direct object format
+                                listings_count = len(data) if isinstance(data, list) else 1
+                        elif isinstance(data, list):
+                            listings_count = len(data)
+                        
+                        self.log_result(
+                            f"My-Listings Count ({filter_name})", 
+                            True, 
+                            f"Status '{status_value or 'default'}' returned {listings_count} listings",
+                            response_time
+                        )
+                        
+                        results[filter_name] = {
+                            'count': listings_count,
+                            'status': status_value,
+                            'data': data,
+                            'success': True
+                        }
+                    else:
+                        error_text = await response.text()
+                        self.log_result(
+                            f"My-Listings Count ({filter_name})", 
+                            False, 
+                            f"Failed with status {response.status}: {error_text}",
+                            response_time
+                        )
+                        results[filter_name] = {
+                            'count': 0,
+                            'success': False,
+                            'error': error_text
+                        }
+                        
+            except Exception as e:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                self.log_result(
+                    f"My-Listings Count ({filter_name})", 
+                    False, 
+                    f"Request failed with exception: {str(e)}",
+                    response_time
+                )
+                results[filter_name] = {
+                    'count': 0,
+                    'success': False,
+                    'error': str(e)
+                }
+        
+        return results
+    
+    async def test_database_listing_counts(self, admin_user_id):
+        """Test database counts by querying browse endpoint with different filters"""
+        results = {}
+        
+        # Test different status filters to understand database state
+        status_filters = [
+            ("all_listings", "all"),
+            ("active_listings", "active"),
+            ("sold_listings", "sold"),
+            ("expired_listings", "expired"),
+            ("draft_listings", "draft")
+        ]
+        
+        for filter_name, status_value in status_filters:
+            start_time = datetime.now()
+            
+            try:
+                # Use browse endpoint to get database counts
+                url = f"{BACKEND_URL}/marketplace/browse?status={status_value}&limit=1000&user_id={admin_user_id}&bid_filter=own_listings"
+                
+                async with self.session.get(url) as response:
+                    response_time = (datetime.now() - start_time).total_seconds() * 1000
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        # Handle different response formats
+                        listings_count = 0
+                        total_count = 0
+                        
+                        if isinstance(data, dict):
+                            if 'listings' in data:
+                                # Pagination format
+                                listings_count = len(data['listings'])
+                                total_count = data.get('pagination', {}).get('total_count', listings_count)
+                            else:
+                                # Direct format
+                                listings_count = len(data) if isinstance(data, list) else 0
+                                total_count = listings_count
+                        elif isinstance(data, list):
+                            listings_count = len(data)
+                            total_count = listings_count
+                        
+                        self.log_result(
+                            f"Database Count ({filter_name})", 
+                            True, 
+                            f"Database has {total_count} total listings with status '{status_value}' for admin user",
+                            response_time
+                        )
+                        
+                        results[filter_name] = {
+                            'count': listings_count,
+                            'total_count': total_count,
+                            'status': status_value,
+                            'success': True
+                        }
+                    else:
+                        error_text = await response.text()
+                        self.log_result(
+                            f"Database Count ({filter_name})", 
+                            False, 
+                            f"Failed with status {response.status}: {error_text}",
+                            response_time
+                        )
+                        results[filter_name] = {
+                            'count': 0,
+                            'success': False,
+                            'error': error_text
+                        }
+                        
+            except Exception as e:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                self.log_result(
+                    f"Database Count ({filter_name})", 
+                    False, 
+                    f"Request failed with exception: {str(e)}",
+                    response_time
+                )
+                results[filter_name] = {
+                    'count': 0,
+                    'success': False,
+                    'error': str(e)
+                }
+        
+        return results
+    
+    async def analyze_count_discrepancy(self, tenders_count, my_listings_counts, database_counts):
+        """Analyze and report the count discrepancy findings"""
+        print("\n🔍 COUNT DISCREPANCY ANALYSIS:")
+        
+        # Extract key numbers
+        tenders_num = tenders_count.get('count', 0) if tenders_count.get('success') else 0
+        my_listings_default = my_listings_counts.get('default', {}).get('count', 0)
+        my_listings_active = my_listings_counts.get('active', {}).get('count', 0)
+        my_listings_all = my_listings_counts.get('all', {}).get('count', 0)
+        
+        db_active = database_counts.get('active_listings', {}).get('total_count', 0)
+        db_all = database_counts.get('all_listings', {}).get('total_count', 0)
+        db_sold = database_counts.get('sold_listings', {}).get('total_count', 0)
+        db_expired = database_counts.get('expired_listings', {}).get('total_count', 0)
+        db_draft = database_counts.get('draft_listings', {}).get('total_count', 0)
+        
+        print(f"   📊 SUMMARY OF COUNTS:")
+        print(f"   - Tenders Section: {tenders_num} listings")
+        print(f"   - My-Listings (default): {my_listings_default} listings")
+        print(f"   - My-Listings (active): {my_listings_active} listings")
+        print(f"   - My-Listings (all): {my_listings_all} listings")
+        print(f"   - Database (active): {db_active} listings")
+        print(f"   - Database (all): {db_all} listings")
+        print(f"   - Database (sold): {db_sold} listings")
+        print(f"   - Database (expired): {db_expired} listings")
+        print(f"   - Database (draft): {db_draft} listings")
+        
+        # Identify discrepancies
+        discrepancies = []
+        
+        # Compare Tenders vs Database Active
+        if tenders_num != db_active:
+            discrepancies.append(f"Tenders ({tenders_num}) vs Database Active ({db_active}) = {abs(tenders_num - db_active)} difference")
+        
+        # Compare My-Listings vs Database
+        if my_listings_active != db_active:
+            discrepancies.append(f"My-Listings Active ({my_listings_active}) vs Database Active ({db_active}) = {abs(my_listings_active - db_active)} difference")
+        
+        if my_listings_all != db_all:
+            discrepancies.append(f"My-Listings All ({my_listings_all}) vs Database All ({db_all}) = {abs(my_listings_all - db_all)} difference")
+        
+        # Compare Tenders vs My-Listings
+        if tenders_num != my_listings_active:
+            discrepancies.append(f"Tenders ({tenders_num}) vs My-Listings Active ({my_listings_active}) = {abs(tenders_num - my_listings_active)} difference")
+        
+        if discrepancies:
+            self.log_result(
+                "Count Discrepancy Analysis", 
+                False, 
+                f"❌ DISCREPANCIES FOUND: {'; '.join(discrepancies)}"
+            )
+            
+            # Provide detailed analysis
+            print(f"\n   🔍 DETAILED ANALYSIS:")
+            print(f"   - The user reported: Tenders shows 62, Listings shows 34")
+            print(f"   - Current test shows: Tenders shows {tenders_num}, My-Listings shows {my_listings_default}")
+            print(f"   - Possible causes:")
+            print(f"     * Different status filters being applied")
+            print(f"     * Different user ID contexts")
+            print(f"     * Caching issues")
+            print(f"     * Different API endpoints returning different data")
+            
+        else:
+            self.log_result(
+                "Count Discrepancy Analysis", 
+                True, 
+                f"✅ NO DISCREPANCIES: All counts are consistent"
+            )
+        
+        return len(discrepancies) == 0
     
     async def get_listing_with_view_tracking(self, listing_id, token=None, increment_view=False):
         """Get listing with optional view tracking"""
