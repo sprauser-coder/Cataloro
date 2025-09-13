@@ -910,41 +910,57 @@ class BackendTester:
             self.log_result("Completion Workflow Testing", False, "Cannot proceed without test data")
             return False
         
-        # Step 4: Test Workflow Independence - Seller First
-        print("\n   🔄 Test Workflow Independence (Seller First):")
-        seller_first_result = await self.test_workflow_independence_seller_first(
-            test_data, admin_token, demo_token
-        )
-        results['seller_first_workflow'] = seller_first_result
+        # Determine which user tokens to use based on the test data
+        buyer_id = test_data.get('buyer_id')
+        seller_id = test_data.get('seller_id')
         
-        if not seller_first_result.get('success'):
-            self.log_result("Completion Workflow Testing", False, "Seller-first workflow failed")
-            return False
+        # Get appropriate tokens
+        if buyer_id == 'admin_user_1':
+            buyer_token = admin_token
+        else:
+            buyer_token = demo_token
+            
+        if seller_id == 'admin_user_1':
+            seller_token = admin_token
+        else:
+            seller_token = demo_token
         
-        # Step 5: Test Workflow Independence - Buyer Second
-        print("\n   🔄 Test Workflow Independence (Buyer Second):")
-        buyer_second_result = await self.test_workflow_independence_buyer_second(
-            test_data, admin_token, demo_token
+        print(f"   Using buyer_id: {buyer_id}, seller_id: {seller_id}")
+        
+        # Step 4: Test Existing Completion State
+        print("\n   🔍 Test Existing Completion State:")
+        existing_state_result = await self.test_existing_completion_state(
+            test_data, seller_token, buyer_token
         )
-        results['buyer_second_workflow'] = buyer_second_result
+        results['existing_state'] = existing_state_result
+        
+        # Step 5: Test Completion Workflow Update Logic
+        print("\n   🔄 Test Completion Workflow Update:")
+        update_result = await self.test_completion_workflow_update(
+            test_data, seller_token, buyer_token
+        )
+        results['update_workflow'] = update_result
         
         # Step 6: Test Transaction States
         print("\n   🔍 Test Transaction States:")
-        states_result = await self.test_transaction_states_verification(
-            test_data, 
-            seller_first_result.get('seller_completion', {}),
-            buyer_second_result.get('buyer_completion', {})
-        )
+        if update_result.get('success'):
+            states_result = await self.test_transaction_states_verification(
+                test_data, 
+                update_result.get('seller_completion', {}),
+                update_result.get('buyer_completion', {})
+            )
+        else:
+            states_result = {'success': False, 'error': 'Update workflow failed'}
         results['transaction_states'] = states_result
         
         # Step 7: Test API Response Structure
         print("\n   📊 Test API Response Structure:")
         # Get final completed transactions for both users
         seller_completed = await self.test_completed_transactions_filtering(
-            admin_user_id, admin_token, 'seller', test_data.get('listing_id')
+            seller_id, seller_token, 'seller', test_data.get('listing_id')
         )
         buyer_completed = await self.test_completed_transactions_filtering(
-            demo_user_id, demo_token, 'buyer', test_data.get('listing_id')
+            buyer_id, buyer_token, 'buyer', test_data.get('listing_id')
         )
         
         structure_result = await self.test_api_response_structure(seller_completed, buyer_completed)
