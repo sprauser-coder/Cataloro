@@ -1,26 +1,41 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - TENDER MANAGEMENT API TESTING
-Testing the tender management API endpoints to verify they are working correctly
+CATALORO MARKETPLACE - COMPLETE ORDER FUNCTIONALITY TESTING
+Testing the updated "Complete Order" functionality to verify both fixes are working
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Buyer Tenders Endpoint**: GET /api/tenders/buyer/admin_user_1 - verify tender list with listing info
-2. **Test Seller Tenders Overview Endpoint**: GET /api/tenders/seller/admin_user_1/overview - verify overview with listings
-3. **Verify Data Structure**: Check tender IDs, offer_amounts, status, listing titles, prices, images
-4. **Test Different User IDs**: Try other user IDs to see data variation
-5. **Verify Enrichment**: Check buyer/seller information is properly enriched
+1. **Test Seller Accepted Tenders Filtering**: GET /api/tenders/seller/admin_user_1/accepted 
+   - Verify that tenders marked as completed by the seller are no longer returned
+   - Check that only pending accepted tenders appear in the list
+
+2. **Test Complete Transaction Workflow**:
+   - Find an accepted tender with a specific listing_id
+   - Call POST /api/user/complete-transaction with that listing_id
+   - Verify the response shows successful completion
+   - Call GET /api/tenders/seller/admin_user_1/accepted again to confirm the tender is no longer in the list
+   - Call GET /api/user/completed-transactions/admin_user_1 to verify the completed transaction appears
+
+3. **Test Data Consistency**:
+   - Verify that completed transactions are properly stored with seller_confirmed_at timestamp
+   - Check that the tender still exists in the database but is filtered out from accepted tenders
+   - Confirm the listing details are properly captured in the completion record
+
+4. **Test Authentication**:
+   - Verify all endpoints require proper authentication
+   - Test with admin_user_1 credentials
 
 CRITICAL ENDPOINTS BEING TESTED:
 - POST /api/auth/login (user authentication)
-- GET /api/tenders/buyer/{buyer_id} (get buyer's submitted tenders with listing details)
-- GET /api/tenders/seller/{seller_id}/overview (get seller's listings with associated tenders)
+- GET /api/tenders/seller/{seller_id}/accepted (get seller's accepted tenders - should filter out completed)
+- POST /api/user/complete-transaction (complete a transaction from seller side)
+- GET /api/user/completed-transactions/{user_id} (get completed transactions)
 
 EXPECTED RESULTS:
-- ✅ Buyer tenders endpoint returns list of tenders with listing information
-- ✅ Seller tenders overview returns listings with associated tender data
-- ✅ Data structure includes proper IDs, offer_amounts, status fields
-- ✅ Listings have proper titles, prices, images
-- ✅ Buyer/seller information is properly enriched
+- ✅ Seller accepted tenders endpoint filters out completed transactions
+- ✅ Complete transaction workflow works correctly
+- ✅ Completed transactions appear in completed-transactions endpoint
+- ✅ Data consistency maintained with proper timestamps
+- ✅ Authentication working for all endpoints
 """
 
 import asyncio
