@@ -585,46 +585,44 @@ class BackendTester:
             )
             return False
     
-    async def test_listing_count_consistency_fixes(self):
-        """Test the listing count consistency fixes applied by the main agent"""
-        print("\n📊 LISTING COUNT CONSISTENCY FIXES TESTING:")
-        print("   Testing fixes applied to resolve Tenders vs My-Listings count discrepancy")
-        print("   Recent changes made:")
-        print("   - Updated tenders overview to use `associated_ids` logic (same as my-listings)")
-        print("   - Updated my-listings endpoint to default to `status='all'` and `limit=1000`")
-        print("   - Updated frontend to pass `status='all'` and `limit=1000` parameters")
+    async def test_my_listings_endpoint_consistency_fixes(self):
+        """Test the user my-listings endpoint that the frontend actually uses to verify the fix is working"""
+        print("\n📊 MY-LISTINGS ENDPOINT CONSISTENCY TESTING:")
+        print("   Testing the user my-listings endpoint that the frontend actually uses")
+        print("   User reported Active: 34 instead of expected 62")
+        print("   Testing if the endpoint fix resolves the frontend display issue")
         
         # Step 1: Login as admin user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Listing Count Consistency Fixes Test", False, "Failed to login as admin")
+            self.log_result("My-Listings Endpoint Consistency Test", False, "Failed to login as admin")
             return False
         
         print(f"   Testing with admin user ID: {admin_user_id}")
         
-        # Step 2: Test Fixed Tenders Overview Count
-        print("\n   🎯 Testing Fixed Tenders Overview Count:")
-        tenders_result = await self.test_fixed_tenders_overview_count(admin_user_id, admin_token)
+        # Step 2: Test Old Endpoint with New Parameters
+        print("\n   🔧 Test Old Endpoint with New Parameters:")
+        old_endpoint_result = await self.test_old_endpoint_with_new_parameters(admin_user_id, admin_token)
         
-        # Step 3: Test Fixed My-Listings Count (should now default to status="all" with limit=1000)
-        print("\n   📋 Testing Fixed My-Listings Count:")
-        my_listings_result = await self.test_fixed_my_listings_count(admin_user_id, admin_token)
+        # Step 3: Test Default Behavior
+        print("\n   🎯 Test Default Behavior:")
+        default_result = await self.test_default_behavior(admin_user_id, admin_token)
         
-        # Step 4: Verify Count Consistency
-        print("\n   ⚖️ Verifying Count Consistency:")
-        consistency_result = await self.verify_count_consistency(tenders_result, my_listings_result)
+        # Step 4: Test Active Status Filter
+        print("\n   📋 Test Active Status Filter:")
+        active_result = await self.test_active_status_filter(admin_user_id, admin_token)
         
-        # Step 5: Test Status Filtering (verify that when filtering for 'active' status, both endpoints return consistent counts)
-        print("\n   🔍 Testing Status Filtering:")
-        filters_result = await self.test_status_filtering_consistency(admin_user_id, admin_token)
+        # Step 5: Compare with Tenders
+        print("\n   ⚖️ Compare with Tenders:")
+        tenders_result = await self.test_tenders_overview_count(admin_user_id, admin_token)
         
-        # Step 6: Verify Database Counts
-        print("\n   💾 Verifying Database Counts:")
-        database_result = await self.verify_database_counts(admin_user_id)
+        # Step 6: Verify Consistency
+        print("\n   ✅ Verify Consistency:")
+        consistency_result = await self.verify_endpoint_consistency(active_result, tenders_result)
         
         # Step 7: Final Analysis
         print("\n   📈 Final Analysis:")
-        await self.analyze_consistency_fixes(tenders_result, my_listings_result, database_result, consistency_result)
+        await self.analyze_my_listings_fixes(old_endpoint_result, default_result, active_result, tenders_result, consistency_result)
         
         return True
     
