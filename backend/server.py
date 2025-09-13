@@ -4495,6 +4495,11 @@ async def get_all_listings(
             
             # Remove MongoDB ObjectId
             listing.pop('_id', None)
+            
+            # Optimize images for response
+            if 'images' in listing:
+                listing['images'] = optimize_images_for_response(listing['images'], listing.get('id', ''))
+            
             listings.append(listing)
         
         # Cache the results for 10 minutes (frequent updates expected)
