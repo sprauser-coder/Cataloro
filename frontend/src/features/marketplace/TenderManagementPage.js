@@ -120,7 +120,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     }
   }, [activeTab, user, showBuyTabOnly, showSellTabOnly]);
 
-  const fetchTendersOverview = async () => {
+  const fetchTendersOverview = React.useCallback(async () => {
     if (!user?.id || tendersLoading) return; // Prevent multiple concurrent calls
     
     setTendersLoading(true);
@@ -145,7 +145,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     } finally {
       setTendersLoading(false);
     }
-  };
+  }, [user?.id, tendersLoading]);
 
   const fetchMyTenders = React.useCallback(async () => {
     if (!user?.id || myTendersLoading) return; // Prevent multiple concurrent calls
