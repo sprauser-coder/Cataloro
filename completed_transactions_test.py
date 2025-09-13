@@ -677,7 +677,7 @@ class CompletedTransactionsTester:
         
         # Step 3: Find an accepted tender for testing
         print("\n   🔍 Finding Accepted Tender for Testing:")
-        test_tender = await self.find_accepted_tender_for_testing(admin_token)
+        test_tender = await self.find_accepted_tender_for_testing(admin_token, admin_user_id)
         if not test_tender:
             self.log_result("Completed Transactions Test Setup", False, "No accepted tender found for testing")
             return False
