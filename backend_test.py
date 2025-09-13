@@ -7560,77 +7560,60 @@ class BackendTester:
             return False
 
 async def main():
-    """Main test execution function for MESSAGE READ FUNCTIONALITY CRITICAL FIX"""
+    """Main test execution function"""
+    print("🚀 CATALORO MARKETPLACE - UNIQUE VIEW TRACKING FIX TESTING")
+    print("=" * 80)
+    print("Testing the unique view tracking fix implementation")
+    print("Focus: Ensuring same user views only count once, different users increment count")
+    print("=" * 80)
+    
     async with BackendTester() as tester:
-        print("🚀 CATALORO MARKETPLACE - MESSAGE READ FUNCTIONALITY CRITICAL FIX TESTING")
-        print("=" * 80)
-        print("Testing the critical fix for message read functionality:")
-        print("1. **Message Field Consistency**: Verify messages created with 'is_read': false")
-        print("2. **Mark Read Functionality**: Test PUT endpoint updates 'is_read': true")
-        print("3. **Complete Workflow**: Multiple messages, mark some as read, verify counts")
-        print("4. **Badge Update Fix**: Confirm field consistency resolves badge issues")
-        print("=" * 80)
-        print()
-        
         # Test database connectivity first
         db_healthy = await tester.test_database_connectivity()
         if not db_healthy:
-            print("❌ Database connectivity failed - aborting tests")
+            print("\n❌ Database connectivity failed - aborting tests")
             return
         
-        # Test the critical message field consistency fix
-        field_consistency_success = await tester.test_message_field_consistency_fix()
+        # Run unique view tracking tests
+        print("\n🎯 STARTING UNIQUE VIEW TRACKING FIX TESTS...")
+        success = await tester.test_unique_view_tracking_fix()
         
-        # Test multiple messages workflow
-        workflow_success = await tester.test_multiple_messages_workflow()
-        
-        # Summary
+        # Print summary
         print("\n" + "=" * 80)
-        print("🏁 MESSAGE READ FUNCTIONALITY CRITICAL FIX TESTING SUMMARY")
+        print("📊 TEST RESULTS SUMMARY")
         print("=" * 80)
         
+        passed_tests = sum(1 for result in tester.test_results if result["success"])
         total_tests = len(tester.test_results)
-        passed_tests = len([r for r in tester.test_results if r['success']])
-        failed_tests = total_tests - passed_tests
+        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
         
-        print(f"📊 OVERALL RESULTS:")
-        print(f"   Total Tests: {total_tests}")
-        print(f"   ✅ Passed: {passed_tests}")
-        print(f"   ❌ Failed: {failed_tests}")
-        print(f"   Success Rate: {(passed_tests/total_tests*100):.1f}%")
-        print()
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {passed_tests}")
+        print(f"Failed: {total_tests - passed_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
         
-        print(f"🎯 CRITICAL FIX STATUS:")
-        print(f"   📧 Message Field Consistency Fix: {'✅ WORKING' if field_consistency_success else '❌ ISSUES FOUND'}")
-        print(f"   🔄 Multiple Messages Workflow: {'✅ WORKING' if workflow_success else '❌ ISSUES FOUND'}")
-        print()
-        
-        if failed_tests > 0:
-            print("❌ FAILED TESTS:")
-            for result in tester.test_results:
-                if not result['success']:
-                    print(f"   - {result['test']}: {result['details']}")
-            print()
-        
-        print("🔍 KEY FINDINGS:")
-        if field_consistency_success and workflow_success:
-            print("   ✅ CRITICAL FIX WORKING: Message field consistency resolved")
-            print("   ✅ Messages created with 'is_read': false (not 'read': false)")
-            print("   ✅ Mark read endpoint updates 'is_read': true consistently")
-            print("   ✅ Multiple messages workflow working correctly")
-            print("   ✅ Frontend badge logic can now properly detect read/unread status")
+        if success:
+            print("\n✅ UNIQUE VIEW TRACKING FIX VERIFICATION: COMPLETE SUCCESS")
+            print("The unique view tracking fix is working correctly:")
+            print("- Same user multiple views only count as 1 view")
+            print("- Different users viewing same listing increment view count")
+            print("- Unauthenticated requests don't increment view count")
+            print("- increment_view=false never increments view count")
         else:
-            print("   ❌ CRITICAL FIX ISSUES: Field consistency problems detected")
-            print("   🔧 POTENTIAL ISSUES:")
-            print("      - Messages still being created with 'read': false instead of 'is_read': false")
-            print("      - Mark read endpoint not updating 'is_read' field correctly")
-            print("      - Field inconsistency causing unread count calculation errors")
-            print("      - Frontend badge logic still unable to detect status changes")
+            print("\n❌ UNIQUE VIEW TRACKING FIX VERIFICATION: ISSUES FOUND")
+            print("Some view tracking functionality is not working as expected.")
+            print("Check the detailed test results above for specific issues.")
+        
+        # Print failed tests details
+        failed_tests = [result for result in tester.test_results if not result["success"]]
+        if failed_tests:
+            print(f"\n🔍 FAILED TESTS DETAILS ({len(failed_tests)} failures):")
+            for i, test in enumerate(failed_tests, 1):
+                print(f"{i}. {test['test']}: {test['details']}")
         
         print("\n" + "=" * 80)
-        
-        # Return success status
-        return field_consistency_success and workflow_success
+        print("🏁 UNIQUE VIEW TRACKING FIX TESTING COMPLETED")
+        print("=" * 80)
 
 
 if __name__ == "__main__":
