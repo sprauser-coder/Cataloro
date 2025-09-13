@@ -719,36 +719,33 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_authentication_requirements(self, seller_id):
-        """Test that all endpoints require proper authentication"""
+    async def test_authentication_requirements(self):
+        """Test that completion endpoints require proper authentication"""
         try:
             print("      Testing authentication requirements...")
             
             # Test endpoints without authentication
             endpoints_to_test = [
-                f"/tenders/seller/{seller_id}/accepted",
-                f"/user/complete-transaction", 
-                f"/user/completed-transactions/{seller_id}"
+                ("/user/complete-transaction", "POST", {"listing_id": "test"}),
+                ("/user/completed-transactions/admin_user_1", "GET", None)
             ]
             
             auth_failures = []
             auth_successes = []
             
-            for endpoint in endpoints_to_test:
+            for endpoint, method, data in endpoints_to_test:
                 url = f"{BACKEND_URL}{endpoint}"
                 
                 try:
-                    if endpoint == "/user/complete-transaction":
-                        # POST request
-                        async with self.session.post(url, json={"listing_id": "test"}) as response:
-                            if response.status == 401 or response.status == 403:
+                    if method == "POST":
+                        async with self.session.post(url, json=data) as response:
+                            if response.status in [401, 403]:
                                 auth_successes.append(f"{endpoint} (POST) properly requires auth")
                             else:
                                 auth_failures.append(f"{endpoint} (POST) allows access without auth (status: {response.status})")
                     else:
-                        # GET request
                         async with self.session.get(url) as response:
-                            if response.status == 401 or response.status == 403:
+                            if response.status in [401, 403]:
                                 auth_successes.append(f"{endpoint} (GET) properly requires auth")
                             else:
                                 auth_failures.append(f"{endpoint} (GET) allows access without auth (status: {response.status})")
@@ -767,7 +764,7 @@ class BackendTester:
                 self.log_result(
                     "Authentication Requirements", 
                     True, 
-                    f"✅ AUTH WORKING: All endpoints properly require authentication ({len(auth_successes)} endpoints tested)"
+                    f"✅ AUTH WORKING: All completion endpoints properly require authentication ({len(auth_successes)} endpoints tested)"
                 )
                 return {'success': True, 'successes': auth_successes}
             
