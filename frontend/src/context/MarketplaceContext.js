@@ -175,6 +175,26 @@ function marketplaceReducer(state, action) {
         sortBy: action.payload
       };
     
+    case ACTIONS.SET_CURRENT_PAGE:
+      return {
+        ...state,
+        currentPage: action.payload
+      };
+    
+    case ACTIONS.SET_PAGINATION_INFO:
+      return {
+        ...state,
+        totalPages: action.payload.totalPages,
+        totalListings: action.payload.totalListings,
+        currentPage: action.payload.currentPage || state.currentPage
+      };
+    
+    case ACTIONS.SET_LOADING_PAGE:
+      return {
+        ...state,
+        isLoadingPage: action.payload
+      };
+    
     case ACTIONS.SET_VIEW_MODE:
       return {
         ...state,
