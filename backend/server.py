@@ -4837,13 +4837,14 @@ async def check_listing_expiration(listing_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to check expiration: {str(e)}")
 
 @app.get("/api/listings/{listing_id}")
-async def get_listing(listing_id: str, increment_view: bool = False):
+async def get_listing(listing_id: str, increment_view: bool = False, current_user: dict = Depends(get_current_user_optional)):
     """Get a specific listing by ID - returns full details including images and bid_info
     
     Args:
         listing_id: The listing ID to fetch
         increment_view: Whether to increment the view counter (default: False)
                        Set to True only when user actually views the listing page
+        current_user: Current authenticated user (optional, for view tracking)
     """
     try:
         listing = await db.listings.find_one({"id": listing_id})
@@ -4853,15 +4854,45 @@ async def get_listing(listing_id: str, increment_view: bool = False):
         
         listing['_id'] = str(listing['_id'])
         
-        # Only increment view count when explicitly requested (actual page view)
-        if increment_view:
-            result = await db.listings.update_one(
-                {"id": listing_id},
-                {"$inc": {"views": 1}}
-            )
-            # Refresh listing data to get updated view count
-            listing = await db.listings.find_one({"id": listing_id})
-            listing['_id'] = str(listing['_id'])
+        # Only increment view count when explicitly requested and user is available
+        if increment_view and current_user:
+            user_id = current_user.get("id")
+            
+            if user_id:
+                # Check if this user has already viewed this listing
+                existing_view = await db.listing_views.find_one({
+                    "listing_id": listing_id,
+                    "user_id": user_id
+                })
+                
+                if not existing_view:
+                    # This is a new unique view from this user
+                    # Record the view
+                    await db.listing_views.insert_one({
+                        "listing_id": listing_id,
+                        "user_id": user_id,
+                        "viewed_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+                        "ip_address": None,  # Could add request IP if needed
+                        "user_agent": None   # Could add user agent if needed
+                    })
+                    
+                    # Increment the view counter
+                    await db.listings.update_one(
+                        {"id": listing_id},
+                        {"$inc": {"views": 1}}
+                    )
+                    
+                    # Refresh listing data to get updated view count
+                    listing = await db.listings.find_one({"id": listing_id})
+                    listing['_id'] = str(listing['_id'])
+                    
+                    logger.info(f"📊 New unique view recorded - User: {user_id}, Listing: {listing_id}, Total views: {listing.get('views', 0)}")
+                else:
+                    logger.info(f"📊 Duplicate view skipped - User: {user_id} already viewed Listing: {listing_id}")
+            else:
+                logger.warning("📊 View increment requested but no user_id available")
+        elif increment_view and not current_user:
+            logger.warning("📊 View increment requested but user not authenticated")
         
         # Add bid_info with highest_bidder_id for individual listing page
         if not listing.get('bid_info'):
