@@ -35,6 +35,13 @@ export const WebSocketProvider = ({ children }) => {
   }, []);
 
   const initializeWebSocket = (user) => {
+    // Temporarily disable WebSocket connection to avoid connection errors
+    console.log('🔌 WebSocket connection disabled - no real-time server available');
+    setIsConnected(false);
+    return;
+    
+    // Original WebSocket connection code (disabled)
+    /*
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
       const wsUrl = backendUrl.replace('/api', '').replace('http', 'ws');
