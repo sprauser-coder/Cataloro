@@ -7797,10 +7797,10 @@ class BackendTester:
 
 async def main():
     """Main test execution function"""
-    print("🚀 CATALORO MARKETPLACE - UNIQUE VIEW TRACKING FIX TESTING")
+    print("🚀 CATALORO MARKETPLACE - LISTING COUNT DISCREPANCY INVESTIGATION")
     print("=" * 80)
-    print("Testing the unique view tracking fix implementation")
-    print("Focus: Ensuring same user views only count once, different users increment count")
+    print("Investigating the listing count discrepancy between Tenders and Listings sections")
+    print("Focus: Understanding why Tenders shows 62 active listings vs Listings shows 34")
     print("=" * 80)
     
     async with BackendTester() as tester:
@@ -7810,9 +7810,9 @@ async def main():
             print("\n❌ Database connectivity failed - aborting tests")
             return
         
-        # Run unique view tracking tests
-        print("\n🎯 STARTING UNIQUE VIEW TRACKING FIX TESTS...")
-        success = await tester.test_unique_view_tracking_fix()
+        # Run listing count discrepancy investigation
+        print("\n🎯 STARTING LISTING COUNT DISCREPANCY INVESTIGATION...")
+        success = await tester.test_listing_count_discrepancy()
         
         # Print summary
         print("\n" + "=" * 80)
@@ -7829,15 +7829,12 @@ async def main():
         print(f"Success Rate: {success_rate:.1f}%")
         
         if success:
-            print("\n✅ UNIQUE VIEW TRACKING FIX VERIFICATION: COMPLETE SUCCESS")
-            print("The unique view tracking fix is working correctly:")
-            print("- Same user multiple views only count as 1 view")
-            print("- Different users viewing same listing increment view count")
-            print("- Unauthenticated requests don't increment view count")
-            print("- increment_view=false never increments view count")
+            print("\n✅ LISTING COUNT DISCREPANCY INVESTIGATION: COMPLETE")
+            print("Successfully analyzed all endpoints and database counts.")
+            print("Check the detailed analysis above to understand the discrepancy source.")
         else:
-            print("\n❌ UNIQUE VIEW TRACKING FIX VERIFICATION: ISSUES FOUND")
-            print("Some view tracking functionality is not working as expected.")
+            print("\n❌ LISTING COUNT DISCREPANCY INVESTIGATION: ISSUES FOUND")
+            print("Some endpoints failed or returned unexpected results.")
             print("Check the detailed test results above for specific issues.")
         
         # Print failed tests details
@@ -7848,7 +7845,7 @@ async def main():
                 print(f"{i}. {test['test']}: {test['details']}")
         
         print("\n" + "=" * 80)
-        print("🏁 UNIQUE VIEW TRACKING FIX TESTING COMPLETED")
+        print("🏁 LISTING COUNT DISCREPANCY INVESTIGATION COMPLETED")
         print("=" * 80)
 
 
