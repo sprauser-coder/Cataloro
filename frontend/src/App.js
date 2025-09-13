@@ -142,6 +142,8 @@ function App() {
 
                   <Route path="messages" element={<MessagesPage />} />
                   <Route path={APP_ROUTES.TENDERS.substring(1)} element={<TenderManagementPage />} />
+                  <Route path={APP_ROUTES.BUY.substring(1)} element={<BuyPage />} />
+                  <Route path={APP_ROUTES.SELL.substring(1)} element={<SellPage />} />
                   <Route path="buy-management" element={<BuyManagementPage />} />
                   <Route path="analytics" element={<AdminPanel />} />
                   <Route path="performance" element={<AdminPanel />} />
