@@ -154,7 +154,12 @@ function SimpleLoginPage() {
     
     try {
       // Call the actual backend API
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://cataloro-admin-fix.preview.emergentagent.com/api';
+      const loginUrl = `${backendUrl}/api/auth/login`;
+      
+      console.log('🔐 Login attempt - URL:', loginUrl, 'Email:', loginData.email);
+      
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,6 +169,8 @@ function SimpleLoginPage() {
           password: loginData.password
         })
       });
+
+      console.log('🔐 Login response status:', response.status);
 
       if (!response.ok) {
         throw new Error(`Login failed: ${response.status}`);
