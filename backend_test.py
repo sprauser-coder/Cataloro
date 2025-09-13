@@ -7173,15 +7173,15 @@ class BackendTester:
             return False
 
 async def main():
-    """Main test execution function for MESSAGE READ FUNCTIONALITY"""
+    """Main test execution function for MESSAGE READ FUNCTIONALITY CRITICAL FIX"""
     async with BackendTester() as tester:
-        print("🚀 CATALORO MARKETPLACE - MESSAGE READ FUNCTIONALITY TESTING")
+        print("🚀 CATALORO MARKETPLACE - MESSAGE READ FUNCTIONALITY CRITICAL FIX TESTING")
         print("=" * 80)
-        print("Testing the message read functionality and badge updating:")
-        print("1. **Setup Message Scenario**: Admin sends message to demo user")
-        print("2. **Message Read Workflow**: Test mark read endpoint and verification")
-        print("3. **Unread Count Logic**: Test badge/count updating")
-        print("4. **Debug Issues**: Authorization, ID format, timing issues")
+        print("Testing the critical fix for message read functionality:")
+        print("1. **Message Field Consistency**: Verify messages created with 'is_read': false")
+        print("2. **Mark Read Functionality**: Test PUT endpoint updates 'is_read': true")
+        print("3. **Complete Workflow**: Multiple messages, mark some as read, verify counts")
+        print("4. **Badge Update Fix**: Confirm field consistency resolves badge issues")
         print("=" * 80)
         print()
         
@@ -7191,12 +7191,12 @@ async def main():
             print("❌ Database connectivity failed - aborting tests")
             return
         
-        # Test message read functionality
-        message_read_success = await tester.test_message_read_functionality()
+        # Test the critical message field consistency fix
+        field_consistency_success = await tester.test_message_field_consistency_fix()
         
         # Summary
         print("\n" + "=" * 80)
-        print("🏁 MESSAGE READ FUNCTIONALITY TESTING SUMMARY")
+        print("🏁 MESSAGE READ FUNCTIONALITY CRITICAL FIX TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = len(tester.test_results)
@@ -7210,8 +7210,8 @@ async def main():
         print(f"   Success Rate: {(passed_tests/total_tests*100):.1f}%")
         print()
         
-        print(f"🎯 MESSAGE READ FUNCTIONALITY STATUS:")
-        print(f"   📨 Message Read System: {'✅ WORKING' if message_read_success else '❌ ISSUES FOUND'}")
+        print(f"🎯 CRITICAL FIX STATUS:")
+        print(f"   📧 Message Field Consistency Fix: {'✅ WORKING' if field_consistency_success else '❌ ISSUES FOUND'}")
         print()
         
         if failed_tests > 0:
@@ -7222,20 +7222,24 @@ async def main():
             print()
         
         print("🔍 KEY FINDINGS:")
-        if message_read_success:
-            print("   ✅ Message Read: Complete workflow working - messages can be marked as read and badge updates correctly")
+        if field_consistency_success:
+            print("   ✅ CRITICAL FIX WORKING: Message field consistency resolved")
+            print("   ✅ Messages created with 'is_read': false (not 'read': false)")
+            print("   ✅ Mark read endpoint updates 'is_read': true consistently")
+            print("   ✅ Unread count calculation works correctly")
+            print("   ✅ Frontend badge logic can now properly detect read/unread status")
         else:
-            print("   ❌ Message Read: Critical issues found - check field consistency, authorization, or timing issues")
-            print("   🔧 POTENTIAL ROOT CAUSES:")
-            print("      - Field name inconsistency: 'read' vs 'is_read' in database")
-            print("      - Authorization header issues with mark read endpoint")
-            print("      - Message ID format problems")
-            print("      - Database timing/async operation issues")
+            print("   ❌ CRITICAL FIX ISSUES: Field consistency problems detected")
+            print("   🔧 POTENTIAL ISSUES:")
+            print("      - Messages still being created with 'read': false instead of 'is_read': false")
+            print("      - Mark read endpoint not updating 'is_read' field correctly")
+            print("      - Field inconsistency causing unread count calculation errors")
+            print("      - Frontend badge logic still unable to detect status changes")
         
         print("\n" + "=" * 80)
         
         # Return success status
-        return message_read_success
+        return field_consistency_success
 
 
 if __name__ == "__main__":
