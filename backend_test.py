@@ -204,16 +204,18 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_complete_transaction_endpoint(self, listing_id, token):
-        """Test POST /api/user/complete-transaction endpoint"""
+    async def test_seller_completion(self, listing_id, seller_token):
+        """Test POST /api/user/complete-transaction from seller perspective"""
         start_time = datetime.now()
         
         try:
-            headers = {"Authorization": f"Bearer {token}"}
+            headers = {"Authorization": f"Bearer {seller_token}"}
             url = f"{BACKEND_URL}/user/complete-transaction"
             
             transaction_data = {
-                "listing_id": listing_id
+                "listing_id": listing_id,
+                "notes": "Seller completion test",
+                "method": "meeting"
             }
             
             async with self.session.post(url, headers=headers, json=transaction_data) as response:
@@ -222,33 +224,41 @@ class BackendTester:
                 if response.status == 200:
                     data = await response.json()
                     
-                    # Check if response indicates successful completion
-                    if data.get('message') and 'complet' in data.get('message', '').lower():
+                    completion = data.get('completion', {})
+                    is_fully_completed = data.get('is_fully_completed', False)
+                    
+                    # Verify seller completion fields
+                    seller_confirmed_at = completion.get('seller_confirmed_at')
+                    buyer_confirmed_at = completion.get('buyer_confirmed_at')
+                    
+                    if seller_confirmed_at and not buyer_confirmed_at and not is_fully_completed:
                         self.log_result(
-                            "Complete Transaction Endpoint", 
+                            "Seller Completion Logic", 
                             True, 
-                            f"✅ TRANSACTION COMPLETED: Successfully completed transaction for listing {listing_id}",
+                            f"✅ SELLER COMPLETION WORKING: seller_confirmed_at set, buyer_confirmed_at null, is_fully_completed=false",
                             response_time
                         )
                         return {
                             'success': True,
-                            'data': data,
-                            'listing_id': listing_id
+                            'completion': completion,
+                            'is_fully_completed': is_fully_completed,
+                            'seller_confirmed_at': seller_confirmed_at,
+                            'buyer_confirmed_at': buyer_confirmed_at
                         }
                     else:
                         self.log_result(
-                            "Complete Transaction Endpoint", 
+                            "Seller Completion Logic", 
                             False, 
-                            f"❌ UNEXPECTED RESPONSE: Response doesn't indicate successful completion: {data}",
+                            f"❌ SELLER COMPLETION LOGIC FAILED: seller_confirmed_at={seller_confirmed_at}, buyer_confirmed_at={buyer_confirmed_at}, is_fully_completed={is_fully_completed}",
                             response_time
                         )
-                        return {'success': False, 'error': 'Unexpected response format', 'data': data}
+                        return {'success': False, 'error': 'Seller completion logic incorrect', 'data': data}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Complete Transaction Endpoint", 
+                        "Seller Completion Logic", 
                         False, 
-                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        f"❌ SELLER COMPLETION FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'success': False, 'error': error_text}
@@ -256,9 +266,79 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Complete Transaction Endpoint", 
+                "Seller Completion Logic", 
                 False, 
-                f"❌ REQUEST FAILED: {str(e)}",
+                f"❌ SELLER COMPLETION EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_buyer_completion(self, listing_id, buyer_token):
+        """Test POST /api/user/complete-transaction from buyer perspective"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {buyer_token}"}
+            url = f"{BACKEND_URL}/user/complete-transaction"
+            
+            transaction_data = {
+                "listing_id": listing_id,
+                "notes": "Buyer completion test",
+                "method": "meeting"
+            }
+            
+            async with self.session.post(url, headers=headers, json=transaction_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    completion = data.get('completion', {})
+                    is_fully_completed = data.get('is_fully_completed', False)
+                    
+                    # Verify buyer completion fields
+                    seller_confirmed_at = completion.get('seller_confirmed_at')
+                    buyer_confirmed_at = completion.get('buyer_confirmed_at')
+                    
+                    # Should now have both confirmations and be fully completed
+                    if seller_confirmed_at and buyer_confirmed_at and is_fully_completed:
+                        self.log_result(
+                            "Buyer Completion Logic", 
+                            True, 
+                            f"✅ BUYER COMPLETION WORKING: Both confirmations present, is_fully_completed=true",
+                            response_time
+                        )
+                        return {
+                            'success': True,
+                            'completion': completion,
+                            'is_fully_completed': is_fully_completed,
+                            'seller_confirmed_at': seller_confirmed_at,
+                            'buyer_confirmed_at': buyer_confirmed_at
+                        }
+                    else:
+                        self.log_result(
+                            "Buyer Completion Logic", 
+                            False, 
+                            f"❌ BUYER COMPLETION LOGIC FAILED: seller_confirmed_at={seller_confirmed_at}, buyer_confirmed_at={buyer_confirmed_at}, is_fully_completed={is_fully_completed}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Buyer completion logic incorrect', 'data': data}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Buyer Completion Logic", 
+                        False, 
+                        f"❌ BUYER COMPLETION FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Buyer Completion Logic", 
+                False, 
+                f"❌ BUYER COMPLETION EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
