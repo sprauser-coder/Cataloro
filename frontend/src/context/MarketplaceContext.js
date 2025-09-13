@@ -805,16 +805,32 @@ export function MarketplaceProvider({ children }) {
     if (filters.hotDeals && filters.hotDeals !== 'all') {
       console.log(`🔥 Applying hot deals filter: ${filters.hotDeals}, starting with ${filtered.length} products`);
       
+      // Debug: Show what time_info data we have
+      filtered.forEach((product, index) => {
+        if (index < 5) { // Show first 5 products
+          console.log(`🔥 Product ${index + 1} "${product.title}":`, {
+            has_time_info: !!product.time_info,
+            time_info: product.time_info
+          });
+        }
+      });
+      
       filtered = filtered.filter(product => {
         const timeInfo = product.time_info;
         
-        if (!timeInfo) return filters.hotDeals === 'no_time_limit';
+        if (!timeInfo) {
+          console.log(`🔥 ${product.title}: No time_info, filter=${filters.hotDeals}, result=${filters.hotDeals === 'no_time_limit'}`);
+          return filters.hotDeals === 'no_time_limit';
+        }
         
         if (filters.hotDeals === 'no_time_limit') {
-          return !timeInfo.has_time_limit;
+          const result = !timeInfo.has_time_limit;
+          console.log(`🔥 ${product.title}: No time limit filter, has_time_limit=${timeInfo.has_time_limit}, result=${result}`);
+          return result;
         }
         
         if (!timeInfo.has_time_limit || timeInfo.is_expired) {
+          console.log(`🔥 ${product.title}: No time limit or expired, has_time_limit=${timeInfo.has_time_limit}, is_expired=${timeInfo.is_expired}`);
           return false;
         }
         
@@ -823,12 +839,14 @@ export function MarketplaceProvider({ children }) {
         
         if (filters.hotDeals === 'hot_deals') {
           const isHotDeal = timeRemainingHours > 0 && timeRemainingHours <= 24;
-          console.log(`🔥 ${product.title} (${timeRemainingHours.toFixed(1)}h remaining): isHotDeal=${isHotDeal}`);
+          console.log(`🔥 ${product.title}: ${timeRemainingHours.toFixed(1)}h remaining, isHotDeal=${isHotDeal}`);
           return isHotDeal;
         }
         
         if (filters.hotDeals === 'expiring_soon') {
-          return timeRemainingHours > 0 && timeRemainingHours <= 48;
+          const isExpiringSoon = timeRemainingHours > 0 && timeRemainingHours <= 48;
+          console.log(`🔥 ${product.title}: ${timeRemainingHours.toFixed(1)}h remaining, isExpiringSoon=${isExpiringSoon}`);
+          return isExpiringSoon;
         }
         
         return true;
