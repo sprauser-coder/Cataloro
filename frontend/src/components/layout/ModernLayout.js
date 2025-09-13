@@ -26,16 +26,21 @@ function ModernLayout() {
       const token = localStorage.getItem('cataloro_token');
       const user = localStorage.getItem('cataloro_user');
       
+      console.log('🔐 Auth check - token:', !!token, 'user:', !!user, 'location:', location.pathname);
+      
       if (token && user) {
         try {
-          JSON.parse(user);
+          const userObj = JSON.parse(user);
+          console.log('🔐 Auth success - user:', userObj.full_name || userObj.name);
           setIsAuthenticated(true);
         } catch (error) {
+          console.log('🔐 Auth failed - invalid user data:', error);
           localStorage.removeItem('cataloro_token');
           localStorage.removeItem('cataloro_user');
           setIsAuthenticated(false);
         }
       } else {
+        console.log('🔐 Auth failed - missing token or user');
         setIsAuthenticated(false);
       }
       
@@ -48,6 +53,7 @@ function ModernLayout() {
     // Listen for storage changes (when user logs in from another tab or after login)
     const handleStorageChange = (e) => {
       if (e.key === 'cataloro_token' || e.key === 'cataloro_user') {
+        console.log('🔐 Storage changed, re-checking auth');
         checkAuth();
       }
     };
@@ -57,7 +63,7 @@ function ModernLayout() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [location.pathname]); // Re-check when location changes
+  }, [location.pathname, navigate]); // Include navigate in dependencies
 
   // Check for dark mode preference and load site configuration
   useEffect(() => {
