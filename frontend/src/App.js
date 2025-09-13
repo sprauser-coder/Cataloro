@@ -36,6 +36,8 @@ import RegisterPage from './features/auth/RegisterPage';
 import InfoPage from './features/info/InfoPage';
 import TenderManagementPage from './features/marketplace/TenderManagementPage';
 import BuyManagementPage from './features/marketplace/BuyManagementPage';
+import BuyPage from './features/marketplace/BuyPage';
+import SellPage from './features/marketplace/SellPage';
 import DashboardHub from './components/admin/DashboardHub';
 import PerformanceDashboard from './components/performance/PerformanceDashboard';
 
