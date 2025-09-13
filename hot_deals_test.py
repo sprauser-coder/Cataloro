@@ -385,9 +385,10 @@ class HotDealsFilterTester:
                     no_time_limit.append(listing)
                     continue
                 
-                time_remaining_seconds = time_info.get('time_remaining_seconds', 0)
+                time_remaining_seconds = time_info.get('time_remaining_seconds')
                 
-                if time_remaining_seconds > 0:
+                # Handle None values properly
+                if time_remaining_seconds is not None and time_remaining_seconds > 0:
                     if time_remaining_seconds <= 86400:  # 24 hours = 86400 seconds
                         hot_deals.append(listing)
                     elif time_remaining_seconds <= 172800:  # 48 hours = 172800 seconds
