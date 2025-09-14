@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { liveService } from '../../services/liveService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function NotificationsPage() {
   const { user } = useAuth();
