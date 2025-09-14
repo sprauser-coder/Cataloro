@@ -10370,7 +10370,6 @@ async def get_public_profile(user_id: str):
         
         # Format dates
         date_joined = user.get("created_at") or user.get("date_joined")
-        print(f"🔍 DEBUG: Public profile date raw value: {date_joined}")
         logger.info(f"🔍 Public profile date raw value: {date_joined}")
         
         if date_joined:
