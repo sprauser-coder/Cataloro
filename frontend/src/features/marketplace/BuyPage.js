@@ -136,8 +136,8 @@ function BuyPage() {
           </nav>
         </div>
 
-        {/* Tab Content */}
-        <div className="p-6">
+          {/* Tab Content */}
+          <div className="p-4 sm:p-6">
           <div style={{ display: activeTab === 'tenders' ? 'block' : 'none' }}>
             <TenderManagementPage showBuyTabOnly={true} />
           </div>
