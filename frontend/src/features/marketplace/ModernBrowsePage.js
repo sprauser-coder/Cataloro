@@ -1628,7 +1628,21 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
 
           {/* Simple Partner Offer Badge */}
           {(() => {
-            // Debug logging for all partner-only listings
+            // Debug: Log every listing to see what's happening
+            console.log('🔍 BADGE RENDER CHECK:', {
+              title: item.title,
+              id: item.id,
+              is_partners_only: item.is_partners_only,
+              has_public_at: !!item.public_at
+            });
+            
+            // Test badge - show for first 3 listings to verify rendering works
+            if (item.title === 'HyundaiKiaTA311') {
+              console.log('🔍 TEST BADGE SHOULD SHOW FOR:', item.title);
+              return true;
+            }
+            
+            // Original logic for partner listings
             if (item.is_partners_only) {
               console.log('🔍 PARTNER BADGE DEBUG:', {
                 title: item.title,
@@ -1637,14 +1651,12 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
                 public_at_date: item.public_at ? new Date(item.public_at) : null,
                 current_date: new Date(),
                 is_future: item.public_at ? new Date(item.public_at) > new Date() : false,
-                should_show: item.is_partners_only && item.public_at && new Date(item.public_at) > new Date(),
-                all_fields: {
-                  show_partners_first: item.show_partners_first,
-                  partners_visibility_hours: item.partners_visibility_hours
-                }
+                should_show: item.is_partners_only && item.public_at && new Date(item.public_at) > new Date()
               });
+              return item.public_at && new Date(item.public_at) > new Date();
             }
-            return item.is_partners_only && item.public_at && new Date(item.public_at) > new Date();
+            
+            return false;
           })() && (
             <div>
               <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
