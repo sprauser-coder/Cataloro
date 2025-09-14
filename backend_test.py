@@ -462,7 +462,7 @@ class BackendTester:
                     if test_notification:
                         notification_id = test_notification.get('id')
                         print(f"✅ Testing mark as read for {user_type} with notification {notification_id}...")
-                        mark_read_result = await self.test_mark_notification_as_read(token, notification_id)
+                        mark_read_result = await self.test_mark_notification_as_read(token, user_id, notification_id)
                         user_results['mark_as_read'] = mark_read_result
                     else:
                         print(f"⚠️ No notifications available for mark-as-read test for {user_type}")
