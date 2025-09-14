@@ -927,7 +927,7 @@ function MyListingCard({ listing, onDelete }) {
             {listing.title}
           </h3>
           <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            €{listing.price.toFixed(2)}
+            {formatEuro(listing.price)}
           </p>
         </div>
         
