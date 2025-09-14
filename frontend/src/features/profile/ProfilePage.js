@@ -1071,6 +1071,116 @@ function ProfilePage() {
             </div>
           )}
 
+          {/* Partners Tab */}
+          {activeTab === 'partners' && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                <Users className="w-6 h-6 mr-2" />
+                Preferred Partners
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Add users as preferred partners. When you create listings with "Show Partners First" enabled, 
+                only your partners will see the listing for the specified time period before it becomes public.
+              </p>
+
+              {/* Add Partner Section */}
+              <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Add New Partner</h3>
+                <div className="flex space-x-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Search users by name or email..."
+                      value={userSearchQuery}
+                      onChange={(e) => setUserSearchQuery(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <button
+                    onClick={() => searchUsers()}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
+                  >
+                    Search
+                  </button>
+                </div>
+
+                {/* Search Results */}
+                {userSearchResults.length > 0 && (
+                  <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+                    {userSearchResults.map((searchUser) => (
+                      <div key={searchUser.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900 dark:text-white">{searchUser.full_name || searchUser.username}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{searchUser.email}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => addPartner(searchUser)}
+                          disabled={partners.some(p => p.id === searchUser.id) || searchUser.id === user?.id}
+                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm"
+                        >
+                          {partners.some(p => p.id === searchUser.id) ? 'Already Partner' : 
+                           searchUser.id === user?.id ? 'You' : 'Add Partner'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Current Partners List */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                  Current Partners ({partners.length})
+                </h3>
+                
+                {partnersLoading ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-400" />
+                    <p className="mt-2 text-sm text-gray-500">Loading partners...</p>
+                  </div>
+                ) : partners.length > 0 ? (
+                  <div className="space-y-3">
+                    {partners.map((partner) => (
+                      <div key={partner.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                            <User className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900 dark:text-white">{partner.full_name || partner.username}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{partner.email}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">
+                              Partner since {new Date(partner.added_at || Date.now()).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removePartner(partner.id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No partners yet</h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Search and add users as your preferred partners for exclusive early access to your listings.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Statistics Tab */}
           {activeTab === 'stats' && (
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
