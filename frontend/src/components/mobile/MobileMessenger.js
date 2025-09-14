@@ -440,9 +440,9 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
                 </div>
 
                 {/* Unread Badge */}
-                {conversation.unreadCount > 0 && (
-                  <div className="bg-blue-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
-                    {conversation.unreadCount}
+                {(conversation.unreadCount > 0 || conversation.unread_count > 0) && (
+                  <div className="bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5 font-bold">
+                    {conversation.unreadCount || conversation.unread_count}
                   </div>
                 )}
               </div>
