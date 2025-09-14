@@ -657,10 +657,7 @@ function PublicProfilePage() {
                   <div>
                     <div className="text-sm text-gray-600 dark:text-gray-300">Member since</div>
                     <div className="font-medium text-gray-900 dark:text-white">
-                      {new Date(userStats.memberSince).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long' 
-                      })}
+                      {userStats.memberSince && userStats.memberSince !== 'Unknown' ? userStats.memberSince : 'Unknown'}
                     </div>
                   </div>
                 </div>
