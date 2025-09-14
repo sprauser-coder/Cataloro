@@ -2269,7 +2269,7 @@ async def get_my_deals(user_id: str):
                     "id": listing.get("id", ""),
                     "title": listing.get("title", "Unknown Item"),
                     "price": listing.get("price", 0),
-                    "image": listing.get("images", [""])[0] if listing and listing.get("images") else ""
+                    "image": optimize_images_for_response(listing.get("images", []), listing.get("id", ""))[0] if listing and listing.get("images") else '/api/placeholder-image.jpg'
                 } if listing else {},
                 "buyer": buyer_info,
                 "seller": seller_info
