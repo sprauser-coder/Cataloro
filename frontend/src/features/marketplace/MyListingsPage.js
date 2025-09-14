@@ -143,18 +143,19 @@ function MyListingsPage() {
   return (
     <div className="fade-in">
       {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center">
+      <div className="mb-4 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Listings</h1>
-            <p className="text-gray-600 dark:text-gray-300">Manage your marketplace listings</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">My Listings</h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Manage your marketplace listings</p>
           </div>
           <button 
             onClick={handleCreateListing}
-            className="cataloro-button-primary flex items-center"
+            className="cataloro-button-primary flex items-center justify-center w-full sm:w-auto"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            Create New Listing
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+            <span className="hidden sm:inline">Create New Listing</span>
+            <span className="sm:hidden">Create Listing</span>
           </button>
         </div>
       </div>
