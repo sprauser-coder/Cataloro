@@ -1,30 +1,29 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - PARTNER BADGE FUNCTIONALITY TESTING
-Testing the Partner Badge fix by creating fresh partner-only listings and verifying badge data
+CATALORO MARKETPLACE - PROFILE STATS SYNCHRONIZATION TESTING
+Testing the backend endpoints that support Profile stats synchronization improvements
 
 SPECIFIC TESTS REQUESTED (Review Request):
-1. **Login as admin** (admin@cataloro.com / admin123) 
-2. **Create a NEW partner-only listing with LONG duration** to ensure badge will show:
-   - Title: "BADGE TEST - Future Date"
-   - Basic details (description: "Testing badge display", price: 25, category: "Electronics", condition: "New")  
-   - **CRITICAL**: Set `show_partners_first: true`
-   - **CRITICAL**: Set `partners_visibility_hours: 168` (1 week = 168 hours)
-   
-3. **Verify the NEW listing has future public_at date:**
-   - Confirm `is_partners_only: true`
-   - Confirm `public_at` is approximately 1 week (168 hours) in the future
-   - Confirm current time is BEFORE the `public_at` date
-   
-4. **Test the browse endpoint shows the new listing with correct partner data**
+Test the backend endpoints that support the Profile stats synchronization improvements:
 
-EXPECTED RESULTS:
-- New listing created with `public_at` date that is 1 week in the future  
-- Current datetime should be BEFORE the `public_at` datetime
-- This will create the condition where badge SHOULD display: `is_partners_only=true && public_at > current_date`
-- This will give the user a listing that definitely shows a partner badge
+**Context**: ProfilePage modified to sync stats with existing working tiles by fetching data directly from the same endpoints:
 
-GOAL: Create a test case where the badge display condition `is_partners_only && public_at && new Date(public_at) > new Date()` will evaluate to TRUE so we can test if badges appear.
+1. **My Listings Data**: Uses `marketplaceService.getMyListings(user_id)` - same as MyListingsPage
+2. **My Tenders Data**: Uses `/api/tenders/buyer/${user_id}` endpoint - same as TenderManagementPage
+
+**Test Requirements**:
+- Test the listings endpoint for user data retrieval
+- Test the tenders endpoint for user data retrieval  
+- Verify that the data returned matches what the working tiles use
+- Use demo_user@cataloro.com or admin@cataloro.com for testing
+- Ensure the endpoints return proper data structure with status, listings counts, etc.
+
+**Expected Results**:
+- Listings endpoint should return array of user's listings with status field
+- Tenders endpoint should return array of user's tenders with status field (including 'accepted' status)
+- Both endpoints should return consistent data that allows proper stats calculation
+
+GOAL: Verify that the Profile stats synchronization endpoints are working correctly and returning proper data structure.
 """
 
 import asyncio
