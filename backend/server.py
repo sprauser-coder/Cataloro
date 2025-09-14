@@ -4570,6 +4570,20 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
             listing_data["is_expired"] = False
             listing_data["winning_bidder_id"] = None
         
+        # Handle partners first functionality
+        if listing_data.get("show_partners_first", False):
+            partners_visibility_hours = listing_data.get("partners_visibility_hours", 24)
+            # Calculate when listing becomes public
+            public_at = datetime.utcnow() + timedelta(hours=partners_visibility_hours)
+            listing_data["public_at"] = public_at.isoformat()
+            listing_data["partners_visibility_hours"] = partners_visibility_hours
+            listing_data["is_partners_only"] = True
+        else:
+            listing_data["show_partners_first"] = False
+            listing_data["partners_visibility_hours"] = None
+            listing_data["public_at"] = datetime.utcnow().isoformat()  # Immediately public
+            listing_data["is_partners_only"] = False
+        
         # Validate required fields
         required_fields = ['title', 'description', 'price', 'category', 'condition', 'seller_id']
         for field in required_fields:
