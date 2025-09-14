@@ -356,7 +356,7 @@ class BackendTester:
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/notifications"
+            url = f"{BACKEND_URL}/user/{user_id}/notifications"
             
             notification_data = {
                 "user_id": user_id,
