@@ -1627,7 +1627,25 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           )}
 
           {/* Simple Partner Offer Badge */}
-          {item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() && (
+          {(() => {
+            // Debug logging for all partner-only listings
+            if (item.is_partners_only) {
+              console.log('🔍 PARTNER BADGE DEBUG:', {
+                title: item.title,
+                is_partners_only: item.is_partners_only,
+                public_at: item.public_at,
+                public_at_date: item.public_at ? new Date(item.public_at) : null,
+                current_date: new Date(),
+                is_future: item.public_at ? new Date(item.public_at) > new Date() : false,
+                should_show: item.is_partners_only && item.public_at && new Date(item.public_at) > new Date(),
+                all_fields: {
+                  show_partners_first: item.show_partners_first,
+                  partners_visibility_hours: item.partners_visibility_hours
+                }
+              });
+            }
+            return item.is_partners_only && item.public_at && new Date(item.public_at) > new Date();
+          })() && (
             <div>
               <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
