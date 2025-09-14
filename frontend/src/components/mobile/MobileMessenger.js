@@ -221,6 +221,21 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
             status: msg.sender === 'them' ? 'read' : msg.status
           }))
         );
+        
+        // Update the unread message count in bottom navigation
+        const totalUnreadMessages = realConversations.reduce((total, conv) => {
+          const updatedUnreadCount = conv.id === conversation.id 
+            ? Math.max(0, (conv.unread_count || 0) - unreadMessages.length)
+            : (conv.unread_count || 0);
+          return total + updatedUnreadCount;
+        }, 0);
+        
+        // Dispatch event to update bottom navigation badge
+        window.dispatchEvent(new CustomEvent('badgeUpdate', {
+          detail: { type: 'messages', count: totalUnreadMessages }
+        }));
+        
+        console.log(`🔔 Updated unread message count to: ${totalUnreadMessages}`);
       }
     } catch (error) {
       console.error('❌ Error marking conversation as read:', error);
