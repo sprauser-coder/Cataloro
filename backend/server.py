@@ -8186,7 +8186,7 @@ async def get_bought_items(user_id: str):
                     "price": listing.get("price", 0) if listing else order.get("price", 0),
                     "seller_name": seller_name,
                     "seller_id": seller_id,
-                    "image": listing.get("images", [""])[0] if listing and listing.get("images") else None,
+                    "image": optimize_images_for_response(listing.get("images", []), listing.get("id", ""))[0] if listing and listing.get("images") else '/api/placeholder-image.jpg',
                     "purchased_at": order.get("approved_at", order.get("created_at")),
                     "basket_id": None,
                     # Cat database fields - prioritize preserved data from order, fallback to listing
