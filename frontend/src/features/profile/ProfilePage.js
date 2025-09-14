@@ -372,7 +372,7 @@ function ProfilePage() {
       }));
     };
 
-    if (user && allProducts && orderHistory && favorites) {
+    if (user && allProducts && favorites !== undefined) {
       calculateStats();
     } else {
       console.log('⚠️ Missing data for stats calculation:', {
