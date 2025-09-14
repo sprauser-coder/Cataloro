@@ -4483,12 +4483,16 @@ async def get_all_listings(
         
         # Partner visibility filtering
         if current_user:
+            logger.info(f"🔍 PARTNER DEBUG: Checking visibility for user {current_user.get('id')} ({current_user.get('username', 'unknown')})")
+            
             # Get user's partnerships (where current user is the partner)
             user_partnerships = await db.user_partners.find({
                 "partner_id": current_user.get("id"),
                 "status": "active"
             }).to_list(length=None)
             partner_of_users = [p.get("user_id") for p in user_partnerships]
+            
+            logger.info(f"🔍 PARTNER DEBUG: User {current_user.get('id')} is partner of sellers: {partner_of_users}")
             
             # Show listings that are either:
             # 1. Public (not partners-only OR public_at time has passed)
