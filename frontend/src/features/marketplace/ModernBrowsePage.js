@@ -1627,7 +1627,7 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           )}
 
           {/* Simple Partner Offer Badge */}
-          {item.is_partners_only && item.public_at && (
+          {item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() && (
             <div>
               <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
