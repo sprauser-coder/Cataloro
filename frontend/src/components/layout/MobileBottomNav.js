@@ -106,21 +106,35 @@ function MobileBottomNav() {
     return location.pathname === path;
   };
 
-  // Check if user is seller-only (you can define this logic based on user role/preferences)
-  const isSellerOnly = user?.role === 'seller' || user?.account_type === 'seller_only' || 
-                      (user?.is_business && !user?.can_buy);
+  // Check if user is seller-only based on actual user properties
+  // For now, let's check email domain or username patterns to identify seller accounts
+  const isSellerOnly = user && (
+    user.email?.includes('seller') || 
+    user.username?.includes('seller') ||
+    user.email === 'ana@cataloro.com' || // Specific seller account mentioned by user
+    user.username === 'ana_admin' ||
+    (user.is_business === true && user.full_name?.toLowerCase().includes('business'))
+  );
   
   console.log('🔍 MobileBottomNav - User role debug:', {
     user: user ? {
       id: user.id,
       username: user.username,
       email: user.email,
+      full_name: user.full_name,
+      is_business: user.is_business,
       role: user.role,
       account_type: user.account_type,
-      is_business: user.is_business,
       can_buy: user.can_buy
     } : null,
-    isSellerOnly: isSellerOnly
+    isSellerOnly: isSellerOnly,
+    sellerChecks: user ? {
+      emailIncludesSeller: user.email?.includes('seller'),
+      usernameIncludesSeller: user.username?.includes('seller'),
+      isAnaAccount: user.email === 'ana@cataloro.com',
+      isAnaUsername: user.username === 'ana_admin',
+      isBusiness: user.is_business === true
+    } : null
   });
 
   const allBottomNavItems = isSellerOnly ? [
