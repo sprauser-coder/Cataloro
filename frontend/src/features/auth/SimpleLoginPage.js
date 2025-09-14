@@ -183,14 +183,12 @@ function SimpleLoginPage() {
       console.log('🔐 Login successful, storing auth data');
       
       // Store user data and token in localStorage
-      localStorage.setItem('cataloro_token', data.token);
+      localStorage.setItem('cataloro_token', data.token);  
       localStorage.setItem('cataloro_user', JSON.stringify(data.user));
       
-      // Update AuthContext state directly
-      // The AuthContext will pick up the changes on next page load/refresh
-      
-      // Redirect to marketplace
-      navigate('/browse');
+      // Force a page reload to pick up the new auth state
+      // This ensures the AuthContext detects the authentication change
+      window.location.href = '/browse';
       
     } catch (error) {
       setError(error.message || 'Login failed. Please check your credentials.');
