@@ -444,6 +444,9 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
         // Reload data to reflect changes
         loadBoughtItems();
         loadCompletedTransactions();
+        
+        // Redirect to completed tab after successful completion
+        setActiveTab('completed');
       } else {
         const errorText = await response.text();
         console.error('Mark complete failed:', errorText);
