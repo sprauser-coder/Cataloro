@@ -270,7 +270,7 @@ function MyListingsPage() {
 }
 
 // My Listing Card Component
-function MyListingCard({ listing, onDelete }) {
+function MyListingCard({ listing, onDelete, onReactivate }) {
   const [showMenu, setShowMenu] = useState(false);
 
   // Close menu when clicking outside
