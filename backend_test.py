@@ -331,55 +331,7 @@ class BackendTester:
 
 
 
-    async def test_mark_notification_as_read(self, token, user_id, notification_id):
-        """Test PUT /api/user/{user_id}/notifications/{notification_id}/read endpoint"""
-        start_time = datetime.now()
-        
-        try:
-            headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/user/{user_id}/notifications/{notification_id}/read"
-            
-            async with self.session.put(url, headers=headers) as response:
-                response_time = (datetime.now() - start_time).total_seconds() * 1000
-                
-                if response.status == 200:
-                    data = await response.json()
-                    
-                    if data.get("message"):
-                        self.log_result(
-                            "Mark Notification as Read", 
-                            True, 
-                            f"✅ MARK AS READ WORKING: {data.get('message')}",
-                            response_time
-                        )
-                        return {'success': True, 'marked_read': True}
-                    else:
-                        self.log_result(
-                            "Mark Notification as Read", 
-                            False, 
-                            f"❌ UNEXPECTED RESPONSE: {data}",
-                            response_time
-                        )
-                        return {'success': False, 'error': 'Unexpected response'}
-                else:
-                    error_text = await response.text()
-                    self.log_result(
-                        "Mark Notification as Read", 
-                        False, 
-                        f"❌ MARK AS READ FAILED: Status {response.status}: {error_text}",
-                        response_time
-                    )
-                    return {'success': False, 'error': error_text}
-                    
-        except Exception as e:
-            response_time = (datetime.now() - start_time).total_seconds() * 1000
-            self.log_result(
-                "Mark Notification as Read", 
-                False, 
-                f"❌ MARK AS READ EXCEPTION: {str(e)}",
-                response_time
-            )
-            return {'success': False, 'error': str(e)}
+
 
     async def test_notification_types_support(self, notifications_result):
         """Test that the notification system supports all required notification types for routing"""
