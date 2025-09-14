@@ -43,12 +43,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
     onQuickView?.(currentListing);
   };
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(price);
-  };
+  // Using the new German Euro formatting utility
 
   const formatTimeAgo = (dateString) => {
     const date = new Date(dateString);
