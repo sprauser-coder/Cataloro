@@ -34,7 +34,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import usePermissions from '../../hooks/usePermissions';
 
-function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false, showOnlyTab = null }) {
+function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, showOnlyTab = null }) {
   const { user } = useAuth();
   const { showToast } = useNotifications();
   const { permissions } = usePermissions();
