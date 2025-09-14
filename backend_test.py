@@ -1064,6 +1064,59 @@ class BackendTester:
                 response_time
             )
             return {'success': False, 'error': str(e)}
+
+    async def analyze_partner_management_results(self, results):
+        """Analyze the effectiveness of the partner management testing"""
+        print("      Final analysis of partner management and visibility testing:")
+        
+        working_features = []
+        failing_features = []
+        
+        # Check user search
+        if results.get('user_search', {}).get('success'):
+            working_features.append("✅ User search API working")
+        else:
+            failing_features.append("❌ User search API failed")
+        
+        # Check partner management
+        if results.get('partner_management', {}).get('success'):
+            working_features.append("✅ Partner management workflow working")
+        else:
+            failing_features.append("❌ Partner management workflow failed")
+        
+        # Check partner visibility
+        if results.get('partner_visibility', {}).get('success'):
+            working_features.append("✅ Partner visibility functionality working")
+        else:
+            failing_features.append("❌ Partner visibility functionality failed")
+        
+        # Check image optimization
+        if results.get('image_optimization', {}).get('success'):
+            working_features.append("✅ Image optimization fixes working")
+        else:
+            failing_features.append("❌ Image optimization issues found")
+        
+        # Check listing reactivation
+        if results.get('listing_reactivation', {}).get('success'):
+            working_features.append("✅ Listing reactivation working")
+        else:
+            failing_features.append("❌ Listing reactivation failed")
+        
+        # Final assessment
+        if not failing_features:
+            self.log_result(
+                "Partner Management Analysis", 
+                True, 
+                f"✅ ALL PARTNER MANAGEMENT FEATURES WORKING: {'; '.join(working_features)}"
+            )
+        else:
+            self.log_result(
+                "Partner Management Analysis", 
+                False, 
+                f"❌ PARTNER MANAGEMENT ISSUES FOUND: {len(working_features)} working, {len(failing_features)} failing. Issues: {'; '.join(failing_features)}"
+            )
+        
+        return len(failing_features) == 0
     
     async def test_completed_transactions_filtering(self, user_id, token, expected_role, test_listing_id):
         """Test GET /api/user/completed-transactions/{user_id} endpoint with proper filtering"""
