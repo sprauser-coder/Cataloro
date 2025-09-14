@@ -224,8 +224,8 @@ function MobileBottomNav() {
     isSellerOnly,
     allBottomNavItemsCount: allBottomNavItems.length,
     allBottomNavLabels: allBottomNavItems.map(item => item.label),
-    filteredBottomNavItemsCount: filteredBottomNavItems.length,
-    filteredBottomNavLabels: filteredBottomNavItems.map(item => item.label)
+    bottomNavItemsCount: bottomNavItems.length,
+    bottomNavLabels: bottomNavItems.map(item => item.label)
   });
 
   return (
