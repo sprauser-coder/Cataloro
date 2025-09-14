@@ -560,17 +560,28 @@ class BackendTester:
         print(f"\n🔑 KEY FINDINGS:")
         
         # Check if notification endpoints are working
-        demo_notifications = all_results.get('Demo User', {}).get('notifications', {})
-        admin_notifications = all_results.get('Admin User', {}).get('notifications', {})
+        demo_notifications = all_results.get('Demo User', {})
+        admin_notifications = all_results.get('Admin User', {})
         
-        if demo_notifications.get('success') or admin_notifications.get('success'):
+        # Handle case where results might contain lists
+        if isinstance(demo_notifications, dict):
+            demo_notifications_result = demo_notifications.get('notifications', {})
+        else:
+            demo_notifications_result = {}
+            
+        if isinstance(admin_notifications, dict):
+            admin_notifications_result = admin_notifications.get('notifications', {})
+        else:
+            admin_notifications_result = {}
+        
+        if demo_notifications_result.get('success') or admin_notifications_result.get('success'):
             print("   ✅ Notification endpoints are working")
         else:
             print("   ❌ Notification endpoints are not working")
         
         # Check routing types support
-        demo_types = all_results.get('Demo User', {}).get('types_support', {})
-        admin_types = all_results.get('Admin User', {}).get('types_support', {})
+        demo_types = demo_notifications.get('types_support', {}) if isinstance(demo_notifications, dict) else {}
+        admin_types = admin_notifications.get('types_support', {}) if isinstance(admin_notifications, dict) else {}
         
         all_supported_types = set()
         if demo_types.get('success'):
