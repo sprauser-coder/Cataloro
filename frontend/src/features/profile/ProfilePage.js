@@ -149,6 +149,130 @@ function ProfilePage() {
     'Luxembourg', 'Slovenia', 'Slovakia', 'Estonia', 'Latvia', 'Lithuania', 'Malta', 'Cyprus', 'Croatia', 'Romania', 'Bulgaria'
   ];
 
+  // Load user data when component mounts or user changes
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        full_name: user.full_name || '',
+        username: user.username || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        street: user.street || '',
+        post_code: user.post_code || '',
+        city: user.city || '',
+        country: user.country || '',
+        bio: user.bio || 'Marketplace enthusiast and trusted seller.',
+        date_of_birth: user.date_of_birth || '',
+        website: user.website || '',
+        profile_image: user.profile_image || null
+      });
+      
+      // Load partners when switching to partners tab
+      if (activeTab === 'partners') {
+        loadPartners();
+      }
+    }
+  }, [user, activeTab]);
+
+  // Partners management functions
+  const loadPartners = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setPartnersLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/partners/${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPartners(data);
+      }
+    } catch (error) {
+      console.error('Failed to load partners:', error);
+      showToast('Failed to load partners', 'error');
+    } finally {
+      setPartnersLoading(false);
+    }
+  };
+
+  const searchUsers = async () => {
+    if (!userSearchQuery.trim()) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/users/search?q=${encodeURIComponent(userSearchQuery)}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUserSearchResults(data);
+      }
+    } catch (error) {
+      console.error('Failed to search users:', error);
+      showToast('Failed to search users', 'error');
+    }
+  };
+
+  const addPartner = async (partnerUser) => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/partners`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          partner_id: partnerUser.id
+        })
+      });
+      
+      if (response.ok) {
+        showToast(`${partnerUser.full_name || partnerUser.username} added as partner`, 'success');
+        setUserSearchQuery('');
+        setUserSearchResults([]);
+        await loadPartners();
+      } else {
+        throw new Error('Failed to add partner');
+      }
+    } catch (error) {
+      console.error('Failed to add partner:', error);
+      showToast('Failed to add partner', 'error');
+    }
+  };
+
+  const removePartner = async (partnerId) => {
+    if (!user?.id) return;
+    
+    if (!window.confirm('Are you sure you want to remove this partner?')) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/partners/${partnerId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
+        }
+      });
+      
+      if (response.ok) {
+        showToast('Partner removed successfully', 'success');
+        await loadPartners();
+      } else {
+        throw new Error('Failed to remove partner');
+      }
+    } catch (error) {
+      console.error('Failed to remove partner:', error);
+      showToast('Failed to remove partner', 'error');
+    }
+  };
+
   // Calculate real statistics from marketplace data
   useEffect(() => {
     const calculateStats = () => {
