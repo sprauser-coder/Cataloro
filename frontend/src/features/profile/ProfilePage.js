@@ -327,30 +327,31 @@ function ProfilePage() {
         return;
       }
       
-      console.log('🔍 Debugging allProducts structure:', {
-        sampleProducts: allProducts?.slice(0, 3).map(p => ({
+      console.log('🔍 COMPLETE DIAGNOSTIC - allProducts analysis:', {
+        totalProducts: allProducts?.length,
+        firstProductComplete: allProducts?.[0] ? Object.keys(allProducts[0]) : [],
+        sampleProducts: allProducts?.slice(0, 5).map(p => ({
           id: p.id,
           title: p.title,
           seller_id: p.seller_id,
           seller: p.seller,
           seller_name: p.seller_name,
-          seller_username: p.seller_username,
-          seller_email: p.seller_email,
+          seller_username: p.seller_username || 'N/A',
+          seller_email: p.seller_email || 'N/A',
           inStock: p.inStock,
-          price: p.price,
           seller_id_matches: p.seller_id === user.id,
           seller_matches: p.seller === user.username,
-          seller_name_matches: p.seller_name === user.full_name || p.seller_name === user.username
+          seller_name_matches: p.seller_name === user.full_name
         })),
-        allSellerIds: [...new Set(allProducts?.map(p => p.seller_id))],
-        allSellers: [...new Set(allProducts?.map(p => p.seller))],
-        allSellerNames: [...new Set(allProducts?.map(p => p.seller_name))],
-        ACTUAL_SELLER_IDS: [...new Set(allProducts?.map(p => p.seller_id))].join(', '),
-        ACTUAL_SELLERS: [...new Set(allProducts?.map(p => p.seller))].slice(0, 5).join(', '),
-        ACTUAL_SELLER_NAMES: [...new Set(allProducts?.map(p => p.seller_name))].join(', '),
-        userIdToMatch: user.id,
-        userUsernameToMatch: user.username,
-        userFullNameToMatch: user.full_name
+        UNIQUE_SELLERS: [...new Set(allProducts?.slice(0, 10).map(p => p.seller))],
+        UNIQUE_SELLER_IDS: [...new Set(allProducts?.slice(0, 10).map(p => p.seller_id))],
+        UNIQUE_SELLER_NAMES: [...new Set(allProducts?.slice(0, 10).map(p => p.seller_name))],
+        USER_TO_MATCH: {
+          id: user.id,
+          username: user.username,
+          full_name: user.full_name,
+          email: user.email
+        }
       });
       
       console.log('🔍 Debugging orderHistory structure:', {
