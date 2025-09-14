@@ -147,125 +147,308 @@ class BackendTester:
             )
             return None, None, None
     
-    async def get_test_tender_data(self, token):
-        """Get test tender data for completion workflow testing"""
+    async def test_user_search_api(self, token):
+        """Test GET /api/users/search endpoint"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
             
-            # First try to get demo user's tenders (as buyer)
-            demo_buyer_url = f"{BACKEND_URL}/tenders/buyer/68bfff790e4e46bc28d43631"
-            async with self.session.get(demo_buyer_url, headers=headers) as response:
-                if response.status == 200:
-                    demo_tenders = await response.json()
-                    
-                    # Find an accepted tender that hasn't been completed yet
-                    for tender in demo_tenders:
-                        if tender.get('status') == 'accepted':
-                            listing_id = tender.get('listing', {}).get('id')
-                            buyer_id = '68bfff790e4e46bc28d43631'  # Demo user
-                            seller_id = tender.get('seller', {}).get('id')
-                            
-                            # Check if this transaction is already completed
-                            completed_url = f"{BACKEND_URL}/user/completed-transactions/{buyer_id}"
-                            async with self.session.get(completed_url, headers=headers) as completed_response:
-                                if completed_response.status == 200:
-                                    completed_transactions = await completed_response.json()
-                                    already_completed = any(
-                                        ct.get('listing_id') == listing_id for ct in completed_transactions
-                                    )
-                                    
-                                    if not already_completed:
-                                        self.log_result(
-                                            "Test Data Discovery", 
-                                            True, 
-                                            f"✅ Found fresh accepted tender: listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
-                                            (datetime.now() - start_time).total_seconds() * 1000
-                                        )
-                                        return {
-                                            'success': True,
-                                            'tender': tender,
-                                            'listing_id': listing_id,
-                                            'buyer_id': buyer_id,
-                                            'seller_id': seller_id
-                                        }
+            # Test search with valid query
+            search_query = "demo"
+            url = f"{BACKEND_URL}/users/search?q={search_query}"
             
-            # If no fresh demo user tenders, try admin user tenders
-            admin_buyer_url = f"{BACKEND_URL}/tenders/buyer/admin_user_1"
-            async with self.session.get(admin_buyer_url, headers=headers) as response:
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
                 if response.status == 200:
-                    admin_tenders = await response.json()
+                    data = await response.json()
                     
-                    # Find an accepted tender that hasn't been completed yet
-                    for tender in admin_tenders:
-                        if tender.get('status') == 'accepted':
-                            listing_id = tender.get('listing', {}).get('id')
-                            buyer_id = 'admin_user_1'
-                            seller_id = tender.get('seller', {}).get('id')
-                            
-                            # Check if this transaction is already completed
-                            completed_url = f"{BACKEND_URL}/user/completed-transactions/{buyer_id}"
-                            async with self.session.get(completed_url, headers=headers) as completed_response:
-                                if completed_response.status == 200:
-                                    completed_transactions = await completed_response.json()
-                                    already_completed = any(
-                                        ct.get('listing_id') == listing_id for ct in completed_transactions
-                                    )
-                                    
-                                    if not already_completed:
-                                        self.log_result(
-                                            "Test Data Discovery", 
-                                            True, 
-                                            f"✅ Found fresh accepted tender: listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
-                                            (datetime.now() - start_time).total_seconds() * 1000
-                                        )
-                                        return {
-                                            'success': True,
-                                            'tender': tender,
-                                            'listing_id': listing_id,
-                                            'buyer_id': buyer_id,
-                                            'seller_id': seller_id
-                                        }
-            
-            # If no fresh accepted tenders, use any accepted tender for testing (even if completed)
-            # This will test the update logic
-            if admin_tenders:
-                for tender in admin_tenders:
-                    if tender.get('status') == 'accepted':
-                        listing_id = tender.get('listing', {}).get('id')
-                        buyer_id = 'admin_user_1'
-                        seller_id = tender.get('seller', {}).get('id')
+                    if isinstance(data, list):
+                        # Check if we found users
+                        found_users = len(data)
                         
+                        # Verify response structure
+                        if found_users > 0:
+                            user = data[0]
+                            required_fields = ['id', 'username', 'full_name', 'email']
+                            missing_fields = [field for field in required_fields if field not in user]
+                            
+                            if not missing_fields:
+                                self.log_result(
+                                    "User Search API", 
+                                    True, 
+                                    f"✅ USER SEARCH WORKING: Found {found_users} users, proper response structure",
+                                    response_time
+                                )
+                                return {'success': True, 'found_users': found_users, 'users': data}
+                            else:
+                                self.log_result(
+                                    "User Search API", 
+                                    False, 
+                                    f"❌ RESPONSE STRUCTURE INVALID: Missing fields {missing_fields}",
+                                    response_time
+                                )
+                                return {'success': False, 'error': 'Invalid response structure'}
+                        else:
+                            self.log_result(
+                                "User Search API", 
+                                True, 
+                                f"✅ USER SEARCH WORKING: No users found for query '{search_query}' (expected)",
+                                response_time
+                            )
+                            return {'success': True, 'found_users': 0, 'users': []}
+                    else:
                         self.log_result(
-                            "Test Data Discovery", 
-                            True, 
-                            f"✅ Found accepted tender (may be completed): listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
-                            (datetime.now() - start_time).total_seconds() * 1000
+                            "User Search API", 
+                            False, 
+                            f"❌ WRONG RESPONSE FORMAT: Expected array, got {type(data)}",
+                            response_time
                         )
-                        return {
-                            'success': True,
-                            'tender': tender,
-                            'listing_id': listing_id,
-                            'buyer_id': buyer_id,
-                            'seller_id': seller_id,
-                            'note': 'Using existing tender (may test update logic)'
-                        }
-            
-            self.log_result(
-                "Test Data Discovery", 
-                False, 
-                "❌ No suitable tenders found for testing",
-                (datetime.now() - start_time).total_seconds() * 1000
-            )
-            return {'success': False, 'error': 'No suitable tenders found'}
+                        return {'success': False, 'error': 'Wrong response format'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "User Search API", 
+                        False, 
+                        f"❌ SEARCH FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
                     
         except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Test Data Discovery", 
+                "User Search API", 
                 False, 
-                f"❌ Exception getting test data: {str(e)}",
-                (datetime.now() - start_time).total_seconds() * 1000
+                f"❌ SEARCH EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_partner_management_workflow(self, token, user_id, partner_id):
+        """Test the complete partner management workflow"""
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Step 1: Get initial partners list
+            print("      Step 1: Getting initial partners list...")
+            initial_partners = await self.get_user_partners(user_id, token)
+            
+            # Step 2: Add partner
+            print("      Step 2: Adding partner...")
+            add_result = await self.add_user_partner(partner_id, token)
+            
+            if not add_result.get('success'):
+                return add_result
+            
+            # Step 3: Verify partner was added
+            print("      Step 3: Verifying partner was added...")
+            updated_partners = await self.get_user_partners(user_id, token)
+            
+            if not updated_partners.get('success'):
+                return updated_partners
+            
+            # Check if partner count increased
+            initial_count = len(initial_partners.get('partners', []))
+            updated_count = len(updated_partners.get('partners', []))
+            
+            if updated_count > initial_count:
+                # Step 4: Remove partner
+                print("      Step 4: Removing partner...")
+                remove_result = await self.remove_user_partner(partner_id, token)
+                
+                if remove_result.get('success'):
+                    # Step 5: Verify partner was removed
+                    print("      Step 5: Verifying partner was removed...")
+                    final_partners = await self.get_user_partners(user_id, token)
+                    
+                    if final_partners.get('success'):
+                        final_count = len(final_partners.get('partners', []))
+                        
+                        if final_count == initial_count:
+                            self.log_result(
+                                "Partner Management Workflow", 
+                                True, 
+                                f"✅ PARTNER MANAGEMENT WORKING: Add/remove workflow successful (initial: {initial_count}, added: {updated_count}, final: {final_count})"
+                            )
+                            return {'success': True, 'workflow_verified': True}
+                        else:
+                            self.log_result(
+                                "Partner Management Workflow", 
+                                False, 
+                                f"❌ REMOVE FAILED: Partner count mismatch (initial: {initial_count}, final: {final_count})"
+                            )
+                            return {'success': False, 'error': 'Remove verification failed'}
+                    else:
+                        return final_partners
+                else:
+                    return remove_result
+            else:
+                self.log_result(
+                    "Partner Management Workflow", 
+                    False, 
+                    f"❌ ADD FAILED: Partner count didn't increase (initial: {initial_count}, updated: {updated_count})"
+                )
+                return {'success': False, 'error': 'Add verification failed'}
+            
+        except Exception as e:
+            self.log_result(
+                "Partner Management Workflow", 
+                False, 
+                f"❌ WORKFLOW EXCEPTION: {str(e)}"
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def get_user_partners(self, user_id, token):
+        """Get user's partners list"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/user/partners/{user_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if isinstance(data, list):
+                        self.log_result(
+                            "Get User Partners", 
+                            True, 
+                            f"✅ GET PARTNERS WORKING: Found {len(data)} partners",
+                            response_time
+                        )
+                        return {'success': True, 'partners': data}
+                    else:
+                        self.log_result(
+                            "Get User Partners", 
+                            False, 
+                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Wrong response format'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Get User Partners", 
+                        False, 
+                        f"❌ GET FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Get User Partners", 
+                False, 
+                f"❌ GET EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def add_user_partner(self, partner_id, token):
+        """Add a user as partner"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/user/partners"
+            
+            partner_data = {"partner_id": partner_id}
+            
+            async with self.session.post(url, headers=headers, json=partner_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if data.get("message") and "successfully" in data.get("message", "").lower():
+                        self.log_result(
+                            "Add User Partner", 
+                            True, 
+                            f"✅ ADD PARTNER WORKING: {data.get('message')}",
+                            response_time
+                        )
+                        return {'success': True, 'partnership_id': data.get('partnership_id')}
+                    else:
+                        self.log_result(
+                            "Add User Partner", 
+                            False, 
+                            f"❌ UNEXPECTED RESPONSE: {data}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Unexpected response'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Add User Partner", 
+                        False, 
+                        f"❌ ADD FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Add User Partner", 
+                False, 
+                f"❌ ADD EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def remove_user_partner(self, partner_id, token):
+        """Remove a user from partners"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/user/partners/{partner_id}"
+            
+            async with self.session.delete(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if data.get("message") and "successfully" in data.get("message", "").lower():
+                        self.log_result(
+                            "Remove User Partner", 
+                            True, 
+                            f"✅ REMOVE PARTNER WORKING: {data.get('message')}",
+                            response_time
+                        )
+                        return {'success': True}
+                    else:
+                        self.log_result(
+                            "Remove User Partner", 
+                            False, 
+                            f"❌ UNEXPECTED RESPONSE: {data}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Unexpected response'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Remove User Partner", 
+                        False, 
+                        f"❌ REMOVE FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Remove User Partner", 
+                False, 
+                f"❌ REMOVE EXCEPTION: {str(e)}",
+                response_time
             )
             return {'success': False, 'error': str(e)}
     
