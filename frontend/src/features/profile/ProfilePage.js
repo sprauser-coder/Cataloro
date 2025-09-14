@@ -385,7 +385,7 @@ function ProfilePage() {
             seller: p.seller,
             seller_name: p.seller_name,
             inStock: p.inStock,
-            matchedBy: sellerMatch ? 'seller' : sellerIdMatch ? 'seller_id' : 'seller_name'
+            matchedBy: sellerUsernameMatch ? 'seller.username' : sellerStringMatch ? 'seller' : sellerIdMatch ? 'seller_id' : sellerFullNameMatch ? 'seller.full_name' : 'seller_name'
           });
         }
         return matches;
