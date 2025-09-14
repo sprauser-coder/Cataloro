@@ -724,7 +724,7 @@ function ProductDetailPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600 dark:text-gray-300">Current Highest Bid:</span>
                   <span className="font-bold text-green-600 dark:text-green-400">
-                    €{product.bid_info.highest_bid.toFixed(2)}
+                    {formatEuro(product.bid_info.highest_bid)}
                   </span>
                 </div>
               ) : (
