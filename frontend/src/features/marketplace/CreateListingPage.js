@@ -1003,7 +1003,13 @@ function CreateListingPage() {
                       type="checkbox"
                       checked={useProfileAddress}
                       onChange={(e) => handleUseProfileAddressChange(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 bg-gray-50 border-2 border-gray-400 rounded focus:ring-blue-500 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600"
+                      className="appearance-none w-4 h-4 bg-gray-100 border-2 border-gray-500 rounded checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-blue-600 dark:checked:border-blue-600"
+                      style={{
+                        backgroundImage: useProfileAddress ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e")` : 'none',
+                        backgroundSize: '12px 12px',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center">
                       <User className="w-3 h-3 mr-1" />
