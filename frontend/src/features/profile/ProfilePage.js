@@ -84,7 +84,9 @@ function ProfilePage() {
     is_business: user?.is_business || false,
     company_name: user?.company_name || '',
     business_country: user?.business_country || '',
-    vat_number: user?.vat_number || ''
+    vat_number: user?.vat_number || '',
+    // Timezone preference
+    timezone: user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
   });
 
   // Address suggestions state
