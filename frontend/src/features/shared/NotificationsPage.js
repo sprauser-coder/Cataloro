@@ -37,6 +37,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 function NotificationsPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -45,6 +46,147 @@ function NotificationsPage() {
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Smart notification click handler (same logic as ModernHeader and NotificationsCenterPage)
+  const handleNotificationClick = async (notification) => {
+    try {
+      // Mark notification as read first if not already read
+      if (!notification.is_read) {
+        await handleMarkAsRead(notification.id);
+      }
+      
+      // Navigate based on notification type
+      switch (notification.type) {
+        case 'tender_accepted':
+          // Navigate to Buy > Bought Items tab
+          navigate('/buy?tab=bought-items');
+          break;
+          
+        case 'tender_offer':
+        case 'new_tender_offer':
+          // Navigate to Sell > Sell Tenders tab
+          navigate('/sell?tab=tenders');
+          if (notification.listing_id) {
+            // Add listing parameter if available
+            setTimeout(() => {
+              const urlParams = new URLSearchParams(window.location.search);
+              urlParams.set('listing', notification.listing_id);
+              navigate('/sell?tab=tenders&' + urlParams.toString(), { replace: true });
+            }, 100);
+          }
+          break;
+          
+        case 'tender_rejected':
+          // Navigate to Buy > Items (keeping existing behavior but with new Buy page structure)
+          navigate('/buy?tab=tenders');
+          break;
+          
+        case 'order_completed':
+        case 'transaction_completed':
+        case 'transaction_marked_completed':
+          // Navigate to Buy > Bought Items
+          navigate('/buy?tab=bought-items');
+          break;
+          
+        case 'transaction_fully_completed':
+        case 'order_fully_completed':
+          // Navigate to Buy > Completed
+          navigate('/buy?tab=completed');
+          break;
+          
+        case 'order_shipped':
+        case 'listing_sold':
+          // Navigate to My Listings page with Closed filter (keep existing for seller notifications)
+          navigate('/my-listings');
+          setTimeout(() => {
+            const urlParams = new URLSearchParams();
+            urlParams.set('filter', 'closed');
+            navigate('/my-listings?' + urlParams.toString(), { replace: true });
+          }, 100);
+          break;
+          
+        case 'message':
+        case 'new_message':
+          // Navigate to Messages page (keep existing)
+          if (notification.message_id) {
+            navigate(`/messages?id=${notification.message_id}`);
+          } else {
+            navigate('/messages');
+          }
+          break;
+          
+        case 'buy_request':
+        case 'purchase_request':
+          // Navigate to My Listings page with Active filter (keep existing)
+          navigate('/my-listings');
+          setTimeout(() => {
+            const urlParams = new URLSearchParams();
+            urlParams.set('filter', 'active');
+            navigate('/my-listings?' + urlParams.toString(), { replace: true });
+          }, 100);
+          break;
+          
+        case 'buy_approved':
+        case 'purchase_approved':
+          // Navigate to deals page instead of cart (keep existing)
+          navigate('/deals');
+          break;
+          
+        case 'buy_rejected':
+        case 'purchase_rejected':
+          // Navigate to browse page to find alternatives (keep existing)
+          navigate('/browse');
+          break;
+          
+        case 'favorite':
+        case 'wishlist_update':
+          // Navigate to favorites page (keep existing)
+          navigate('/favorites');
+          break;
+          
+        case 'listing_approved':
+        case 'listing_updated':
+          // Navigate to My Listings (keep existing)
+          navigate('/my-listings');
+          break;
+          
+        case 'profile_update':
+        case 'account_update':
+          // Navigate to profile settings (keep existing)
+          navigate('/profile');
+          break;
+          
+        case 'new_user_registration':
+        case 'user_registration':
+          // For ADMIN users: Navigate to Admin Panel > Users tab
+          if (user?.role === 'admin' || user?.is_admin) {
+            navigate('/admin?tab=users');
+          } else {
+            // For non-admin users, stay on notifications page
+            console.log('User registration notification is for admin users only');
+          }
+          break;
+          
+        case 'system':
+        case 'announcement':
+          // Stay on notifications page for full details (keep existing)
+          console.log('System notification details available here');
+          break;
+          
+        default:
+          // For unknown notification types, check if action_url exists (fallback to old behavior)
+          if (notification.action_url) {
+            window.location.href = notification.action_url;
+          } else {
+            console.log(`Unknown notification type: ${notification.type}`);
+          }
+          break;
+      }
+      
+    } catch (error) {
+      console.error('Error handling notification click:', error);
+    }
+  };
 
   // Fetch real notifications from backend
   const fetchNotifications = async () => {
