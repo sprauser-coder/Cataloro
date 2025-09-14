@@ -1478,7 +1478,7 @@ async def suspend_user(user_id: str):
 
 @app.put("/api/admin/users/{user_id}/verify")
 async def toggle_user_verification(user_id: str, verification_data: dict):
-    """Toggle user verification status"""
+    """Toggle user verification status and update all user's listings"""
     try:
         verified = verification_data.get("verified", False)
         
@@ -1509,8 +1509,24 @@ async def toggle_user_verification(user_id: str, verification_data: dict):
                 pass
         
         if result.matched_count > 0:
+            # Also update all listings by this user to reflect the new verification status
+            listings_result = await db.listings.update_many(
+                {"seller_id": user_id},
+                {
+                    "$set": {
+                        "seller.verified": verified,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+            
             logger.info(f"User {user_id} verification status updated to: {verified}")
-            return {"message": f"User {'verified' if verified else 'verification removed'} successfully"}
+            logger.info(f"Updated {listings_result.modified_count} listings with new verification status")
+            
+            return {
+                "message": f"User {'verified' if verified else 'verification removed'} successfully",
+                "listings_updated": listings_result.modified_count
+            }
         else:
             raise HTTPException(status_code=404, detail="User not found")
             
