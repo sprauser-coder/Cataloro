@@ -5927,6 +5927,31 @@ async def mark_notification_read(user_id: str, notification_id: str):
         logger.error(f"Error marking notification as read: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
 
+@app.post("/api/admin/migrate-notification-fields")
+async def migrate_notification_fields():
+    """Migrate existing notifications from 'read' to 'is_read' field"""
+    try:
+        # Update all existing notifications to use is_read instead of read
+        result = await db.user_notifications.update_many(
+            {"read": {"$exists": True}},
+            [
+                {
+                    "$set": {
+                        "is_read": "$read"
+                    }
+                },
+                {
+                    "$unset": ["read"]
+                }
+            ]
+        )
+        
+        logger.info(f"🔄 Migrated {result.modified_count} notifications to use is_read field")
+        return {"message": f"Migrated {result.modified_count} notifications to use is_read field"}
+    except Exception as e:
+        logger.error(f"Error migrating notification fields: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to migrate notification fields: {str(e)}")
+
 @app.put("/api/user/{user_id}/notifications/{notification_id}")
 async def update_notification(user_id: str, notification_id: str, update_data: dict):
     """Update notification properties (read, archived, etc.)"""
