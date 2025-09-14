@@ -426,7 +426,11 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
-                    <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                    <h3 className={`truncate text-gray-900 dark:text-white ${
+                      (conversation.unreadCount > 0 || conversation.unread_count > 0) 
+                        ? 'font-bold' 
+                        : 'font-medium'
+                    }`}>
                       {conversation.name}
                     </h3>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
