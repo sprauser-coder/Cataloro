@@ -185,30 +185,31 @@ function SellPage() {
 
           {/* Tab Content */}
           <div className="p-4 sm:p-6">
-          <div style={{ display: activeTab === 'tenders' ? 'block' : 'none' }}>
-            <TenderManagementPage showSellTabOnly={true} />
+            <div style={{ display: activeTab === 'tenders' ? 'block' : 'none' }}>
+              <TenderManagementPage showSellTabOnly={true} />
+            </div>
+            
+            {activeTab === 'accepted' && (
+              <AcceptedTendersTab 
+                user={user}
+                onRefresh={loadCompletedTransactions}
+                onCompleteOrder={loadCompletedTransactions}
+                onSwitchToCompleted={() => handleTabChange('completed')}
+              />
+            )}
+            
+            <div style={{ display: activeTab === 'listings' ? 'block' : 'none' }}>
+              <MyListingsPage />
+            </div>
+            
+            {activeTab === 'completed' && (
+              <CompletedSalesTab 
+                transactions={completedTransactions}
+                loading={loading}
+                onRefresh={loadCompletedTransactions}
+              />
+            )}
           </div>
-          
-          {activeTab === 'accepted' && (
-            <AcceptedTendersTab 
-              user={user}
-              onRefresh={loadCompletedTransactions}
-              onCompleteOrder={loadCompletedTransactions}
-              onSwitchToCompleted={() => handleTabChange('completed')}
-            />
-          )}
-          
-          <div style={{ display: activeTab === 'listings' ? 'block' : 'none' }}>
-            <MyListingsPage />
-          </div>
-          
-          {activeTab === 'completed' && (
-            <CompletedSalesTab 
-              transactions={completedTransactions}
-              loading={loading}
-              onRefresh={loadCompletedTransactions}
-            />
-          )}
         </div>
       </div>
     </div>
