@@ -42,17 +42,19 @@ function MobileBottomNav() {
             const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
             const unreadCount = messages.filter(msg => {
               const messageDate = new Date(msg.created_at);
-              return !msg.is_read && msg.recipient_id === user.id && messageDate >= sevenDaysAgo;
+              const isUnread = !msg.is_read && msg.recipient_id === user.id && messageDate >= sevenDaysAgo;
+              if (isUnread) {
+                console.log(`🔍 BottomNav found unread message: from ${msg.sender_id} to ${msg.recipient_id}, is_read=${msg.is_read}, date=${messageDate.toISOString()}`);
+              }
+              return isUnread;
             }).length;
+            console.log(`🔍 BottomNav calculated unread count: ${unreadCount} from ${messages.length} total messages`);
             setUnreadMessages(unreadCount);
             localStorage.setItem('cataloro_unread_messages', unreadCount.toString());
           } catch (error) {
             console.error('Error loading messages:', error);
-            // Fallback to localStorage
-            const savedMessages = localStorage.getItem('cataloro_unread_messages');
-            if (savedMessages) {
-              setUnreadMessages(parseInt(savedMessages, 10) || 0);
-            }
+            // Don't use fallback localStorage to avoid stale data
+            setUnreadMessages(0);
           }
         } catch (error) {
           console.error('Error parsing user data:', error);
