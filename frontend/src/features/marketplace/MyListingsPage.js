@@ -159,17 +159,17 @@ function MyListingsPage() {
         </div>
       </div>
 
-      {/* Stats Cards - CLICKABLE & REDUCED MARGIN */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+      {/* Stats Cards - Mobile Optimized */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <button
           onClick={() => handleTileClick('all')}
           className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
             activeFilter === 'all' ? 'ring-2 ring-blue-500 bg-blue-50/20 dark:bg-blue-900/20' : ''
           }`}
         >
-          <div className="p-6 text-center">
-            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{listings.length}</div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Listings</div>
+          <div className="p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold mb-1 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{listings.length}</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total</div>
           </div>
         </button>
         <button
@@ -178,9 +178,9 @@ function MyListingsPage() {
             activeFilter === 'active' ? 'ring-2 ring-green-500 bg-green-50/20 dark:bg-green-900/20' : ''
           }`}
         >
-          <div className="p-6 text-center">
-            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'active').length}</div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active</div>
+          <div className="p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold mb-1 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'active').length}</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active</div>
           </div>
         </button>
         <button
@@ -189,10 +189,10 @@ function MyListingsPage() {
             activeFilter === 'closed' ? 'ring-2 ring-red-500 bg-red-50/20 dark:bg-red-900/20' : ''
           }`}
         >
-          <div className="p-6 text-center">
-            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'sold' || l.status === 'closed').length}</div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Closed</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sold & completed</div>
+          <div className="p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold mb-1 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'sold' || l.status === 'closed').length}</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Closed</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">Sold & completed</div>
           </div>
         </button>
         <button
@@ -201,10 +201,10 @@ function MyListingsPage() {
             activeFilter === 'drafts' ? 'ring-2 ring-orange-500 bg-orange-50/20 dark:bg-orange-900/20' : ''
           }`}
         >
-          <div className="p-6 text-center">
-            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'draft' || l.is_draft).length}</div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Drafts</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Finish & publish later</div>
+          <div className="p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold mb-1 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'draft' || l.is_draft).length}</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Drafts</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">Finish & publish later</div>
           </div>
         </button>
         <button
@@ -213,10 +213,10 @@ function MyListingsPage() {
             activeFilter === 'expired' ? 'ring-2 ring-yellow-500 bg-yellow-50/20 dark:bg-yellow-900/20' : ''
           }`}
         >
-          <div className="p-6 text-center">
-            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'expired').length}</div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Expired</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Can be reactivated</div>
+          <div className="p-3 sm:p-4 text-center">
+            <div className="text-xl sm:text-2xl font-bold mb-1 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'expired').length}</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Expired</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">Can be reactivated</div>
           </div>
         </button>
       </div>
