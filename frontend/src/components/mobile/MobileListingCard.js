@@ -158,7 +158,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
     const minimumBid = getMinimumBid();
 
     if (!bidValue || bidValue < minimumBid) {
-      setBidError(`Minimum bid: ${formatPrice(minimumBid)}`);
+      setBidError(`Minimum bid: ${formatEuro(minimumBid)}`);
       return;
     }
 
