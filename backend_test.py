@@ -335,64 +335,7 @@ class BackendTester:
 
 
 
-    async def create_test_notification(self, token, user_id, notification_type="tender_accepted"):
-        """Create a test notification for testing purposes"""
-        start_time = datetime.now()
-        
-        try:
-            headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/user/{user_id}/notifications"
-            
-            notification_data = {
-                "user_id": user_id,
-                "title": f"Test {notification_type.replace('_', ' ').title()}",
-                "message": f"This is a test notification of type {notification_type} for routing verification",
-                "type": notification_type,
-                "read": False
-            }
-            
-            async with self.session.post(url, headers=headers, json=notification_data) as response:
-                response_time = (datetime.now() - start_time).total_seconds() * 1000
-                
-                if response.status in [200, 201]:
-                    data = await response.json()
-                    notification_id = data.get('notification', {}).get('id') or data.get('id')
-                    
-                    if notification_id:
-                        self.log_result(
-                            "Create Test Notification", 
-                            True, 
-                            f"✅ TEST NOTIFICATION CREATED: Created {notification_type} notification with ID {notification_id}",
-                            response_time
-                        )
-                        return {'success': True, 'notification_id': notification_id, 'type': notification_type}
-                    else:
-                        self.log_result(
-                            "Create Test Notification", 
-                            False, 
-                            f"❌ NO NOTIFICATION ID: Response missing notification ID: {data}",
-                            response_time
-                        )
-                        return {'success': False, 'error': 'No notification ID in response'}
-                else:
-                    error_text = await response.text()
-                    self.log_result(
-                        "Create Test Notification", 
-                        False, 
-                        f"❌ CREATION FAILED: Status {response.status}: {error_text}",
-                        response_time
-                    )
-                    return {'success': False, 'error': error_text}
-                    
-        except Exception as e:
-            response_time = (datetime.now() - start_time).total_seconds() * 1000
-            self.log_result(
-                "Create Test Notification", 
-                False, 
-                f"❌ CREATION EXCEPTION: {str(e)}",
-                response_time
-            )
-            return {'success': False, 'error': str(e)}
+
 
     async def run_admin_panel_completed_transactions_tests(self):
         """Run comprehensive admin panel completed transactions tab tests"""
