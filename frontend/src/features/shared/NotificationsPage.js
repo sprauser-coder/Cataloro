@@ -504,14 +504,7 @@ function NotificationsPage() {
                   className={`cataloro-card-glass p-6 transition-all duration-300 hover:scale-[1.02] cursor-pointer ${
                     !notification.is_read ? 'ring-2 ring-blue-500/30 bg-blue-50/30 dark:bg-blue-900/20' : ''
                   } ${isSelected ? 'ring-2 ring-purple-500/50' : ''}`}
-                  onClick={() => {
-                    if (!notification.is_read) {
-                      handleMarkAsRead(notification.id);
-                    }
-                    if (notification.action_url) {
-                      window.location.href = notification.action_url;
-                    }
-                  }}
+                  onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start space-x-4">
                     
