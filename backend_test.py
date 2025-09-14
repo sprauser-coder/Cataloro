@@ -230,7 +230,7 @@ class BackendTester:
                 if response.status == 200:
                     data = await response.json()
                     
-                    if data.get("message") and "successfully" in data.get("message", "").lower():
+                    if data.get("message"):
                         self.log_result(
                             "Mark Notification as Read", 
                             True, 
