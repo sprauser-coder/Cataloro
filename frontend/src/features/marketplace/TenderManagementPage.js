@@ -752,7 +752,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
             </div>
             <div className="ml-3 sm:ml-4 min-w-0 flex-1">
               <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Total Value</h3>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">€{totalTenderValue.toFixed(2)}</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{formatEuro(totalTenderValue)}</p>
             </div>
           </div>
         </div>
