@@ -224,13 +224,13 @@ function MyListingsPage() {
 
       {/* Filter Indicator */}
       {activeFilter !== 'all' && (
-        <div className="mb-4 flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-          <span className="text-blue-800 dark:text-blue-300 font-medium">
+        <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between bg-blue-50 dark:bg-blue-900/20 p-3 sm:p-4 rounded-lg gap-2 sm:gap-0">
+          <span className="text-blue-800 dark:text-blue-300 font-medium text-sm sm:text-base">
             Showing {activeFilter} listings ({filteredListings.length} items)
           </span>
           <button 
             onClick={() => setActiveFilter('all')}
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium self-start sm:self-auto"
           >
             Show All
           </button>
