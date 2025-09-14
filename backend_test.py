@@ -207,8 +207,8 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_public_profile_endpoint(self, token, user_id, user_email):
-        """Test GET /api/user/{user_id}/public-profile endpoint for date parsing fix"""
+    async def test_public_profile_verification_status(self, token, user_id, username, user_email):
+        """Test GET /api/user/{user_id}/public-profile endpoint for is_verified field"""
         start_time = datetime.now()
         
         try:
@@ -222,72 +222,254 @@ class BackendTester:
                     data = await response.json()
                     
                     # Check if response has the expected structure
-                    stats = data.get('stats', {})
-                    member_since = stats.get('member_since')
                     profile_data = data.get('profile', {})
+                    stats = data.get('stats', {})
+                    is_verified = data.get('is_verified')
+                    verified = data.get('verified')
                     
-                    # Check if date parsing is working correctly in member_since
-                    if member_since and member_since != "Unknown":
-                        # Check if it's in the expected format (e.g., "Sep 2025")
-                        if len(member_since.split()) == 2:  # Month Year format
-                            self.log_result(
-                                "Public Profile Endpoint", 
-                                True, 
-                                f"✅ PUBLIC PROFILE DATE WORKING: Member since formatted correctly as '{member_since}' (profile: {profile_data.get('full_name', 'Unknown')})",
-                                response_time
-                            )
-                            return {
-                                'success': True, 
-                                'member_since': member_since,
-                                'stats': stats,
-                                'profile': profile_data,
-                                'user_email': user_email,
-                                'formatted_correctly': True
-                            }
-                        else:
-                            self.log_result(
-                                "Public Profile Endpoint", 
-                                False, 
-                                f"❌ PUBLIC PROFILE DATE FORMAT INCORRECT: Member since '{member_since}' not in expected 'Month Year' format",
-                                response_time
-                            )
-                            return {
-                                'success': False, 
-                                'member_since': member_since,
-                                'stats': stats,
-                                'error': 'Date format incorrect',
-                                'formatted_correctly': False
-                            }
+                    # Check for verification status in different possible locations
+                    verification_found = False
+                    verification_status = None
+                    verification_location = None
+                    
+                    if is_verified is not None:
+                        verification_found = True
+                        verification_status = is_verified
+                        verification_location = "root.is_verified"
+                    elif verified is not None:
+                        verification_found = True
+                        verification_status = verified
+                        verification_location = "root.verified"
+                    elif profile_data.get('is_verified') is not None:
+                        verification_found = True
+                        verification_status = profile_data.get('is_verified')
+                        verification_location = "profile.is_verified"
+                    elif profile_data.get('verified') is not None:
+                        verification_found = True
+                        verification_status = profile_data.get('verified')
+                        verification_location = "profile.verified"
+                    
+                    if verification_found:
+                        self.log_result(
+                            f"Public Profile Verification - {username}", 
+                            True, 
+                            f"✅ VERIFICATION STATUS FOUND: {verification_location} = {verification_status} for user {username} ({user_email})",
+                            response_time
+                        )
+                        return {
+                            'success': True, 
+                            'is_verified': verification_status,
+                            'verification_location': verification_location,
+                            'profile': profile_data,
+                            'stats': stats,
+                            'user_email': user_email,
+                            'username': username,
+                            'full_response': data
+                        }
                     else:
                         self.log_result(
-                            "Public Profile Endpoint", 
+                            f"Public Profile Verification - {username}", 
                             False, 
-                            f"❌ PUBLIC PROFILE DATE PARSING FAILED: Member since is 'Unknown' or missing (stats: {stats})",
+                            f"❌ VERIFICATION STATUS MISSING: No is_verified or verified field found in response for user {username} ({user_email}). Response keys: {list(data.keys())}",
                             response_time
                         )
                         return {
                             'success': False, 
-                            'member_since': member_since,
+                            'is_verified': None,
+                            'verification_location': None,
+                            'profile': profile_data,
                             'stats': stats,
-                            'error': 'Date parsing failed - returned Unknown',
-                            'formatted_correctly': False
+                            'error': 'Verification status field not found',
+                            'response_keys': list(data.keys()),
+                            'full_response': data
                         }
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Public Profile Endpoint", 
+                        f"Public Profile Verification - {username}", 
                         False, 
                         f"❌ PUBLIC PROFILE ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
-                    return {'success': False, 'error': error_text}
+                    return {'success': False, 'error': error_text, 'status_code': response.status}
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Public Profile Endpoint", 
+                f"Public Profile Verification - {username}", 
                 False, 
                 f"❌ PUBLIC PROFILE EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_user_profile_verification_status(self, token, user_id, username, user_email):
+        """Test GET /api/auth/profile/{user_id} endpoint for verification status in user profile"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/auth/profile/{user_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check for verification status in user profile
+                    is_verified = data.get('is_verified')
+                    verified = data.get('verified')
+                    
+                    verification_found = False
+                    verification_status = None
+                    verification_location = None
+                    
+                    if is_verified is not None:
+                        verification_found = True
+                        verification_status = is_verified
+                        verification_location = "is_verified"
+                    elif verified is not None:
+                        verification_found = True
+                        verification_status = verified
+                        verification_location = "verified"
+                    
+                    if verification_found:
+                        self.log_result(
+                            f"User Profile Verification - {username}", 
+                            True, 
+                            f"✅ USER PROFILE VERIFICATION FOUND: {verification_location} = {verification_status} for user {username} ({user_email})",
+                            response_time
+                        )
+                        return {
+                            'success': True, 
+                            'is_verified': verification_status,
+                            'verification_location': verification_location,
+                            'user_data': data,
+                            'user_email': user_email,
+                            'username': username
+                        }
+                    else:
+                        self.log_result(
+                            f"User Profile Verification - {username}", 
+                            False, 
+                            f"❌ USER PROFILE VERIFICATION MISSING: No verification field found for user {username} ({user_email}). Available fields: {list(data.keys())}",
+                            response_time
+                        )
+                        return {
+                            'success': False, 
+                            'is_verified': None,
+                            'verification_location': None,
+                            'error': 'Verification status field not found in user profile',
+                            'available_fields': list(data.keys()),
+                            'user_data': data
+                        }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"User Profile Verification - {username}", 
+                        False, 
+                        f"❌ USER PROFILE ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text, 'status_code': response.status}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"User Profile Verification - {username}", 
+                False, 
+                f"❌ USER PROFILE EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_specific_user_verification(self, username_or_id):
+        """Test verification status for a specific user by username or ID"""
+        start_time = datetime.now()
+        
+        try:
+            # Try to get public profile without authentication first
+            url = f"{BACKEND_URL}/user/{username_or_id}/public-profile"
+            
+            async with self.session.get(url) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check for verification status
+                    is_verified = data.get('is_verified')
+                    verified = data.get('verified')
+                    profile_data = data.get('profile', {})
+                    
+                    verification_found = False
+                    verification_status = None
+                    verification_location = None
+                    
+                    if is_verified is not None:
+                        verification_found = True
+                        verification_status = is_verified
+                        verification_location = "root.is_verified"
+                    elif verified is not None:
+                        verification_found = True
+                        verification_status = verified
+                        verification_location = "root.verified"
+                    elif profile_data.get('is_verified') is not None:
+                        verification_found = True
+                        verification_status = profile_data.get('is_verified')
+                        verification_location = "profile.is_verified"
+                    elif profile_data.get('verified') is not None:
+                        verification_found = True
+                        verification_status = profile_data.get('verified')
+                        verification_location = "profile.verified"
+                    
+                    if verification_found:
+                        self.log_result(
+                            f"Specific User Verification - {username_or_id}", 
+                            True, 
+                            f"✅ VERIFICATION STATUS FOUND: {verification_location} = {verification_status} for user {username_or_id}",
+                            response_time
+                        )
+                        return {
+                            'success': True, 
+                            'is_verified': verification_status,
+                            'verification_location': verification_location,
+                            'profile': profile_data,
+                            'username_or_id': username_or_id,
+                            'full_response': data
+                        }
+                    else:
+                        self.log_result(
+                            f"Specific User Verification - {username_or_id}", 
+                            False, 
+                            f"❌ VERIFICATION STATUS MISSING: No verification field found for user {username_or_id}. Response keys: {list(data.keys())}",
+                            response_time
+                        )
+                        return {
+                            'success': False, 
+                            'is_verified': None,
+                            'verification_location': None,
+                            'error': 'Verification status field not found',
+                            'response_keys': list(data.keys()),
+                            'full_response': data
+                        }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Specific User Verification - {username_or_id}", 
+                        False, 
+                        f"❌ PUBLIC PROFILE FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text, 'status_code': response.status}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Specific User Verification - {username_or_id}", 
+                False, 
+                f"❌ SPECIFIC USER EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
