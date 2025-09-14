@@ -1611,6 +1611,18 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
               {item.seller?.is_business ? 'Business' : 'Private'}
             </span>
           </div>
+          
+          {/* Partner Access Badge */}
+          {item.show_partner_badge && item.visibility_reason === 'partner_access' && (
+            <div>
+              <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg animate-pulse">
+                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+                Partner Only
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Enhanced Favorite Button - Only Favorite, No Share */}
