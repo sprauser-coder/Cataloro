@@ -22,6 +22,7 @@ import {
   Globe,
   Settings
 } from 'lucide-react';
+import { formatEuro } from '../../utils/currency';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import usePermissions from '../../hooks/usePermissions';
