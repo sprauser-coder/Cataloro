@@ -77,6 +77,33 @@ function MyListingsPage() {
     }
   };
 
+  const handleReactivateListing = async (listingId) => {
+    if (!window.confirm('Are you sure you want to set this listing back online? This will make it available for new offers.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${listingId}/reactivate`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
+        }
+      });
+
+      if (response.ok) {
+        // Refresh listings to show updated status
+        await fetchMyListings();
+        showToast('Listing reactivated successfully', 'success');
+      } else {
+        throw new Error('Failed to reactivate listing');
+      }
+    } catch (error) {
+      showToast('Failed to reactivate listing', 'error');
+      console.error('Failed to reactivate listing:', error);
+    }
+  };
+
   // Handle tile clicks for filtering
   const handleTileClick = (filter) => {
     setActiveFilter(filter);
