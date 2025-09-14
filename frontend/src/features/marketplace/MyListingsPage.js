@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Edit, Trash2, Eye, MoreHorizontal } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, MoreHorizontal, RefreshCw } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useAuth } from '../../context/AuthContext';
