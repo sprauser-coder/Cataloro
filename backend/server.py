@@ -9608,6 +9608,86 @@ async def search_users(q: str, current_user: dict = Depends(get_current_user)):
         logger.error(f"Error searching users: {e}")
         return []
 
+@app.get("/api/debug/partner-visibility-test")
+async def debug_partner_visibility(current_user: dict = Depends(get_current_user)):
+    """Debug endpoint to test partner visibility logic"""
+    try:
+        current_time = datetime.utcnow()
+        current_user_id = current_user.get("id")
+        
+        # Get all partnerships involving current user
+        partnerships_as_partner = await db.user_partners.find({
+            "partner_id": current_user_id,
+            "status": "active"
+        }).to_list(length=None)
+        
+        partnerships_as_seller = await db.user_partners.find({
+            "user_id": current_user_id,
+            "status": "active"
+        }).to_list(length=None)
+        
+        # Get all partner-only listings
+        partner_only_listings = await db.listings.find({
+            "is_partners_only": True
+        }).to_list(length=None)
+        
+        # Apply visibility logic
+        visible_listings = []
+        hidden_listings = []
+        
+        partner_of_users = [p.get("user_id") for p in partnerships_as_partner]
+        
+        for listing in partner_only_listings:
+            listing_seller = listing.get("seller_id")
+            public_at_str = listing.get("public_at")
+            
+            try:
+                public_at = datetime.fromisoformat(public_at_str) if public_at_str else current_time
+                is_public_now = public_at <= current_time
+                is_partner_of_seller = listing_seller in partner_of_users
+                
+                if is_public_now or is_partner_of_seller:
+                    visible_listings.append({
+                        "id": listing.get("id")[:8],
+                        "title": listing.get("title"),
+                        "seller": listing_seller,
+                        "public_at": public_at_str,
+                        "is_public_now": is_public_now,
+                        "is_partner_of_seller": is_partner_of_seller,
+                        "reason": "expired" if is_public_now else "partner_access"
+                    })
+                else:
+                    hidden_listings.append({
+                        "id": listing.get("id")[:8],
+                        "title": listing.get("title"),
+                        "seller": listing_seller,
+                        "public_at": public_at_str,
+                        "is_public_now": is_public_now,
+                        "is_partner_of_seller": is_partner_of_seller
+                    })
+            except Exception as e:
+                logger.error(f"Error processing listing {listing.get('id')}: {e}")
+        
+        return {
+            "current_user": {
+                "id": current_user_id,
+                "username": current_user.get("username")
+            },
+            "current_time": current_time.isoformat(),
+            "partnerships": {
+                "as_partner_of": [{"seller": p.get("user_id"), "added_at": p.get("created_at")} for p in partnerships_as_partner],
+                "has_partners": [{"partner": p.get("partner_id"), "added_at": p.get("created_at")} for p in partnerships_as_seller]
+            },
+            "partner_only_listings": {
+                "visible": visible_listings,
+                "hidden": hidden_listings
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Debug endpoint error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
