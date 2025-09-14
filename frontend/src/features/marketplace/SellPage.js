@@ -38,7 +38,7 @@ function SellPage() {
   // Set active tab from URL parameters
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab && ['tenders', 'listings', 'completed'].includes(tab)) {
+    if (tab && ['listings', 'tenders', 'accepted', 'completed'].includes(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
