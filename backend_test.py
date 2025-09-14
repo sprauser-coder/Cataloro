@@ -1980,7 +1980,7 @@ class BackendTester:
     def print_summary(self):
         """Print test summary"""
         print("\n" + "="*80)
-        print("🎯 PARTNER MANAGEMENT & VISIBILITY TESTING SUMMARY")
+        print("🎯 PARTNER BADGE FUNCTIONALITY TESTING SUMMARY")
         print("="*80)
         
         passed = sum(1 for result in self.test_results if result["success"])
@@ -2001,17 +2001,22 @@ class BackendTester:
 
 async def main():
     """Main test execution"""
-    print("🚀 Starting Partner Management & Visibility Testing...")
+    print("🚀 Starting Partner Badge Functionality Testing...")
     print(f"🌐 Backend URL: {BACKEND_URL}")
     print("="*80)
     
     async with BackendTester() as tester:
         try:
-            # Run partner management tests
-            await tester.test_partner_management_apis()
+            # Run partner badge tests
+            success = await tester.run_all_tests()
             
             # Print summary
             tester.print_summary()
+            
+            if success:
+                print("🎉 All Partner Badge tests passed!")
+            else:
+                print("⚠️ Some Partner Badge tests failed - check details above")
             
         except Exception as e:
             print(f"❌ Test execution failed: {e}")
