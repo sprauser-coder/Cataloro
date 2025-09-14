@@ -1933,6 +1933,9 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           </div>
         </div>
 
+        {/* Partner-Only Countdown Timer */}
+        <PartnerCountdownTimer item={item} />
+
         {/* 7. Input Field */}
         <div className="mb-3">
           {/* User is Highest Bidder Indicator */}
