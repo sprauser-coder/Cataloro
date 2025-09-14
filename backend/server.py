@@ -4819,8 +4819,9 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
             # Calculate when listing becomes public
             public_at = datetime.utcnow() + timedelta(hours=partners_visibility_hours)
             listing_data["public_at"] = public_at.isoformat()
-            listing_data["partners_visibility_hours"] = partners_visibility_hours
+            listing_data["partners_visibility_hours"] = int(partners_visibility_hours)  # Ensure integer
             listing_data["is_partners_only"] = True
+            listing_data["show_partners_first"] = True  # Explicitly set to True
             
             logger.info(f"🔍 PARTNER DEBUG: Created partner-only listing")
             logger.info(f"🔍 PARTNER DEBUG: Title: {listing_data.get('title', 'Unknown')}")
