@@ -319,8 +319,7 @@ function MobileProductDetailPage() {
 
             {/* Partner Offer Badge */}
             {product.is_partners_only && product.public_at && (() => {
-              // Import timezone utility functions
-              const { formatPartnerTimeRemaining } = require('../../utils/timezone');
+              // Use imported timezone utility functions
               const timeText = formatPartnerTimeRemaining(product.public_at);
               
               // Only show if time remaining is positive
