@@ -879,101 +879,56 @@ class BackendTester:
         
         return len(failing_features) == 0
 
-    async def test_independent_completion_workflow(self):
-        """Test the independent completion workflow functionality"""
-        print("\n🔄 INDEPENDENT COMPLETION WORKFLOW TESTING:")
-        print("   Testing fixed completion workflow to ensure buyer and seller completions work independently")
-        print("   Testing separate completion logic, filtering, workflow independence, and transaction states")
+    async def test_partner_management_apis(self):
+        """Test the partner management APIs functionality"""
+        print("\n🤝 PARTNER MANAGEMENT APIS TESTING:")
+        print("   Testing new partner management APIs and partner visibility functionality")
+        print("   Testing partner relationships, visibility controls, and image optimization fixes")
         
         results = {}
         
-        # Step 1: Setup - Login as admin user (seller) and demo user (buyer)
+        # Step 1: Setup - Login as admin user and demo user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Completion Workflow Setup", False, "Failed to login as admin (seller)")
+            self.log_result("Partner Management Setup", False, "Failed to login as admin")
             return False
         
         demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
         if not demo_token:
-            self.log_result("Completion Workflow Setup", False, "Failed to login as demo user (buyer)")
+            self.log_result("Partner Management Setup", False, "Failed to login as demo user")
             return False
         
-        print(f"   Testing with admin (seller) ID: {admin_user_id}")
-        print(f"   Testing with demo (buyer) ID: {demo_user_id}")
+        print(f"   Testing with admin ID: {admin_user_id}")
+        print(f"   Testing with demo ID: {demo_user_id}")
         
-        # Step 2: Test Authentication Requirements
-        print("\n   🔐 Test Authentication Requirements:")
-        auth_result = await self.test_authentication_requirements()
-        results['authentication'] = auth_result
+        # Step 2: Test User Search API
+        print("\n   🔍 Test User Search API:")
+        search_result = await self.test_user_search_api(admin_token)
+        results['user_search'] = search_result
         
-        # Step 3: Get Test Data
-        print("\n   📋 Get Test Tender Data:")
-        test_data = await self.get_test_tender_data(admin_token)
-        results['test_data'] = test_data
+        # Step 3: Test Partner Management APIs
+        print("\n   🤝 Test Partner Management APIs:")
+        partner_mgmt_result = await self.test_partner_management_workflow(admin_token, admin_user_id, demo_user_id)
+        results['partner_management'] = partner_mgmt_result
         
-        if not test_data.get('success'):
-            self.log_result("Completion Workflow Testing", False, "Cannot proceed without test data")
-            return False
+        # Step 4: Test Partner Visibility in Listings
+        print("\n   👁️ Test Partner Visibility in Listings:")
+        visibility_result = await self.test_partner_visibility_functionality(admin_token, demo_token, admin_user_id, demo_user_id)
+        results['partner_visibility'] = visibility_result
         
-        # Determine which user tokens to use based on the test data
-        buyer_id = test_data.get('buyer_id')
-        seller_id = test_data.get('seller_id')
+        # Step 5: Test Image Optimization Fixes
+        print("\n   🖼️ Test Image Optimization Fixes:")
+        image_opt_result = await self.test_image_optimization_fixes(admin_token, admin_user_id)
+        results['image_optimization'] = image_opt_result
         
-        # Get appropriate tokens
-        if buyer_id == 'admin_user_1':
-            buyer_token = admin_token
-        else:
-            buyer_token = demo_token
-            
-        if seller_id == 'admin_user_1':
-            seller_token = admin_token
-        else:
-            seller_token = demo_token
+        # Step 6: Test Listing Reactivation
+        print("\n   🔄 Test Listing Reactivation:")
+        reactivation_result = await self.test_listing_reactivation(admin_token, admin_user_id)
+        results['listing_reactivation'] = reactivation_result
         
-        print(f"   Using buyer_id: {buyer_id}, seller_id: {seller_id}")
-        
-        # Step 4: Test Existing Completion State
-        print("\n   🔍 Test Existing Completion State:")
-        existing_state_result = await self.test_existing_completion_state(
-            test_data, seller_token, buyer_token
-        )
-        results['existing_state'] = existing_state_result
-        
-        # Step 5: Test Completion Workflow Update Logic
-        print("\n   🔄 Test Completion Workflow Update:")
-        update_result = await self.test_completion_workflow_update(
-            test_data, seller_token, buyer_token
-        )
-        results['update_workflow'] = update_result
-        
-        # Step 6: Test Transaction States
-        print("\n   🔍 Test Transaction States:")
-        if update_result.get('success'):
-            states_result = await self.test_transaction_states_verification(
-                test_data, 
-                update_result.get('seller_completion', {}),
-                update_result.get('buyer_completion', {})
-            )
-        else:
-            states_result = {'success': False, 'error': 'Update workflow failed'}
-        results['transaction_states'] = states_result
-        
-        # Step 7: Test API Response Structure
-        print("\n   📊 Test API Response Structure:")
-        # Get final completed transactions for both users
-        seller_completed = await self.test_completed_transactions_filtering(
-            seller_id, seller_token, 'seller', test_data.get('listing_id')
-        )
-        buyer_completed = await self.test_completed_transactions_filtering(
-            buyer_id, buyer_token, 'buyer', test_data.get('listing_id')
-        )
-        
-        structure_result = await self.test_api_response_structure(seller_completed, buyer_completed)
-        results['api_structure'] = structure_result
-        
-        # Step 8: Final Analysis
+        # Step 7: Final Analysis
         print("\n   📈 Final Analysis:")
-        await self.analyze_completion_workflow_results(results)
+        await self.analyze_partner_management_results(results)
         
         return True
     
