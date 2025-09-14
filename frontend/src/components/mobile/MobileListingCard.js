@@ -382,7 +382,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
                             Market Range
                           </div>
                           <div className="text-sm font-bold text-indigo-900 dark:text-indigo-100 leading-tight">
-                            €{(priceSuggestion * (100 - priceRangeSettings.price_range_min_percent) / 100).toFixed(0)} - €{(priceSuggestion * (100 + priceRangeSettings.price_range_max_percent) / 100).toFixed(0)}
+                            {formatEuro(priceSuggestion * (100 - priceRangeSettings.price_range_min_percent) / 100, false)}.00€ - {formatEuro(priceSuggestion * (100 + priceRangeSettings.price_range_max_percent) / 100, false)}.00€
                           </div>
                         </div>
                       </div>
