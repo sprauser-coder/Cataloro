@@ -10042,7 +10042,6 @@ async def get_registration_date(user_id: str):
                 try:
                     # Handle different date formats
                     date_str = registration_date
-                    print(f"DEBUG: Original date string: {date_str}")
                     logger.info(f"Original date string: {date_str}")
                     
                     # Remove microseconds if present (e.g., 2025-09-09T10:20:41.643000 -> 2025-09-09T10:20:41)
