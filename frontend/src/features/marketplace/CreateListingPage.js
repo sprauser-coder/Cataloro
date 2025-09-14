@@ -1176,12 +1176,45 @@ function CreateListingPage() {
                   name="has_time_limit"
                   checked={formData.has_time_limit}
                   onChange={(e) => setFormData({...formData, has_time_limit: e.target.checked})}
-                  className="appearance-none w-5 h-5 bg-gray-100 border-2 border-gray-500 rounded checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-blue-600 dark:checked:border-blue-600"
                   style={{
-                    backgroundImage: formData.has_time_limit ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e")` : 'none',
-                    backgroundSize: '14px 14px',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat'
+                    appearance: 'none',
+                    width: '20px',
+                    height: '20px',
+                    backgroundColor: '#f3f4f6',
+                    border: '2px solid #6b7280',
+                    borderRadius: '4px',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    outline: 'none'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.backgroundColor = '#e5e7eb';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.backgroundColor = formData.has_time_limit ? '#2563eb' : '#f3f4f6';
+                  }}
+                  onClick={(e) => {
+                    // Force visual update
+                    setTimeout(() => {
+                      e.target.style.backgroundColor = e.target.checked ? '#2563eb' : '#f3f4f6';
+                      e.target.style.backgroundImage = e.target.checked ? 
+                        `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e")` : 
+                        'none';
+                      e.target.style.backgroundSize = '14px 14px';
+                      e.target.style.backgroundPosition = 'center';
+                      e.target.style.backgroundRepeat = 'no-repeat';
+                    }, 10);
+                  }}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.backgroundColor = formData.has_time_limit ? '#2563eb' : '#f3f4f6';
+                      el.style.backgroundImage = formData.has_time_limit ? 
+                        `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e")` : 
+                        'none';
+                      el.style.backgroundSize = '14px 14px';
+                      el.style.backgroundPosition = 'center';
+                      el.style.backgroundRepeat = 'no-repeat';
+                    }
                   }}
                 />
                 <label htmlFor="has_time_limit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
