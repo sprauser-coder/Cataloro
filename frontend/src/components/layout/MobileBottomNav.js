@@ -222,8 +222,10 @@ function MobileBottomNav() {
 
   console.log('🔍 MobileBottomNav rendering with:', {
     isSellerOnly,
-    navigationItemsCount: allBottomNavItems.length,
-    navigationLabels: allBottomNavItems.map(item => item.label)
+    allBottomNavItemsCount: allBottomNavItems.length,
+    allBottomNavLabels: allBottomNavItems.map(item => item.label),
+    filteredBottomNavItemsCount: filteredBottomNavItems.length,
+    filteredBottomNavLabels: filteredBottomNavItems.map(item => item.label)
   });
 
   return (
