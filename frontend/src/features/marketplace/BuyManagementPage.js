@@ -603,7 +603,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4 sm:mb-6">
           {!hideNavigation && (
             <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="-mb-px flex px-0 sm:px-6">
+              <nav className="flex px-4 sm:px-6 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} aria-label="Tabs">
               <button
                 onClick={() => setActiveTab('tenders')}
                 className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
