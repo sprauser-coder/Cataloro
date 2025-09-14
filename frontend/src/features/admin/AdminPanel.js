@@ -6356,7 +6356,12 @@ function ListingsTab({ showToast }) {
       console.log('🔄 Fetching listings from backend...');
       
       // For admin panel, we want to see ALL listings including sold ones - no limit
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings?status=all`);
+      const token = localStorage.getItem('cataloro_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings?status=all`, {
+        headers
+      });
       if (response.ok) {
         const backendData = await response.json();
         console.log('📊 Backend listings response:', backendData);
