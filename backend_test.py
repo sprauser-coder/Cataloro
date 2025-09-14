@@ -513,7 +513,15 @@ class BackendTester:
             print(f"\n🔍 {user_type} Results:")
             print("-" * 30)
             
-            for test_name, result in results.items():
+            # Handle case where results might be a list or dict
+            if isinstance(results, dict):
+                results_items = results.items()
+            else:
+                # Skip if results is not a dict
+                print(f"  ⚠️ Invalid results format for {user_type}")
+                continue
+            
+            for test_name, result in results_items:
                 total_tests += 1
                 if result.get('success'):
                     passed_tests += 1
