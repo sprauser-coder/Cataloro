@@ -9979,6 +9979,286 @@ async def search_users(q: str, current_user: dict = Depends(get_current_user)):
         logger.error(f"Error searching users: {e}")
         return []
 
+# NEW PROFILE MANAGEMENT ENDPOINTS
+
+@app.put("/api/auth/change-password")
+async def change_password(request: Request):
+    """Change user password"""
+    try:
+        data = await request.json()
+        user_id = data.get("user_id")
+        current_password = data.get("current_password")
+        new_password = data.get("new_password")
+        
+        if not all([user_id, current_password, new_password]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        # Find user
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Verify current password (simplified - in production use proper password hashing)
+        import hashlib
+        current_password_hash = hashlib.sha256(current_password.encode()).hexdigest()
+        if user.get("password") != current_password_hash:
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
+        
+        # Hash new password (simplified)
+        new_password_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        
+        # Update password
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "password": new_password_hash,
+                "updated_at": datetime.utcnow().isoformat()
+            }}
+        )
+        
+        logger.info(f"🔒 Password changed for user: {user_id}")
+        return {"message": "Password updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error changing password: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to change password")
+
+@app.get("/api/user/{user_id}/registration-date")
+async def get_registration_date(user_id: str):
+    """Get user registration date"""
+    try:
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        registration_date = user.get("created_at") or user.get("date_joined")
+        if registration_date:
+            # Format date nicely
+            if isinstance(registration_date, str):
+                try:
+                    date_obj = datetime.fromisoformat(registration_date.replace('Z', '+00:00'))
+                    formatted_date = date_obj.strftime("%b %Y")
+                except:
+                    formatted_date = registration_date
+            else:
+                formatted_date = registration_date
+        else:
+            formatted_date = "Unknown"
+        
+        return {
+            "registration_date": formatted_date,
+            "created_at": user.get("created_at"),
+            "date_joined": user.get("date_joined")
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting registration date: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get registration date")
+
+@app.post("/api/user/export-data")
+async def export_user_data(request: Request):
+    """Export user data as PDF"""
+    try:
+        data = await request.json()
+        user_id = data.get("user_id")
+        
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID required")
+        
+        # Get user data
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user's listings
+        listings = await db.listings.find({"seller_id": user_id}).to_list(length=None)
+        
+        # Get user's orders (as buyer)
+        buy_orders = await db.orders.find({"buyer_id": user_id}).to_list(length=None)
+        
+        # Get user's sales (as seller)
+        sell_orders = await db.orders.find({"seller_id": user_id}).to_list(length=None)
+        
+        # Get user's tenders
+        tenders = await db.tenders.find({"buyer_id": user_id}).to_list(length=None)
+        
+        # Create PDF
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib import colors
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import inch
+        import io
+        
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        styles = getSampleStyleSheet()
+        story = []
+        
+        # Title
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            textColor=colors.HexColor('#3b82f6'),
+            spaceAfter=30
+        )
+        story.append(Paragraph(f"Data Export for {user.get('full_name', user.get('username', 'User'))}", title_style))
+        story.append(Spacer(1, 12))
+        
+        # User Information
+        story.append(Paragraph("Personal Information", styles['Heading2']))
+        user_data = [
+            ["Username", user.get("username", "N/A")],
+            ["Email", user.get("email", "N/A")],
+            ["Full Name", user.get("full_name", "N/A")],
+            ["Phone", user.get("phone", "N/A")],
+            ["Address", user.get("address", "N/A")],
+            ["Registration Date", user.get("created_at", "N/A")],
+            ["Account Type", "Business" if user.get("is_business") else "Private"],
+            ["Verified", "Yes" if user.get("is_verified") else "No"]
+        ]
+        
+        user_table = Table(user_data, colWidths=[2*inch, 4*inch])
+        user_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f3f4f6')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb'))
+        ]))
+        story.append(user_table)
+        story.append(Spacer(1, 20))
+        
+        # Listings
+        if listings:
+            story.append(Paragraph(f"Your Listings ({len(listings)})", styles['Heading2']))
+            listing_data = [["Title", "Price", "Category", "Status", "Created"]]
+            for listing in listings[:20]:  # Limit to 20 for PDF size
+                listing_data.append([
+                    listing.get("title", "N/A")[:30],
+                    f"€{listing.get('price', 0)}",
+                    listing.get("category", "N/A"),
+                    listing.get("status", "N/A"),
+                    listing.get("created_at", "N/A")[:10]
+                ])
+            
+            listing_table = Table(listing_data, colWidths=[2*inch, 1*inch, 1.5*inch, 1*inch, 1*inch])
+            listing_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#10b981')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb'))
+            ]))
+            story.append(listing_table)
+            story.append(Spacer(1, 20))
+        
+        # Orders (Purchases)
+        if buy_orders:
+            story.append(Paragraph(f"Your Purchases ({len(buy_orders)})", styles['Heading2']))
+            order_data = [["Order ID", "Amount", "Status", "Date"]]
+            for order in buy_orders[-10:]:  # Last 10 orders
+                order_data.append([
+                    order.get("id", "N/A")[:15],
+                    f"€{order.get('total', 0)}",
+                    order.get("status", "N/A"),
+                    order.get("created_at", "N/A")[:10]
+                ])
+            
+            order_table = Table(order_data, colWidths=[2*inch, 1.5*inch, 1.5*inch, 1.5*inch])
+            order_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3b82f6')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb'))
+            ]))
+            story.append(order_table)
+            story.append(Spacer(1, 20))
+        
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
+        
+        # Return PDF as binary response
+        from fastapi.responses import Response
+        return Response(
+            content=buffer.getvalue(),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=cataloro-export-{user.get('username', user_id)}.pdf"}
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error exporting user data: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to export data")
+
+@app.post("/api/user/delete-account")
+async def soft_delete_account(request: Request):
+    """Soft delete user account"""
+    try:
+        data = await request.json()
+        user_id = data.get("user_id")
+        deletion_type = data.get("deletion_type", "soft")
+        
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID required")
+        
+        # Find user
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Soft delete - deactivate account and hide listings
+        deletion_date = datetime.utcnow()
+        recovery_until = deletion_date + timedelta(days=30)
+        
+        # Update user status
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "status": "deleted",
+                "deleted_at": deletion_date.isoformat(),
+                "recovery_until": recovery_until.isoformat(),
+                "updated_at": deletion_date.isoformat()
+            }}
+        )
+        
+        # Hide user's listings
+        await db.listings.update_many(
+            {"seller_id": user_id},
+            {"$set": {
+                "status": "hidden",
+                "hidden_reason": "account_deleted",
+                "updated_at": deletion_date.isoformat()
+            }}
+        )
+        
+        # Log audit event
+        security_service.log_audit_event(
+            user_id=user_id,
+            action="account_deleted",
+            resource="users",
+            details={
+                "deletion_type": deletion_type,
+                "recovery_until": recovery_until.isoformat()
+            }
+        )
+        
+        logger.info(f"🗑️ Soft deleted account: {user_id}, recoverable until: {recovery_until}")
+        
+        return {
+            "message": "Account deleted successfully",
+            "recovery_until": recovery_until.isoformat(),
+            "deletion_type": deletion_type
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting account: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to delete account")
+
 @app.get("/api/debug/partnership-test/{user_id}")
 async def debug_partnerships(user_id: str):
     """Debug endpoint to check partnership relationships"""
