@@ -280,11 +280,38 @@ function ProfilePage() {
   // Calculate real statistics from marketplace data
   useEffect(() => {
     const calculateStats = () => {
+      console.log('🔍 ProfilePage calculateStats - Debug Info:', {
+        user: user ? {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          account_type: user.account_type,
+          is_business: user.is_business,
+          can_buy: user.can_buy
+        } : null,
+        allProductsCount: allProducts?.length || 0,
+        orderHistoryCount: orderHistory?.length || 0,
+        favoritesCount: favorites?.length || 0
+      });
+      
+      if (!user?.id) {
+        console.log('❌ No user ID available for stats calculation');
+        return;
+      }
+      
       // Use seller_id to match listings instead of username/full_name for consistency
       const userListings = allProducts.filter(p => p.seller_id === user?.id);
       const activeListings = userListings.filter(p => p.inStock !== false);
       const userOrders = orderHistory || [];
       const completedOrders = userOrders.filter(o => o.status === 'completed');
+      
+      console.log('🔍 Stats calculation:', {
+        userListingsCount: userListings.length,
+        activeListingsCount: activeListings.length,
+        userOrdersCount: userOrders.length,
+        completedOrdersCount: completedOrders.length
+      });
       
       // Calculate actual seller rating from completed transactions (if available)
       const actualRating = completedOrders.length > 0 
