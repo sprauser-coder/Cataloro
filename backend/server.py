@@ -8351,7 +8351,7 @@ async def get_user_baskets(user_id: str):
                                 "title": listing.get("title", order.get("listing_title", "Unknown Item")),
                                 "price": listing.get("price", 0),
                                 "seller_name": seller_name,
-                                "image": listing.get("images", [""])[0] if listing.get("images") else None,
+                                "image": optimize_images_for_response(listing.get("images", []), listing.get("id", ""))[0] if listing.get("images") else '/api/placeholder-image.jpg',
                                 "purchased_at": order.get("approved_at", order.get("created_at")),
                                 "assigned_at": assignment.get("assigned_at"),
                                 # Use preserved catalyst data from order
