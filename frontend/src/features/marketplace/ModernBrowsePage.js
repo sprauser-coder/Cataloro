@@ -887,7 +887,6 @@ function ModernBrowsePage() {
                   : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300'
               }`}
             >
-              <span className="text-sm">💰</span>
               <span className="hidden sm:inline">My Bids</span>
             </button>
           )}
