@@ -475,41 +475,12 @@ function ProductDetailPage() {
 
               {/* Partner Offer Badge */}
               {product.is_partners_only && product.public_at && (() => {
-                // Ensure consistent timezone handling
-                let publicDate;
-                try {
-                  // Handle different date formats from backend
-                  if (product.public_at.includes('Z') || product.public_at.includes('+')) {
-                    // Already has timezone info
-                    publicDate = new Date(product.public_at);
-                  } else {
-                    // Assume UTC if no timezone specified
-                    publicDate = new Date(product.public_at + 'Z');
-                  }
-                } catch (e) {
-                  // Fallback parsing
-                  publicDate = new Date(product.public_at);
-                }
-                
-                const now = new Date();
-                const timeRemaining = publicDate - now;
+                // Import timezone utility functions
+                const { formatPartnerTimeRemaining } = require('../../utils/timezone');
+                const timeText = formatPartnerTimeRemaining(product.public_at);
                 
                 // Only show if time remaining is positive
-                if (timeRemaining <= 0) return null;
-                
-                // Calculate hours and minutes remaining
-                const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
-                const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-                
-                // Format time display
-                let timeText = '';
-                if (hoursRemaining > 0) {
-                  timeText = `${hoursRemaining}h ${minutesRemaining}m left`;
-                } else if (minutesRemaining > 0) {
-                  timeText = `${minutesRemaining}m left`;
-                } else {
-                  timeText = 'Ending soon';
-                }
+                if (!timeText) return null;
                 
                 return (
                   <div className="mb-4">
