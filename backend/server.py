@@ -9264,7 +9264,7 @@ async def get_seller_accepted_tenders(seller_id: str):
             enriched_tender = serialize_doc(tender)
             enriched_tender.update({
                 "listing_title": listing.get("title", "Unknown Item") if listing else "Unknown Item",
-                "listing_image": listing.get("images", [None])[0] if listing and listing.get("images") else None,
+                "listing_image": optimize_images_for_response(listing.get("images", []), listing.get("id", ""))[0] if listing and listing.get("images") else '/api/placeholder-image.jpg',
                 "listing_price": listing.get("price", 0) if listing else 0,
                 "buyer_name": buyer.get("full_name", "Unknown User") if buyer else "Unknown User",
                 "buyer_email": buyer.get("email", "") if buyer else ""
