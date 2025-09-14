@@ -1211,6 +1211,88 @@ function CreateListingPage() {
             </div>
           </div>
 
+          {/* Partners First Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <User className="w-6 h-6 text-purple-600" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Partner Preview</h3>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Enable Partners First Toggle */}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="show_partners_first"
+                  name="show_partners_first"
+                  checked={formData.show_partners_first}
+                  onChange={(e) => setFormData({...formData, show_partners_first: e.target.checked})}
+                  className="w-5 h-5 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 dark:focus:ring-purple-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label htmlFor="show_partners_first" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Show Partners First
+                </label>
+              </div>
+              
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Give your preferred partners exclusive early access to your listing before it becomes public.
+              </p>
+
+              {formData.show_partners_first && (
+                <div className="space-y-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                  {/* Duration Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Partner Preview Duration
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        { label: '1 Day', value: 24 },
+                        { label: '2 Days', value: 48 },
+                        { label: '1 Week', value: 168 }
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setFormData({...formData, partners_visibility_hours: option.value})}
+                          className={`p-3 rounded-lg border-2 text-center transition-colors ${
+                            formData.partners_visibility_hours === option.value
+                              ? 'border-purple-500 bg-purple-500 text-white'
+                              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-purple-300'
+                          }`}
+                        >
+                          <div className="font-medium">{option.label}</div>
+                          <div className="text-xs opacity-75">{option.value}h</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Preview Info */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Your listing will be visible only to your partners for <span className="font-mono text-purple-600 dark:text-purple-400">
+                        {formData.partners_visibility_hours === 24 ? '1 day' : 
+                         formData.partners_visibility_hours === 48 ? '2 days' :
+                         formData.partners_visibility_hours === 168 ? '1 week' : `${formData.partners_visibility_hours} hours`}
+                      </span> after publication.
+                      <br />
+                      After this period, it will become visible to all users. Partners can place offers during the exclusive period.
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <User className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                    <div className="text-sm text-blue-700 dark:text-blue-300">
+                      <strong>Note:</strong> You can manage your preferred partners in Profile Settings > Partners. Partners will be notified when you post listings with early access enabled.
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
 
           {/* Submit Section */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
