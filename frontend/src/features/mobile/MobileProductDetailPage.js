@@ -315,6 +315,28 @@ function MobileProductDetailPage() {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               {product.title}
             </h2>
+
+            {/* Partner Offer Badge */}
+            {product.is_partners_only && product.public_at && (() => {
+              // Import timezone utility functions
+              const { formatPartnerTimeRemaining } = require('../../utils/timezone');
+              const timeText = formatPartnerTimeRemaining(product.public_at);
+              
+              // Only show if time remaining is positive
+              if (!timeText) return null;
+              
+              return (
+                <div className="mb-3">
+                  <span className="inline-flex items-center text-white text-sm px-3 py-2 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    Partner Listing • {timeText}
+                  </span>
+                </div>
+              );
+            })()}
+
             <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-center">
                 <MapPin className="w-4 h-4 mr-1" />
