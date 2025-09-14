@@ -371,7 +371,15 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Messages</h1>
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              {realConversations.reduce((total, c) => total + (c.unreadCount || c.unread_count || 0), 0)} unread
+              {(() => {
+                const totalUnread = realConversations.reduce((total, c) => {
+                  const unreadCount = c.unreadCount || c.unread_count || 0;
+                  console.log(`🔍 Conversation ${c.name}: unreadCount=${c.unreadCount}, unread_count=${c.unread_count}, total=${unreadCount}`);
+                  return total + unreadCount;
+                }, 0);
+                console.log(`🔍 Total unread messages in header: ${totalUnread}`);
+                return totalUnread;
+              })()} unread
             </div>
           </div>
           
