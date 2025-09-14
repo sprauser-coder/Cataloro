@@ -972,7 +972,10 @@ function NotificationsCenterPage() {
                       </div>
                     </div>
 
-                    <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">
+                    <p 
+                      className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-2 cursor-pointer hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                      onClick={() => handleNotificationClick(notification)}
+                    >
                       {notification.message || notification.content}
                     </p>
 
