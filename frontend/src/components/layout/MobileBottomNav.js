@@ -99,7 +99,7 @@ function MobileBottomNav() {
     return () => {
       window.removeEventListener('updateMobileBadge', handleBadgeUpdate);
     };
-  }, [unreadMessages, user, isSellerOnly]);
+  }, [unreadMessages]);
 
   const isActive = (path) => {
     if (path === '/browse' && location.pathname === '/') return true;
