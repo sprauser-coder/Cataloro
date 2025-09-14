@@ -310,6 +310,55 @@ function ProfilePage() {
     }
   };
 
+  // Fetch my listings like MyListingsPage does
+  const fetchMyListings = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setListingsLoading(true);
+      const data = await marketplaceService.getMyListings(user.id);
+      setMyListings(data);
+    } catch (error) {
+      console.error('Failed to fetch listings:', error);
+      setMyListings([]);
+    } finally {
+      setListingsLoading(false);
+    }
+  };
+
+  // Fetch my tenders like TenderManagementPage does  
+  const fetchMyTenders = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setTendersLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/buyer/${user.id}`, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMyTenders(data);
+      } else {
+        console.error('Failed to load tenders');
+        setMyTenders([]);
+      }
+    } catch (error) {
+      console.error('Error loading tenders:', error);
+      setMyTenders([]);
+    } finally {
+      setTendersLoading(false);
+    }
+  };
+
+  // Load data when user changes
+  useEffect(() => {
+    if (user?.id) {
+      fetchMyListings();
+      fetchMyTenders();
+    }
+  }, [user?.id]);
+
   // Calculate real statistics from marketplace data
   useEffect(() => {
     const calculateStats = () => {
