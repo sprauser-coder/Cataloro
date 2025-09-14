@@ -667,15 +667,14 @@ class BackendTester:
         
         return all_results
 
-    def generate_verification_status_summary(self, all_results):
-        """Generate comprehensive summary of verification status testing"""
-        print("📊 VERIFICATION STATUS TESTING SUMMARY")
+    def generate_admin_panel_summary(self, all_results):
+        """Generate comprehensive summary of admin panel completed transactions tab testing"""
+        print("📊 ADMIN PANEL COMPLETED TRANSACTIONS TAB TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = 0
         passed_tests = 0
-        verification_found_count = 0
-        verified_users_count = 0
+        critical_issues = []
         
         for user_type, results in all_results.items():
             print(f"\n🔍 {user_type} Results:")
@@ -686,102 +685,113 @@ class BackendTester:
                 if result.get('success'):
                     passed_tests += 1
                     status = "✅ PASS"
-                    
-                    # Check if verification status was found
-                    if result.get('is_verified') is not None:
-                        verification_found_count += 1
-                        if result.get('is_verified'):
-                            verified_users_count += 1
                 else:
                     status = "❌ FAIL"
+                    critical_issues.append(f"{user_type}: {test_name}")
                 
                 print(f"  {status}: {test_name.replace('_', ' ').title()}")
                 
-                # Add specific details for verification tests
-                if result.get('success'):
-                    is_verified = result.get('is_verified')
-                    verification_location = result.get('verification_location', 'unknown')
-                    username = result.get('username', 'unknown')
-                    
-                    print(f"    🔍 Verification Status: {is_verified}")
-                    print(f"    📍 Found in: {verification_location}")
-                    print(f"    👤 Username: {username}")
-                    
-                    if is_verified:
-                        print(f"    ✅ User is VERIFIED")
+                # Add specific details for each test
+                if test_name == 'admin_permissions':
+                    user_role = result.get('user_role', 'Unknown')
+                    should_have_permission = result.get('should_have_permission', False)
+                    print(f"    👤 User Role: {user_role}")
+                    print(f"    🔑 Should Have Permission: {should_have_permission}")
+                    if result.get('success'):
+                        print(f"    ✅ Permission Check: PASSED")
                     else:
-                        print(f"    ❌ User is NOT VERIFIED")
-                else:
-                    error = result.get('error', 'Unknown error')
+                        print(f"    ❌ Permission Check: FAILED - {result.get('error', 'Unknown error')}")
+                        
+                elif test_name == 'completed_transactions_endpoint':
+                    endpoint_accessible = result.get('endpoint_accessible', False)
                     status_code = result.get('status_code', 'N/A')
-                    print(f"    ❌ Error: {error}")
-                    if status_code != 'N/A':
-                        print(f"    🔢 Status Code: {status_code}")
-                    
-                    # Show available fields if verification field is missing
-                    if 'response_keys' in result:
-                        print(f"    🔑 Available fields: {result['response_keys']}")
-                    elif 'available_fields' in result:
-                        print(f"    🔑 Available fields: {result['available_fields']}")
+                    transactions_count = result.get('transactions_count', 0)
+                    print(f"    🔗 Endpoint Accessible: {endpoint_accessible}")
+                    print(f"    📊 Status Code: {status_code}")
+                    if result.get('success'):
+                        print(f"    📈 Transactions Found: {transactions_count}")
+                    else:
+                        print(f"    ❌ Error: {result.get('error', 'Unknown error')}")
+                        
+                elif test_name == 'tab_visibility':
+                    tab_should_be_visible = result.get('tab_should_be_visible', False)
+                    frontend_check_passes = result.get('frontend_check_passes', False)
+                    print(f"    👁️ Tab Should Be Visible: {tab_should_be_visible}")
+                    print(f"    🎨 Frontend Check Passes: {frontend_check_passes}")
+                    if not result.get('success'):
+                        print(f"    ❌ Issue: {result.get('error', 'Unknown error')}")
         
         # Overall summary
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
         print(f"\n🎯 OVERALL RESULTS:")
         print(f"   Tests Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
-        print(f"   Verification Field Found: {verification_found_count}/{total_tests}")
-        print(f"   Verified Users Found: {verified_users_count}/{verification_found_count if verification_found_count > 0 else 1}")
         
         # Key findings
         print(f"\n🔑 KEY FINDINGS:")
         
-        # Check if verification status is being returned
-        if verification_found_count > 0:
-            print(f"   ✅ Verification status field found in {verification_found_count} out of {total_tests} tests")
+        # Analyze results to determine root cause
+        admin_results = all_results.get('Admin User', {}) or all_results.get('Admin User (Alt Password)', {})
+        
+        if admin_results:
+            permissions_result = admin_results.get('admin_permissions', {})
+            endpoint_result = admin_results.get('completed_transactions_endpoint', {})
+            tab_result = admin_results.get('tab_visibility', {})
             
-            if verified_users_count > 0:
-                print(f"   ✅ Found {verified_users_count} verified users")
+            # Check login success
+            if permissions_result.get('success'):
+                print(f"   ✅ Admin login successful with proper role: {permissions_result.get('user_role')}")
             else:
-                print(f"   ⚠️ No verified users found - all users have is_verified: false")
-        else:
-            print(f"   ❌ Verification status field NOT FOUND in any API responses")
-            print(f"   🔧 ISSUE: The is_verified field is missing from public profile endpoints")
-        
-        # Check specific users mentioned in request
-        admin_user_1_result = all_results.get('Specific User - admin_user_1', {}).get('public_profile_verification', {})
-        sash_admin_result = all_results.get('Specific User - sash_admin', {}).get('public_profile_verification', {})
-        
-        print(f"\n🎯 SPECIFIC USERS REQUESTED:")
-        
-        if admin_user_1_result.get('success'):
-            is_verified = admin_user_1_result.get('is_verified')
-            print(f"   👤 admin_user_1: {'✅ VERIFIED' if is_verified else '❌ NOT VERIFIED'} (is_verified: {is_verified})")
-        else:
-            error = admin_user_1_result.get('error', 'Unknown error')
-            print(f"   👤 admin_user_1: ❌ FAILED - {error}")
-        
-        if sash_admin_result.get('success'):
-            is_verified = sash_admin_result.get('is_verified')
-            print(f"   👤 sash_admin: {'✅ VERIFIED' if is_verified else '❌ NOT VERIFIED'} (is_verified: {is_verified})")
-        else:
-            error = sash_admin_result.get('error', 'Unknown error')
-            print(f"   👤 sash_admin: ❌ FAILED - {error}")
+                print(f"   ❌ Admin login or permissions issue")
+                
+            # Check permissions
+            if permissions_result.get('should_have_permission'):
+                print(f"   ✅ Admin user should have canAccessUserManagement permission")
+            else:
+                print(f"   ❌ Admin user does not have required permissions")
+                
+            # Check endpoint access
+            if endpoint_result.get('success'):
+                print(f"   ✅ Admin completed transactions endpoint is accessible")
+                print(f"   📊 Found {endpoint_result.get('transactions_count', 0)} transactions")
+            else:
+                print(f"   ❌ Admin completed transactions endpoint is NOT accessible")
+                print(f"   🔍 Status Code: {endpoint_result.get('status_code', 'Unknown')}")
+                print(f"   💬 Error: {endpoint_result.get('error', 'Unknown error')}")
+                
+            # Check tab visibility
+            if tab_result.get('success'):
+                print(f"   ✅ Completed Transactions tab should be visible in Admin Panel")
+            else:
+                print(f"   ❌ Completed Transactions tab should NOT be visible")
+                print(f"   🔍 Frontend permission check: {tab_result.get('frontend_check_passes', False)}")
         
         # Root cause analysis
         print(f"\n🔧 ROOT CAUSE ANALYSIS:")
         
-        if verification_found_count == 0:
-            print("   ❌ CRITICAL ISSUE: is_verified field is completely missing from API responses")
-            print("   🔧 SOLUTION NEEDED: Backend needs to include is_verified field in public profile endpoint")
-            print("   📝 CHECK: Verify if users have 'verified' field in database and map it to 'is_verified' in API")
-        elif verified_users_count == 0:
-            print("   ⚠️ ISSUE: is_verified field exists but all users are marked as not verified")
-            print("   🔧 SOLUTION NEEDED: Check if admin users should have verified status in database")
-            print("   📝 CHECK: Verify admin users like 'admin_user_1' and 'sash_admin' have verified: true in database")
+        if not admin_results:
+            print("   ❌ CRITICAL: Could not login with admin credentials")
+            print("   🔧 SOLUTION: Check admin credentials and authentication system")
+        elif not permissions_result.get('success'):
+            print("   ❌ CRITICAL: Admin user does not have proper role or permissions")
+            print("   🔧 SOLUTION: Verify admin user has 'Admin' or 'Admin-Manager' role")
+        elif not endpoint_result.get('success'):
+            if endpoint_result.get('status_code') == 403:
+                print("   ❌ CRITICAL: Admin user cannot access completed transactions endpoint (403 Forbidden)")
+                print("   🔧 SOLUTION: Check backend require_admin_role function and user role verification")
+            elif endpoint_result.get('status_code') == 401:
+                print("   ❌ CRITICAL: Authentication token is invalid or expired (401 Unauthorized)")
+                print("   🔧 SOLUTION: Check JWT token generation and validation")
+            else:
+                print("   ❌ CRITICAL: Backend endpoint /api/admin/completed-transactions is not working")
+                print("   🔧 SOLUTION: Check backend server logs and endpoint implementation")
+        elif not tab_result.get('success'):
+            print("   ❌ ISSUE: Frontend permission logic may be incorrect")
+            print("   🔧 SOLUTION: Check usePermissions.js and AdminPanel.js tab filtering logic")
         else:
-            print("   ✅ VERIFICATION SYSTEM WORKING: is_verified field found and some users are verified")
-            print("   🎉 FRONTEND ISSUE: The problem might be in frontend badge display logic")
+            print("   ✅ ALL SYSTEMS WORKING: The Completed Transactions tab should be accessible")
+            print("   🎉 RECOMMENDATION: The issue may be resolved or was a temporary problem")
         
-        print(f"\n🎉 VERIFICATION STATUS TESTING COMPLETED!")
+        print(f"\n🎉 ADMIN PANEL COMPLETED TRANSACTIONS TAB TESTING COMPLETED!")
         print("=" * 80)
 
 async def main():
