@@ -845,6 +845,72 @@ function ProfilePage() {
                   </div>
                 </div>
 
+                {/* Timezone Selection */}
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-white flex items-center">
+                    <Globe className="w-5 h-5 mr-2 text-blue-500" />
+                    Timezone Settings
+                  </h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Timezone
+                    </label>
+                    <select
+                      name="timezone"
+                      value={profileData.timezone}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      className={`cataloro-input ${!isEditing ? 'cursor-not-allowed' : ''}`}
+                    >
+                      <optgroup label="Popular Timezones">
+                        <option value="Europe/London">London (GMT+0/+1)</option>
+                        <option value="Europe/Berlin">Berlin (GMT+1/+2)</option>
+                        <option value="Europe/Paris">Paris (GMT+1/+2)</option>
+                        <option value="Europe/Madrid">Madrid (GMT+1/+2)</option>
+                        <option value="Europe/Rome">Rome (GMT+1/+2)</option>
+                        <option value="Europe/Amsterdam">Amsterdam (GMT+1/+2)</option>
+                        <option value="Europe/Vienna">Vienna (GMT+1/+2)</option>
+                        <option value="Europe/Prague">Prague (GMT+1/+2)</option>
+                        <option value="Europe/Warsaw">Warsaw (GMT+1/+2)</option>
+                        <option value="Europe/Stockholm">Stockholm (GMT+1/+2)</option>
+                      </optgroup>
+                      <optgroup label="Americas">
+                        <option value="America/New_York">New York (EST/EDT)</option>
+                        <option value="America/Chicago">Chicago (CST/CDT)</option>
+                        <option value="America/Denver">Denver (MST/MDT)</option>
+                        <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                        <option value="America/Toronto">Toronto (EST/EDT)</option>
+                        <option value="America/Vancouver">Vancouver (PST/PDT)</option>
+                        <option value="America/Mexico_City">Mexico City (CST/CDT)</option>
+                        <option value="America/Sao_Paulo">São Paulo (BRT)</option>
+                        <option value="America/Argentina/Buenos_Aires">Buenos Aires (ART)</option>
+                      </optgroup>
+                      <optgroup label="Asia Pacific">
+                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                        <option value="Asia/Shanghai">Shanghai (CST)</option>
+                        <option value="Asia/Hong_Kong">Hong Kong (HKT)</option>
+                        <option value="Asia/Singapore">Singapore (SGT)</option>
+                        <option value="Asia/Seoul">Seoul (KST)</option>
+                        <option value="Asia/Kolkata">Mumbai (IST)</option>
+                        <option value="Asia/Dubai">Dubai (GST)</option>
+                        <option value="Australia/Sydney">Sydney (AEST/AEDT)</option>
+                        <option value="Australia/Melbourne">Melbourne (AEST/AEDT)</option>
+                        <option value="Pacific/Auckland">Auckland (NZST/NZDT)</option>
+                      </optgroup>
+                      <optgroup label="Africa">
+                        <option value="Africa/Cairo">Cairo (EET)</option>
+                        <option value="Africa/Johannesburg">Johannesburg (SAST)</option>
+                        <option value="Africa/Lagos">Lagos (WAT)</option>
+                        <option value="Africa/Nairobi">Nairobi (EAT)</option>
+                      </optgroup>
+                    </select>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Current browser timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                    </p>
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Bio
