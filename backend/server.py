@@ -4535,10 +4535,52 @@ async def get_user_menu_settings(user_id: str):
         menu_settings = await db.menu_settings.find_one({"type": "menu_config"})
         
         if not menu_settings:
-            # Return default settings for user role
+            # Return default settings for user role with view_public_profile enabled
+            default_settings = {
+                "desktop_menu": {
+                    "about": {"enabled": True, "label": "About", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "create_listing": {"enabled": True, "label": "Create Listing", "roles": ["admin", "manager", "seller"]},
+                    "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "admin_panel": {"enabled": True, "label": "Administration", "roles": ["admin", "manager"]},
+                    "buy_management": {"enabled": True, "label": "Inventory", "roles": ["admin", "manager", "buyer"]},
+                    "my_listings": {"enabled": True, "label": "My Listings", "roles": ["admin", "manager", "seller"]},
+                    "favorites": {"enabled": True, "label": "Favorites", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "custom_items": []
+                },
+                "mobile_menu": {
+                    "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "notifications": {"enabled": True, "label": "Notifications", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "create": {"enabled": True, "label": "Create", "roles": ["admin", "manager", "seller"]},
+                    "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "listings": {"enabled": True, "label": "Listings", "roles": ["admin", "manager", "seller"]},
+                    "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "view_public_profile": {"enabled": True, "label": "View Public Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                    "admin_drawer": {"enabled": True, "label": "Admin", "roles": ["admin", "manager"]},
+                    "custom_items": []
+                }
+            }
+            
+            # Filter default settings based on user role
+            filtered_desktop = {}
+            filtered_mobile = {}
+            
+            for item_key, item_config in default_settings["desktop_menu"].items():
+                if item_key != "custom_items":
+                    if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
+                        filtered_desktop[item_key] = item_config
+            
+            for item_key, item_config in default_settings["mobile_menu"].items():
+                if item_key != "custom_items":
+                    if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
+                        filtered_mobile[item_key] = item_config
+            
             return {
-                "desktop_menu": {},
-                "mobile_menu": {},
+                "desktop_menu": filtered_desktop,
+                "mobile_menu": filtered_mobile,
                 "user_role": menu_role
             }
         
