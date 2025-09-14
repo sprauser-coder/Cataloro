@@ -660,6 +660,12 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
           )}
           
           <div className="p-4 sm:p-6">
+            {activeTab === 'tenders' && (
+              <TendersTab 
+                loading={loading}
+              />
+            )}
+            
             {activeTab === 'bought-items' && (
               <BoughtItemsTab 
                 items={filteredItems}
