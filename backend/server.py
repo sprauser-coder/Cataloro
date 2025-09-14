@@ -10303,9 +10303,9 @@ async def get_public_profile(user_id: str):
             try:
                 if isinstance(date_joined, str):
                     date_obj = datetime.fromisoformat(date_joined.replace('Z', '+00:00'))
-                    formatted_date = date_obj.strftime("%b %Y")
+                    formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
                 else:
-                    formatted_date = date_joined
+                    formatted_date = "Unknown"
             except:
                 formatted_date = "Unknown"
         else:
