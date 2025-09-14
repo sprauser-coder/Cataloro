@@ -257,7 +257,16 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
   return (
     <div className="relative mb-4">
       {/* Main Card - Simplified without swipe functionality */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden ${
+        // Partner listing border - using timezone utility
+        (() => {
+          const { calculateTimeRemaining } = require('../../utils/timezone');
+          const { expired } = calculateTimeRemaining(currentListing.public_at);
+          return currentListing.is_partners_only && currentListing.public_at && !expired
+            ? 'border border-pink-600 shadow-lg shadow-pink-100 dark:shadow-pink-900/20' 
+            : 'border border-gray-200 dark:border-gray-700';
+        })()
+      }`}>
         {/* Clickable Image Section */}
         <Link to={`/listing/${currentListing.id}`} className="block">
           {/* Image */}
