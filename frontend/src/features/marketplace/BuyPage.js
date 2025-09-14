@@ -145,6 +145,7 @@ function BuyPage() {
           {(activeTab === 'bought-items' || activeTab === 'baskets' || activeTab === 'completed') && (
             <BuyManagementPage key={activeTab} initialTab={activeTab} hideNavigation={true} showOnlyTab={activeTab} />
           )}
+          </div>
         </div>
       </div>
     </div>
