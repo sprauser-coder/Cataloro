@@ -606,7 +606,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               <nav className="-mb-px flex px-0 sm:px-6">
               <button
                 onClick={() => setActiveTab('tenders')}
-                className={`flex-1 py-3 sm:py-4 px-0.5 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
                   activeTab === 'tenders'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -620,7 +620,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               
               <button
                 onClick={() => setActiveTab('bought-items')}
-                className={`flex-1 py-3 sm:py-4 px-0.5 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
                   activeTab === 'bought-items'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -635,7 +635,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               
               <button
                 onClick={() => setActiveTab('baskets')}
-                className={`flex-1 py-3 sm:py-4 px-0.5 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
                   activeTab === 'baskets'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -649,7 +649,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`flex-1 py-3 sm:py-4 px-0.5 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
                   activeTab === 'completed'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
