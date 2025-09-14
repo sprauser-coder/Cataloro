@@ -96,8 +96,8 @@ function BuyPage() {
           </div>
         </div>
 
-      {/* Tab Navigation */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+        {/* Tab Navigation */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 mb-4 sm:mb-6">
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex px-4 sm:px-6 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} aria-label="Tabs">
             {tabs.map((tab) => {
