@@ -1577,58 +1577,405 @@ class BackendTester:
         
         return len(failing_features) == 0
 
-    async def test_partner_management_apis(self):
-        """Test the partner management APIs functionality"""
-        print("\n🤝 PARTNER MANAGEMENT APIS TESTING:")
-        print("   Testing new partner management APIs and partner visibility functionality")
-        print("   Testing partner relationships, visibility controls, and image optimization fixes")
+    async def test_create_partner_badge_listing(self, token, seller_id):
+        """Create a NEW partner-only listing for badge testing"""
+        start_time = datetime.now()
         
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/listings"
+            
+            # Create unique timestamp for listing title
+            current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            listing_data = {
+                "title": f"Badge Test - {current_timestamp}",
+                "description": "Testing badge fix",
+                "price": 50.0,
+                "category": "Testing",
+                "condition": "New",
+                "seller_id": seller_id,
+                "show_partners_first": True,
+                "partners_visibility_hours": 48,  # 48 hours so it won't expire during testing
+                "images": [],
+                "tags": ["badge-test", "partner-visibility"],
+                "features": []
+            }
+            
+            async with self.session.post(url, headers=headers, json=listing_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 201:
+                    data = await response.json()
+                    listing_id = data.get('listing', {}).get('id') or data.get('id')
+                    
+                    if listing_id:
+                        self.log_result(
+                            "Create Partner Badge Listing", 
+                            True, 
+                            f"✅ PARTNER LISTING CREATED: Badge test listing created with ID {listing_id}, title: 'Badge Test - {current_timestamp}'",
+                            response_time
+                        )
+                        return {'success': True, 'listing_id': listing_id, 'listing': data, 'timestamp': current_timestamp}
+                    else:
+                        self.log_result(
+                            "Create Partner Badge Listing", 
+                            False, 
+                            f"❌ NO LISTING ID: Response missing listing ID: {data}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'No listing ID in response'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Partner Badge Listing", 
+                        False, 
+                        f"❌ CREATION FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Partner Badge Listing", 
+                False, 
+                f"❌ CREATION EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_verify_partner_data_structure(self, token, listing_id):
+        """Verify API response structure for partner badge data"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/listings/{listing_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check required partner fields
+                    is_partners_only = data.get('is_partners_only')
+                    public_at = data.get('public_at')
+                    show_partners_first = data.get('show_partners_first')
+                    
+                    # Verify field values
+                    structure_issues = []
+                    
+                    if is_partners_only is not True:
+                        structure_issues.append(f"is_partners_only should be True, got {is_partners_only}")
+                    
+                    if not public_at:
+                        structure_issues.append("public_at field is missing")
+                    else:
+                        # Verify public_at is in the future (48 hours)
+                        try:
+                            from datetime import datetime
+                            public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
+                            current_dt = datetime.now(timezone.utc)
+                            hours_diff = (public_at_dt - current_dt).total_seconds() / 3600
+                            
+                            if hours_diff < 40 or hours_diff > 50:  # Allow some tolerance
+                                structure_issues.append(f"public_at should be ~48 hours in future, got {hours_diff:.1f} hours")
+                        except Exception as e:
+                            structure_issues.append(f"public_at format invalid: {e}")
+                    
+                    if show_partners_first is not True:
+                        structure_issues.append(f"show_partners_first should be True, got {show_partners_first}")
+                    
+                    if structure_issues:
+                        self.log_result(
+                            "Verify Partner Data Structure", 
+                            False, 
+                            f"❌ STRUCTURE ISSUES: {'; '.join(structure_issues)}",
+                            response_time
+                        )
+                        return {'success': False, 'issues': structure_issues}
+                    else:
+                        self.log_result(
+                            "Verify Partner Data Structure", 
+                            True, 
+                            f"✅ PARTNER DATA CORRECT: is_partners_only=True, public_at={public_at}, show_partners_first=True",
+                            response_time
+                        )
+                        return {
+                            'success': True, 
+                            'is_partners_only': is_partners_only,
+                            'public_at': public_at,
+                            'show_partners_first': show_partners_first
+                        }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify Partner Data Structure", 
+                        False, 
+                        f"❌ FETCH FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify Partner Data Structure", 
+                False, 
+                f"❌ VERIFICATION EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_authenticated_browse_partner_data(self, token, listing_id):
+        """Test authenticated browse endpoint for partner badge data"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/marketplace/browse"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listings = data.get('listings', []) if isinstance(data, dict) else data
+                    
+                    # Find our test listing
+                    test_listing = None
+                    for listing in listings:
+                        if listing.get('id') == listing_id:
+                            test_listing = listing
+                            break
+                    
+                    if test_listing:
+                        # Verify partner fields are present in browse response
+                        is_partners_only = test_listing.get('is_partners_only')
+                        public_at = test_listing.get('public_at')
+                        show_partners_first = test_listing.get('show_partners_first')
+                        
+                        browse_issues = []
+                        
+                        if is_partners_only is not True:
+                            browse_issues.append(f"Browse: is_partners_only should be True, got {is_partners_only}")
+                        
+                        if not public_at:
+                            browse_issues.append("Browse: public_at field missing")
+                        
+                        if show_partners_first is not True:
+                            browse_issues.append(f"Browse: show_partners_first should be True, got {show_partners_first}")
+                        
+                        if browse_issues:
+                            self.log_result(
+                                "Authenticated Browse Partner Data", 
+                                False, 
+                                f"❌ BROWSE DATA ISSUES: {'; '.join(browse_issues)}",
+                                response_time
+                            )
+                            return {'success': False, 'issues': browse_issues}
+                        else:
+                            self.log_result(
+                                "Authenticated Browse Partner Data", 
+                                True, 
+                                f"✅ AUTHENTICATED BROWSE WORKING: Admin can see partner-only listing with all badge fields",
+                                response_time
+                            )
+                            return {
+                                'success': True,
+                                'listing_found': True,
+                                'partner_data': {
+                                    'is_partners_only': is_partners_only,
+                                    'public_at': public_at,
+                                    'show_partners_first': show_partners_first
+                                }
+                            }
+                    else:
+                        self.log_result(
+                            "Authenticated Browse Partner Data", 
+                            False, 
+                            f"❌ LISTING NOT FOUND: Partner-only listing {listing_id} not visible to authenticated admin",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Listing not found in browse results'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Authenticated Browse Partner Data", 
+                        False, 
+                        f"❌ BROWSE FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Authenticated Browse Partner Data", 
+                False, 
+                f"❌ BROWSE EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_anonymous_browse_partner_filtering(self, listing_id):
+        """Test anonymous browse endpoint for partner filtering"""
+        start_time = datetime.now()
+        
+        try:
+            # No authorization header for anonymous request
+            url = f"{BACKEND_URL}/marketplace/browse"
+            
+            async with self.session.get(url) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listings = data.get('listings', []) if isinstance(data, dict) else data
+                    
+                    # Check if our test listing is NOT visible
+                    test_listing_found = any(
+                        listing.get('id') == listing_id for listing in listings
+                    )
+                    
+                    if not test_listing_found:
+                        self.log_result(
+                            "Anonymous Browse Partner Filtering", 
+                            True, 
+                            f"✅ ANONYMOUS FILTERING WORKING: Anonymous users cannot see partner-only listing (total listings: {len(listings)})",
+                            response_time
+                        )
+                        return {'success': True, 'listing_hidden': True, 'total_listings': len(listings)}
+                    else:
+                        self.log_result(
+                            "Anonymous Browse Partner Filtering", 
+                            False, 
+                            f"❌ FILTERING FAILED: Anonymous users can see partner-only listing {listing_id}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Anonymous can see partner-only listing'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Anonymous Browse Partner Filtering", 
+                        False, 
+                        f"❌ ANONYMOUS BROWSE FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Anonymous Browse Partner Filtering", 
+                False, 
+                f"❌ FILTERING EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def analyze_partner_badge_results(self, results):
+        """Analyze the effectiveness of the Partner Badge testing"""
+        print("      Final analysis of Partner Badge functionality testing:")
+        
+        working_features = []
+        failing_features = []
+        
+        # Check listing creation
+        if results.get('listing_creation', {}).get('success'):
+            working_features.append("✅ Partner-only listing creation working")
+        else:
+            failing_features.append("❌ Partner-only listing creation failed")
+        
+        # Check API structure
+        if results.get('api_structure', {}).get('success'):
+            working_features.append("✅ Partner data structure correct")
+        else:
+            failing_features.append("❌ Partner data structure issues")
+        
+        # Check authenticated browse
+        if results.get('authenticated_browse', {}).get('success'):
+            working_features.append("✅ Authenticated browse with partner data working")
+        else:
+            failing_features.append("❌ Authenticated browse partner data issues")
+        
+        # Check anonymous filtering
+        if results.get('anonymous_browse', {}).get('success'):
+            working_features.append("✅ Anonymous partner filtering working")
+        else:
+            failing_features.append("❌ Anonymous partner filtering failed")
+        
+        # Final assessment
+        if not failing_features:
+            self.log_result(
+                "Partner Badge Functionality Analysis", 
+                True, 
+                f"✅ ALL PARTNER BADGE FEATURES WORKING: {'; '.join(working_features)}"
+            )
+        else:
+            self.log_result(
+                "Partner Badge Functionality Analysis", 
+                False, 
+                f"❌ PARTNER BADGE ISSUES FOUND: {len(working_features)} working, {len(failing_features)} failing. Issues: {'; '.join(failing_features)}"
+            )
+        
+        return len(failing_features) == 0
+
+    async def run_all_tests(self):
+        """Run all Partner Badge functionality tests"""
+        print("🚀 CATALORO MARKETPLACE - PARTNER BADGE FUNCTIONALITY TESTING")
+        print("=" * 80)
+        print()
+        
+        # Step 1: Admin Authentication
+        print("📋 STEP 1: Admin Authentication")
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        
+        if not admin_token:
+            print("❌ CRITICAL: Admin login failed - cannot proceed with testing")
+            return False
+        
+        print(f"✅ Admin authenticated: {admin_user.get('full_name')} (ID: {admin_user_id})")
+        print()
+        
+        # Initialize results tracking
         results = {}
         
-        # Step 1: Setup - Login as admin user and demo user
-        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
-        if not admin_token:
-            self.log_result("Partner Management Setup", False, "Failed to login as admin")
+        # Step 2: Create NEW Partner-Only Listing
+        print("📋 STEP 2: Create NEW Partner-Only Listing")
+        results['listing_creation'] = await self.test_create_partner_badge_listing(admin_token, admin_user_id)
+        
+        if not results['listing_creation'].get('success'):
+            print("❌ CRITICAL: Partner-only listing creation failed - cannot proceed with badge testing")
             return False
         
-        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
-        if not demo_token:
-            self.log_result("Partner Management Setup", False, "Failed to login as demo user")
-            return False
+        listing_id = results['listing_creation'].get('listing_id')
+        print(f"✅ Partner-only listing created: {listing_id}")
+        print()
         
-        print(f"   Testing with admin ID: {admin_user_id}")
-        print(f"   Testing with demo ID: {demo_user_id}")
+        # Step 3: Verify API Response Structure
+        print("📋 STEP 3: Verify API Response Structure")
+        results['api_structure'] = await self.test_verify_partner_data_structure(admin_token, listing_id)
+        print()
         
-        # Step 2: Test User Search API
-        print("\n   🔍 Test User Search API:")
-        search_result = await self.test_user_search_api(admin_token)
-        results['user_search'] = search_result
+        # Step 4: Test Authenticated Browse Endpoint
+        print("📋 STEP 4: Test Authenticated Browse Endpoint")
+        results['authenticated_browse'] = await self.test_authenticated_browse_partner_data(admin_token, listing_id)
+        print()
         
-        # Step 3: Test Partner Management APIs
-        print("\n   🤝 Test Partner Management APIs:")
-        partner_mgmt_result = await self.test_partner_management_workflow(admin_token, admin_user_id, demo_user_id)
-        results['partner_management'] = partner_mgmt_result
+        # Step 5: Test Anonymous Browse Endpoint
+        print("📋 STEP 5: Test Anonymous Browse Endpoint")
+        results['anonymous_browse'] = await self.test_anonymous_browse_partner_filtering(listing_id)
+        print()
         
-        # Step 4: Test Partner Visibility in Listings
-        print("\n   👁️ Test Partner Visibility in Listings:")
-        visibility_result = await self.test_partner_visibility_functionality(admin_token, demo_token, admin_user_id, demo_user_id)
-        results['partner_visibility'] = visibility_result
+        # Final Analysis
+        print("📋 FINAL ANALYSIS: Partner Badge Functionality Testing Results")
+        print("=" * 80)
+        success = await self.analyze_partner_badge_results(results)
         
-        # Step 5: Test Image Optimization Fixes
-        print("\n   🖼️ Test Image Optimization Fixes:")
-        image_opt_result = await self.test_image_optimization_fixes(admin_token, admin_user_id)
-        results['image_optimization'] = image_opt_result
-        
-        # Step 6: Test Listing Reactivation
-        print("\n   🔄 Test Listing Reactivation:")
-        reactivation_result = await self.test_listing_reactivation(admin_token, admin_user_id)
-        results['listing_reactivation'] = reactivation_result
-        
-        # Step 7: Final Analysis
-        print("\n   📈 Final Analysis:")
-        await self.analyze_partner_management_results(results)
-        
-        return True
+        return success
     
     def print_summary(self):
         """Print test summary"""
