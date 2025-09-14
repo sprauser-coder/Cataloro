@@ -180,12 +180,13 @@ function SimpleLoginPage() {
 
       const data = await response.json();
       
-      // Store user data and redirect to main app
-      localStorage.setItem('cataloro_token', data.token);
-      localStorage.setItem('cataloro_user', JSON.stringify(data.user));
+      console.log('🔐 Login successful, updating auth context');
+      
+      // Update AuthContext with login data
+      await login(data.user, data.token);
       
       // Redirect to marketplace
-      window.location.href = '/browse';
+      navigate('/browse');
       
     } catch (error) {
       setError(error.message || 'Login failed. Please check your credentials.');
