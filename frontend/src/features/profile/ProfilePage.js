@@ -784,9 +784,9 @@ function ProfilePage() {
           avatar_url: result.avatar_url
         }));
         
-        // Update user context
+        // Update user context using the proper updateUser function
         const updatedUser = { ...user, avatar_url: result.avatar_url };
-        localStorage.setItem('cataloro_user', JSON.stringify(updatedUser));
+        updateUser(updatedUser); // This will update both context and localStorage
         
         showToast('Profile picture updated successfully!', 'success');
       } else {
