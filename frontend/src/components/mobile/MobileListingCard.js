@@ -341,7 +341,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
                 </h3>
                 <div className="text-right">
                   <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                    {formatPrice(currentListing.bid_info?.has_bids && currentListing.bid_info?.highest_bid 
+                    {formatEuro(currentListing.bid_info?.has_bids && currentListing.bid_info?.highest_bid 
                       ? currentListing.bid_info.highest_bid 
                       : currentListing.price)}
                   </p>
