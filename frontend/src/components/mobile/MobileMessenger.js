@@ -107,6 +107,8 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
           return;
         }
         
+        processedMessages++;
+        
         const otherUserId = msg.sender_id === user.id ? msg.recipient_id : msg.sender_id;
         const otherUserName = msg.sender_id === user.id ? msg.recipient_name : msg.sender_name;
         
