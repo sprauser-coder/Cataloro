@@ -78,21 +78,25 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   }, [messages, view]);
 
   const loadConversations = async () => {
-    console.log('🔄 Loading conversations - user:', user);
-    if (!user) {
-      console.log('❌ No user found in loadConversations');
+    if (!user || !user.id) {
+      console.log('❌ No user available for loading conversations');
       return;
     }
-    
+
+    console.log('🔍 Loading conversations for user:', user.id);
+
     try {
-      setLoading(true);
-      console.log('📞 Calling liveService.getUserMessages with user.id:', user.id);
       const userMessages = await liveService.getUserMessages(user.id);
-      console.log('✅ Got user messages:', userMessages);
+      console.log(`🔍 Loaded ${userMessages.length} total messages`);
       
-      // Group messages into conversations (same logic as desktop version)
       const conversationsMap = new Map();
+      
+      // Filter messages to only show those from the last 7 days  
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      console.log('🔍 Filtering messages newer than:', sevenDaysAgo.toISOString());
+      
+      let processedMessages = 0;
+      let unreadMessages = 0;
       
       userMessages.forEach(msg => {
         const messageDate = new Date(msg.created_at);
