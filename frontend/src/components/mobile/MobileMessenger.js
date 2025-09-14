@@ -132,12 +132,14 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
           conversation.lastMessage = msg;
         }
         
-        if (!msg.is_read && msg.sender_id !== user.id) {
+        // Only count messages that are explicitly not read (is_read === false, not undefined)
+        // and not from the current user and not self-messages
+        if (msg.is_read === false && msg.sender_id !== user.id && msg.sender_id !== msg.recipient_id) {
           conversation.unreadCount++;
           unreadMessages++;
           console.log(`🔍 Found unread message from ${msg.sender_id} to ${msg.recipient_id}, is_read=${msg.is_read}, conversation unreadCount now: ${conversation.unreadCount}`);
         } else {
-          console.log(`🔍 Message from ${msg.sender_id} to ${msg.recipient_id}, is_read=${msg.is_read}, sender is current user: ${msg.sender_id === user.id}`);
+          console.log(`🔍 Message from ${msg.sender_id} to ${msg.recipient_id}, is_read=${msg.is_read}, sender is current user: ${msg.sender_id === user.id}, is self-message: ${msg.sender_id === msg.recipient_id}`);
         }
       });
       
