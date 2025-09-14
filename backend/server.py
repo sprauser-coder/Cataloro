@@ -4440,14 +4440,31 @@ async def get_all_listings(
     search: str = None,
     status: str = "active",  # Default to active listings only
     limit: int = None,  # No default limit - let frontend specify
-    offset: int = 0
+    offset: int = 0,
+    request: Request = None  # For optional authentication
 ):
-    """Get all listings with optional filtering - OPTIMIZED with Redis caching"""
+    """Get all listings with optional filtering - OPTIMIZED with Redis caching and partner visibility"""
     try:
-        # Create cache key for this specific query
-        cache_key = f"listings_v2_{category or 'all'}_{min_price or 0}_{max_price or 999999}_{condition or 'all'}_{search or ''}_{status}_{limit or 'all'}_{offset}"
+        # Get current user if authenticated (optional)
+        current_user = None
+        try:
+            auth_header = request.headers.get("authorization") if request else None
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+                payload = security_service.verify_token(token)
+                if payload:
+                    current_user = await db.users.find_one({"id": payload.get("user_id")})
+        except:
+            # Authentication is optional for browsing
+            pass
         
-        # Try to get cached results first
+        current_time = datetime.utcnow()
+        
+        # Create cache key for this specific query (include user for partner filtering)
+        user_cache_key = current_user.get("id", "anonymous") if current_user else "anonymous"
+        cache_key = f"listings_v3_{user_cache_key}_{category or 'all'}_{min_price or 0}_{max_price or 999999}_{condition or 'all'}_{search or ''}_{status}_{limit or 'all'}_{offset}"
+        
+        # Try to get cached results first (shorter cache for partner listings)
         cached_listings = await cache_service.get_cached_listings(cache_key)
         if cached_listings:
             logger.info(f"📋 Returning cached listings for key: {cache_key[:50]}...")
@@ -4458,6 +4475,40 @@ async def get_all_listings(
         # Status filtering - default to active only for admin listings management
         if status and status != 'all':
             query['status'] = status
+        
+        # Partner visibility filtering
+        if current_user:
+            # Get user's partnerships (where current user is the partner)
+            user_partnerships = await db.user_partners.find({
+                "partner_id": current_user.get("id"),
+                "status": "active"
+            }).to_list(length=None)
+            partner_of_users = [p.get("user_id") for p in user_partnerships]
+            
+            # Show listings that are either:
+            # 1. Public (not partners-only OR public_at time has passed)
+            # 2. Partner-only listings from sellers who have current user as partner
+            query["$or"] = [
+                # Public listings (either never had partner restriction or time has passed)
+                {
+                    "$or": [
+                        {"is_partners_only": {"$ne": True}},
+                        {"public_at": {"$lte": current_time.isoformat()}}
+                    ]
+                },
+                # Partner-only listings from sellers who have current user as partner
+                {
+                    "is_partners_only": True,
+                    "public_at": {"$gt": current_time.isoformat()},
+                    "seller_id": {"$in": partner_of_users}
+                }
+            ]
+        else:
+            # Anonymous users only see public listings
+            query["$or"] = [
+                {"is_partners_only": {"$ne": True}},
+                {"public_at": {"$lte": current_time.isoformat()}}
+            ]
         
         if category and category != 'all':
             query['category'] = category
@@ -4473,11 +4524,33 @@ async def get_all_listings(
         
         # Add search functionality if provided
         if search:
-            query['$or'] = [
+            # Need to combine with existing $or query for partner visibility
+            search_conditions = [
                 {'title': {'$regex': search, '$options': 'i'}},
                 {'description': {'$regex': search, '$options': 'i'}},
                 {'category': {'$regex': search, '$options': 'i'}}
             ]
+            
+            # Combine search with partner visibility filtering
+            if "$or" in query:
+                visibility_conditions = query["$or"]
+                # Create combined AND condition
+                query = {
+                    "$and": [
+                        {"$or": visibility_conditions},
+                        {"$or": search_conditions}
+                    ]
+                }
+                # Add other filters to the AND condition
+                if category and category != 'all':
+                    query["$and"].append({'category': category})
+                if condition and condition != 'all':
+                    query["$and"].append({'condition': condition})
+                if 'price' in query:
+                    price_filter = query.pop('price')
+                    query["$and"].append({'price': price_filter})
+            else:
+                query['$or'] = search_conditions
         
         # Get listings from database
         listings_cursor = db.listings.find(query).sort("created_at", -1).skip(offset)
