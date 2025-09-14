@@ -4584,17 +4584,74 @@ async def get_user_menu_settings(user_id: str):
                 "user_role": menu_role
             }
         
-        # Filter menu items based on user role (including custom items)
+        # Define default settings to ensure new items like view_public_profile are included
+        default_settings = {
+            "desktop_menu": {
+                "about": {"enabled": True, "label": "About", "roles": ["admin", "manager", "seller", "buyer"]},
+                "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
+                "create_listing": {"enabled": True, "label": "Create Listing", "roles": ["admin", "manager", "seller"]},
+                "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
+                "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
+                "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                "admin_panel": {"enabled": True, "label": "Administration", "roles": ["admin", "manager"]},
+                "buy_management": {"enabled": True, "label": "Inventory", "roles": ["admin", "manager", "buyer"]},
+                "my_listings": {"enabled": True, "label": "My Listings", "roles": ["admin", "manager", "seller"]},
+                "favorites": {"enabled": True, "label": "Favorites", "roles": ["admin", "manager", "seller", "buyer"]},
+                "custom_items": []
+            },
+            "mobile_menu": {
+                "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
+                "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
+                "notifications": {"enabled": True, "label": "Notifications", "roles": ["admin", "manager", "seller", "buyer"]},
+                "create": {"enabled": True, "label": "Create", "roles": ["admin", "manager", "seller"]},
+                "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
+                "listings": {"enabled": True, "label": "Listings", "roles": ["admin", "manager", "seller"]},
+                "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                "view_public_profile": {"enabled": True, "label": "View Public Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                "admin_drawer": {"enabled": True, "label": "Admin", "roles": ["admin", "manager"]},
+                "custom_items": []
+            }
+        }
+        
+        # Merge database settings with defaults - database overrides defaults
+        merged_desktop = {**default_settings["desktop_menu"]}
+        merged_mobile = {**default_settings["mobile_menu"]}
+        
+        # Apply database overrides for desktop menu
+        desktop_db = menu_settings.get("desktop_menu", {})
+        for key, value in desktop_db.items():
+            if key == "custom_items":
+                merged_desktop["custom_items"] = value
+            elif key in merged_desktop:
+                # Merge database settings with defaults, keeping labels
+                merged_desktop[key] = {
+                    **merged_desktop[key],
+                    **value
+                }
+        
+        # Apply database overrides for mobile menu  
+        mobile_db = menu_settings.get("mobile_menu", {})
+        for key, value in mobile_db.items():
+            if key == "custom_items":
+                merged_mobile["custom_items"] = value
+            elif key in merged_mobile:
+                # Merge database settings with defaults, keeping labels
+                merged_mobile[key] = {
+                    **merged_mobile[key],
+                    **value
+                }
+        
+        # Filter merged menu items based on user role (including custom items)
         filtered_desktop = {}
         filtered_mobile = {}
         
-        # Filter regular menu items
-        for item_key, item_config in menu_settings.get("desktop_menu", {}).items():
+        # Filter regular menu items from merged settings
+        for item_key, item_config in merged_desktop.items():
             if item_key != "custom_items":  # Skip custom_items array, handle separately
                 if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
                     filtered_desktop[item_key] = item_config
         
-        for item_key, item_config in menu_settings.get("mobile_menu", {}).items():
+        for item_key, item_config in merged_mobile.items():
             if item_key != "custom_items":  # Skip custom_items array, handle separately
                 if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
                     filtered_mobile[item_key] = item_config
