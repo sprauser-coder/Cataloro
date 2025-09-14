@@ -1675,7 +1675,15 @@ class BackendTester:
                     else:
                         # Verify public_at is in the future (48 hours)
                         try:
-                            public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
+                            # Handle different datetime formats
+                            if public_at.endswith('Z'):
+                                public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
+                            elif '+' in public_at or public_at.endswith('00:00'):
+                                public_at_dt = datetime.fromisoformat(public_at)
+                            else:
+                                # Assume UTC if no timezone info
+                                public_at_dt = datetime.fromisoformat(public_at).replace(tzinfo=timezone.utc)
+                            
                             current_dt = datetime.now(timezone.utc)
                             hours_diff = (public_at_dt - current_dt).total_seconds() / 3600
                             
