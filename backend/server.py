@@ -10517,7 +10517,7 @@ async def get_public_profile(user_id: str):
             "country": user.get("country"),
             "is_business": user.get("is_business", False),
             "company_name": user.get("company_name") if user.get("is_business") else None,
-            "is_verified": user.get("is_verified", False),
+            "is_verified": user.get("verified", False),
             "seller_rating": avg_rating,
             "date_joined": formatted_date,
             "created_at": user.get("created_at"),
