@@ -351,7 +351,44 @@ function ProfilePage() {
     }
   };
 
-  // Load data when user changes
+  // Fetch user registration date
+  useEffect(() => {
+    const fetchRegistrationDate = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/registration-date`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setProfileData(prev => ({
+            ...prev,
+            date_joined: data.registration_date || data.created_at || data.date_joined
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching registration date:', error);
+        // Fallback to user data from auth context
+        if (user.created_at || user.date_joined) {
+          const registrationDate = user.created_at || user.date_joined;
+          const formattedDate = new Date(registrationDate).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short' 
+          });
+          setProfileData(prev => ({
+            ...prev,
+            date_joined: formattedDate
+          }));
+        }
+      }
+    };
+    
+    fetchRegistrationDate();
+  }, [user?.id]);
   useEffect(() => {
     if (user?.id) {
       fetchMyListings();
