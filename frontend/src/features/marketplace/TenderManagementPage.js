@@ -261,7 +261,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     if (!user) return;
     
     const confirmed = window.confirm(
-      `Reject tender offer of €${offerAmount.toFixed(2)} for "${listingTitle}"?\n\nThis will send a rejection notification to the bidder.`
+      `Reject tender offer of ${formatEuro(offerAmount)} for "${listingTitle}"?\n\nThis will send a rejection notification to the bidder.`
     );
     
     if (!confirmed) return;
