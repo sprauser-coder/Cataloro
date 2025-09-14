@@ -1675,7 +1675,6 @@ class BackendTester:
                     else:
                         # Verify public_at is in the future (48 hours)
                         try:
-                            from datetime import datetime
                             public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
                             current_dt = datetime.now(timezone.utc)
                             hours_diff = (public_at_dt - current_dt).total_seconds() / 3600
