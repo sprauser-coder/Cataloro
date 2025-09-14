@@ -180,6 +180,18 @@ function MyListingsPage() {
             <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Finish & publish later</div>
           </div>
         </button>
+        <button
+          onClick={() => handleTileClick('expired')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'expired' ? 'ring-2 ring-yellow-500 bg-yellow-50/20 dark:bg-yellow-900/20' : ''
+          }`}
+        >
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'expired').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Expired</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Can be reactivated</div>
+          </div>
+        </button>
       </div>
 
       {/* Filter Indicator */}
