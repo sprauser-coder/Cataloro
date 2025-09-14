@@ -405,7 +405,11 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
               <div
                 key={conversation.id}
                 onClick={() => handleConversationSelect(conversation)}
-                className="flex items-center space-x-3 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-colors"
+                className={`flex items-center space-x-3 p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-colors ${
+                  (conversation.unreadCount > 0 || conversation.unread_count > 0)
+                    ? 'bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
               >
                 {/* Avatar */}
                 <div className="relative">
