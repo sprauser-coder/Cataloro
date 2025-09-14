@@ -1699,46 +1699,49 @@ async def browse_listings(
         logger.info(f"📋 Found {len(listings)} listings for current page")
         
         # Add partner access information to listings for badge display
-        if current_user:
-            current_user_id = current_user.get("id")
-            # Get user's partnerships again for badge logic
+        current_user_id = current_user.get("id") if current_user else None
+        
+        # Get user's partnerships for badge logic (if authenticated)
+        partner_of_users = []
+        if current_user_id:
             user_partnerships = await db.user_partners.find({
                 "partner_id": current_user_id,
                 "status": "active"
             }).to_list(length=None)
             partner_of_users = [p.get("user_id") for p in user_partnerships]
+        
+        # Add partner access flags to each listing
+        for listing in listings:
+            listing_seller = listing.get("seller_id")
+            is_partner_only = listing.get("is_partners_only", False)
+            public_at_str = listing.get("public_at")
             
-            # Add partner access flags to each listing
-            for listing in listings:
-                listing_seller = listing.get("seller_id")
-                is_partner_only = listing.get("is_partners_only", False)
-                public_at_str = listing.get("public_at")
-                
-                # Determine why this listing is visible to current user
-                if is_partner_only and public_at_str:
-                    try:
-                        public_at = datetime.fromisoformat(public_at_str)
-                        is_still_partner_only = public_at > current_time
-                        
-                        if is_still_partner_only:
-                            if listing_seller == current_user_id:
-                                # User sees it because they're the seller
-                                listing["visibility_reason"] = "own_listing"
-                            elif listing_seller in partner_of_users:
-                                # User sees it because they're a partner
-                                listing["visibility_reason"] = "partner_access"
-                                listing["show_partner_badge"] = True
-                            else:
-                                # Shouldn't happen, but handle gracefully
-                                listing["visibility_reason"] = "unknown"
+            # Initialize default values
+            listing["visibility_reason"] = "public"
+            listing["show_partner_badge"] = False
+            
+            # Determine why this listing is visible to current user
+            if is_partner_only and public_at_str:
+                try:
+                    public_at = datetime.fromisoformat(public_at_str)
+                    is_still_partner_only = public_at > current_time
+                    
+                    if is_still_partner_only:
+                        if current_user_id and listing_seller == current_user_id:
+                            # User sees it because they're the seller
+                            listing["visibility_reason"] = "own_listing"
+                        elif current_user_id and listing_seller in partner_of_users:
+                            # User sees it because they're a partner
+                            listing["visibility_reason"] = "partner_access"
+                            listing["show_partner_badge"] = True
                         else:
-                            # Listing has become public
-                            listing["visibility_reason"] = "public_expired"
-                    except:
-                        listing["visibility_reason"] = "error"
-                else:
-                    # Regular public listing
-                    listing["visibility_reason"] = "public"
+                            # Anonymous user or non-partner (shouldn't see this unless there's a bug)
+                            listing["visibility_reason"] = "partner_only_anonymous"
+                    else:
+                        # Listing has become public
+                        listing["visibility_reason"] = "public_expired"
+                except:
+                    listing["visibility_reason"] = "time_parse_error"
         
         # Apply bid-based filtering if user_id is provided and bid_filter is specified
         # NOTE: This should ideally be moved to the query level for better performance
