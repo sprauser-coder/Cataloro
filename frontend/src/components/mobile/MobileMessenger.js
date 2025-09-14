@@ -174,10 +174,13 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     }
   };
 
-  const handleConversationSelect = (conversation) => {
+  const handleConversationSelect = async (conversation) => {
     setCurrentConversation(conversation);
     setView('conversation');
     loadConversationMessages(conversation);
+    
+    // Mark all unread messages in this conversation as read
+    await markConversationAsRead(conversation);
   };
 
   const handleSendMessage = async () => {
