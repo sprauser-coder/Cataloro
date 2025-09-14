@@ -1593,12 +1593,57 @@ async def update_profile(user_id: str, profile_data: dict):
         # Get updated user data
         updated_user = await db.users.find_one({"id": user_id})
         if updated_user:
+            # Update all user's listings if key fields have changed
+            listing_updates = {}
+            listings_updated = 0
+            
+            # Check if fields that affect listings have changed
+            if "username" in profile_data:
+                listing_updates["seller.username"] = profile_data["username"]
+            
+            if "full_name" in profile_data:
+                listing_updates["seller.full_name"] = profile_data["full_name"]
+                
+            if "is_business" in profile_data:
+                listing_updates["seller.is_business"] = profile_data["is_business"]
+                
+            if "company_name" in profile_data:
+                listing_updates["seller.company_name"] = profile_data["company_name"]
+                
+            # Also preserve current verification status in listings
+            if updated_user.get("verified") is not None:
+                listing_updates["seller.verified"] = updated_user.get("verified")
+            
+            # Update listings if there are changes to propagate
+            if listing_updates:
+                listing_updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+                
+                listings_result = await db.listings.update_many(
+                    {"seller_id": user_id},
+                    {"$set": listing_updates}
+                )
+                listings_updated = listings_result.modified_count
+                
+                logger.info(f"Updated {listings_updated} listings for user {user_id} with changes: {list(listing_updates.keys())}")
+            
             # Trigger system notifications for profile update event
             await trigger_system_notifications(user_id, "profile_update")
             
             return {
                 "message": "Profile updated successfully",
-                "user": serialize_doc(updated_user)
+                "listings_updated": listings_updated,
+                "user": {
+                    "id": updated_user.get("id"),
+                    "username": updated_user.get("username"),
+                    "email": updated_user.get("email"),
+                    "full_name": updated_user.get("full_name"),
+                    "phone": updated_user.get("phone"),
+                    "bio": updated_user.get("bio"),
+                    "timezone": updated_user.get("timezone"),
+                    "is_business": updated_user.get("is_business"),
+                    "company_name": updated_user.get("company_name"),
+                    "verified": updated_user.get("verified", False)
+                }
             }
         else:
             raise HTTPException(status_code=500, detail="Failed to retrieve updated profile")
