@@ -1174,7 +1174,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-base font-bold text-gray-900 dark:text-white">
-                          {user?.full_name || user?.username}
+                          {user?.username || user?.full_name}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-white/70">{user?.email}</p>
                       </div>
