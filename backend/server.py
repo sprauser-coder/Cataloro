@@ -10034,6 +10034,8 @@ async def get_registration_date(user_id: str):
             raise HTTPException(status_code=404, detail="User not found")
         
         registration_date = user.get("created_at") or user.get("date_joined")
+        logger.info(f"🔍 Registration date raw value: {registration_date}")
+        
         if registration_date:
             # Format date nicely
             if isinstance(registration_date, str):
@@ -10042,7 +10044,12 @@ async def get_registration_date(user_id: str):
                     date_str = registration_date
                     logger.info(f"Original date string: {date_str}")
                     
-                    # Simple approach: if it has T but no timezone, add UTC
+                    # Remove microseconds if present (e.g., 2025-09-09T10:20:41.643000 -> 2025-09-09T10:20:41)
+                    if '.' in date_str:
+                        date_str = date_str.split('.')[0]
+                        logger.info(f"Removed microseconds: {date_str}")
+                    
+                    # Add timezone if missing
                     if 'T' in date_str and not ('+' in date_str or 'Z' in date_str):
                         date_str = date_str + '+00:00'
                         logger.info(f"Added UTC timezone: {date_str}")
