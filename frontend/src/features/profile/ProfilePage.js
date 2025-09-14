@@ -573,6 +573,11 @@ function ProfilePage() {
   };
 
   const handleUpdatePassword = async () => {
+    if (!passwordData.currentPassword) {
+      showToast('Current password is required', 'error');
+      return;
+    }
+    
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       showToast('New passwords do not match', 'error');
       return;
@@ -584,17 +589,33 @@ function ProfilePage() {
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          current_password: passwordData.currentPassword,
+          new_password: passwordData.newPassword
+        })
       });
       
-      showToast('Password updated successfully!', 'success');
+      const result = await response.json();
+      
+      if (response.ok) {
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        showToast('Password updated successfully!', 'success');
+      } else {
+        showToast(result.detail || 'Failed to update password', 'error');
+      }
     } catch (error) {
+      console.error('Error updating password:', error);
       showToast('Failed to update password', 'error');
     }
   };
