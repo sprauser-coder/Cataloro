@@ -1199,6 +1199,35 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     }
   };
 
+  const handleToggleVerification = async (userId, verified) => {
+    try {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/verify`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ verified })
+      });
+
+      if (response.ok) {
+        showToast(
+          verified ? 'User verified successfully' : 'User verification removed successfully',
+          'success'
+        );
+        onUpdateUser(); // Refresh the users list
+      } else {
+        const errorText = await response.text();
+        console.error('Toggle verification error:', errorText);
+        showToast('Error updating user verification status', 'error');
+      }
+    } catch (error) {
+      showToast('Error updating user verification status', 'error');
+      console.error('Toggle verification error:', error);
+    }
+  };
+
   const handleUpdateUser = async (userData) => {
     try {
       const token = localStorage.getItem('cataloro_token');
