@@ -1567,12 +1567,21 @@ async def browse_listings(
         current_user = None
         try:
             auth_header = request.headers.get("authorization") if request else None
+            logger.info(f"🔍 AUTH DEBUG: Authorization header present: {auth_header is not None}")
+            if auth_header:
+                logger.info(f"🔍 AUTH DEBUG: Auth header starts with Bearer: {auth_header.startswith('Bearer ')}")
+            
             if auth_header and auth_header.startswith("Bearer "):
                 token = auth_header.split(" ")[1]
+                logger.info(f"🔍 AUTH DEBUG: Extracted token length: {len(token) if token else 0}")
                 payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 if payload:
+                    logger.info(f"🔍 AUTH DEBUG: Token payload user_id: {payload.get('user_id')}")
                     current_user = await db.users.find_one({"id": payload.get("user_id")})
-        except:
+                    if current_user:
+                        logger.info(f"🔍 AUTH DEBUG: Found user in database: {current_user.get('username')}")
+        except Exception as e:
+            logger.info(f"🔍 AUTH DEBUG: Authentication failed: {str(e)}")
             # Authentication is optional for browsing
             pass
         
