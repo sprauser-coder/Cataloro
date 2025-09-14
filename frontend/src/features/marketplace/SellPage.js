@@ -85,6 +85,12 @@ function SellPage() {
 
   const tabs = [
     {
+      id: 'listings',
+      label: 'My Listings',
+      icon: Package,
+      description: 'Manage your active listings'
+    },
+    {
       id: 'tenders',
       label: 'Sell Tenders',
       icon: DollarSign,
@@ -95,12 +101,6 @@ function SellPage() {
       label: 'Accepted Tenders',
       icon: CheckCircle,
       description: 'Manage accepted tenders and orders'
-    },
-    {
-      id: 'listings',
-      label: 'My Listings',
-      icon: Package,
-      description: 'Manage your active listings'
     },
     {
       id: 'completed',
