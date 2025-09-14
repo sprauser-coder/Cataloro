@@ -10,7 +10,7 @@ import json
 import time
 from datetime import datetime
 
-BACKEND_URL = "https://cataloro-partners.preview.emergentagent.com/api"
+BACKEND_URL = "https://mobilefixed-market.preview.emergentagent.com/api"
 
 class DetailedPerformanceTester:
     def __init__(self):

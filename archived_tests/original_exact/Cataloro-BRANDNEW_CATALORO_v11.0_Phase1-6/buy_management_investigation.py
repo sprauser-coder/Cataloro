@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://cataloro-partners.preview.emergentagent.com/api"
+BASE_URL = "https://mobilefixed-market.preview.emergentagent.com/api"
 
 class BuyManagementInvestigator:
     def __init__(self):

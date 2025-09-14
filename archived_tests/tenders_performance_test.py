@@ -25,7 +25,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://cataloro-partners.preview.emergentagent.com/api"
+BACKEND_URL = "https://mobilefixed-market.preview.emergentagent.com/api"
 
 # Performance Targets (from review request)
 SELLER_TENDERS_TARGET_MS = 200  # Seller tenders overview: <200ms
