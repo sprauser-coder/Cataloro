@@ -1,49 +1,53 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - INDEPENDENT COMPLETION WORKFLOW TESTING
-Testing the fixed completion workflow to ensure buyer and seller completions work independently
+CATALORO MARKETPLACE - PARTNER MANAGEMENT & VISIBILITY TESTING
+Testing the new partner management APIs and partner visibility functionality
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Separate Completion Logic**:
-   - Test POST /api/user/complete-transaction from seller perspective
-   - Test POST /api/user/complete-transaction from buyer perspective  
-   - Verify that each completion only affects that user's view
+1. **New Partner Management APIs**:
+   - GET /api/user/partners/{user_id} - Get user's preferred partners
+   - POST /api/user/partners - Add a user as a preferred partner
+   - DELETE /api/user/partners/{partner_id} - Remove a user from preferred partners
+   - GET /api/users/search?q={query} - Search users by name or email for partner selection
 
-2. **Test Completed Transactions Filtering**:
-   - Test GET /api/user/completed-transactions/admin_user_1 (seller completion only)
-   - Verify seller-completed transactions appear only for seller, not buyer
-   - Test with another user ID to verify buyer-completed transactions
+2. **Updated APIs**:
+   - POST /api/listings - Now handles partner visibility fields (show_partners_first, partners_visibility_hours, public_at, is_partners_only)
+   - GET /api/listings - Now filters listings based on partner visibility and current user authentication
 
-3. **Test Workflow Independence**:
-   - Create a scenario where seller completes but buyer does not
-   - Verify seller sees it in completed transactions
-   - Verify buyer does NOT see it in completed transactions
-   - Test the reverse scenario (buyer completes but seller does not)
+3. **Key Testing Scenarios**:
+   - Create a user partnership relationship
+   - Create a listing with "show_partners_first" enabled
+   - Verify that the listing is only visible to partners during the specified time period
+   - Verify that anonymous users can't see partner-only listings
+   - Verify that after the time period expires, the listing becomes public
+   - Test that admin is automatically added as a partner when adding other partners
 
-4. **Test Transaction States**:
-   - Verify seller_confirmed_at and buyer_confirmed_at work independently
-   - Check that is_fully_completed only becomes true when BOTH parties confirm
-   - Verify data integrity with mixed completion states
-
-5. **Test API Response Structure**:
-   - Verify completed transactions API returns correct user_role_in_transaction
-   - Check that only relevant transactions are returned for each user
-   - Ensure proper filtering based on confirmation timestamps
+4. **Other Fixes**:
+   - GET /api/user/my-deals/{user_id} - Should use optimized images instead of base64
+   - GET /api/tenders/seller/{seller_id}/accepted - Should use optimized images instead of base64  
+   - PUT /api/listings/{listing_id}/reactivate - Should work for expired listings
 
 CRITICAL ENDPOINTS BEING TESTED:
 - POST /api/auth/login (user authentication)
-- POST /api/user/complete-transaction (complete a transaction from buyer/seller perspective)
-- GET /api/user/completed-transactions/{user_id} (get completed transactions with proper filtering)
-- GET /api/tenders/buyer/{buyer_id} (get buyer tenders to find test data)
-- GET /api/tenders/seller/{seller_id}/accepted (get seller accepted tenders to find test data)
+- GET /api/user/partners/{user_id} (get user's preferred partners)
+- POST /api/user/partners (add a user as a preferred partner)
+- DELETE /api/user/partners/{partner_id} (remove a user from preferred partners)
+- GET /api/users/search (search users by name or email)
+- POST /api/listings (create listing with partner visibility)
+- GET /api/listings (browse listings with partner filtering)
+- GET /api/user/my-deals/{user_id} (get user deals with optimized images)
+- GET /api/tenders/seller/{seller_id}/accepted (get accepted tenders with optimized images)
+- PUT /api/listings/{listing_id}/reactivate (reactivate expired listings)
 
 EXPECTED RESULTS:
-- ✅ Seller and buyer completions work independently
-- ✅ Completed transactions filtering works correctly for each user
-- ✅ seller_confirmed_at and buyer_confirmed_at timestamps work independently
-- ✅ is_fully_completed only true when both parties confirm
-- ✅ API responses include correct user_role_in_transaction
-- ✅ Workflow independence verified in both directions
+- ✅ Partner management APIs work correctly
+- ✅ Partner visibility functionality works as expected
+- ✅ Listings are properly filtered based on partner relationships
+- ✅ Anonymous users cannot see partner-only listings
+- ✅ Time-based visibility works correctly
+- ✅ Admin is automatically added as partner
+- ✅ Image optimization is working in all endpoints
+- ✅ Listing reactivation works for expired listings
 """
 
 import asyncio
