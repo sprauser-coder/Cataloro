@@ -4456,7 +4456,7 @@ async def get_all_listings(
             auth_header = request.headers.get("authorization") if request else None
             if auth_header and auth_header.startswith("Bearer "):
                 token = auth_header.split(" ")[1]
-                payload = security_service.verify_token(token)
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 if payload:
                     current_user = await db.users.find_one({"id": payload.get("user_id")})
         except:
