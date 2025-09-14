@@ -1734,6 +1734,37 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                       {user.is_active ? 'ACTIVE' : 'SUSPENDED'}
                     </span>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <span className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.verified ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300'
+                      }`}>
+                        {user.verified ? (
+                          <>
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            VERIFIED
+                          </>
+                        ) : (
+                          'UNVERIFIED'
+                        )}
+                      </span>
+                      <button
+                        onClick={() => handleToggleVerification(user.id, !user.verified)}
+                        className={`p-1 rounded transition-colors ${
+                          user.verified 
+                            ? 'text-red-600 hover:text-red-900 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/30' 
+                            : 'text-blue-600 hover:text-blue-900 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/30'
+                        }`}
+                        title={user.verified ? 'Remove Verification' : 'Verify User'}
+                      >
+                        {user.verified ? (
+                          <X className="w-3 h-3" />
+                        ) : (
+                          <CheckCircle className="w-3 h-3" />
+                        )}
+                      </button>
+                    </div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
