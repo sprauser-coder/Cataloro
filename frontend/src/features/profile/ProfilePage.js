@@ -657,6 +657,94 @@ function ProfilePage() {
       showToast('Failed to delete account', 'error');
     }
   };
+
+  // Export Data functionality
+  const handleExportData = async () => {
+    try {
+      showToast('Preparing your data export...', 'info');
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/export-data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          format: 'pdf'
+        })
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `cataloro-data-export-${user.username || user.id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showToast('Data export downloaded successfully!', 'success');
+      } else {
+        const error = await response.json();
+        showToast(error.detail || 'Failed to export data', 'error');
+      }
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      showToast('Failed to export data', 'error');
+    }
+  };
+
+  // Soft Delete Account functionality
+  const handleDeleteAccount = async () => {
+    const confirmation = window.confirm(
+      'Are you sure you want to delete your account?\n\nThis will:\n- Deactivate your account\n- Hide your listings\n- Preserve your data for 30 days\n- Allow account recovery within 30 days\n\nType "DELETE" to confirm.'
+    );
+    
+    if (!confirmation) return;
+    
+    const deleteConfirmation = window.prompt('Type "DELETE" to confirm account deletion:');
+    if (deleteConfirmation !== 'DELETE') {
+      showToast('Account deletion cancelled', 'info');
+      return;
+    }
+    
+    try {
+      showToast('Processing account deletion...', 'info');
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/delete-account`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          deletion_type: 'soft'
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        showToast('Account deleted successfully. You can recover it within 30 days.', 'success');
+        // Logout and redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('cataloro_user');
+        window.location.href = '/login';
+      } else {
+        showToast(result.detail || 'Failed to delete account', 'error');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      showToast('Failed to delete account', 'error');
+    }
+  };
+
+  const handleUpdatePassword = async () => {
     if (!passwordData.currentPassword) {
       showToast('Current password is required', 'error');
       return;
