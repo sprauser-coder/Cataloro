@@ -334,6 +334,7 @@ function ProfilePage() {
         lastActive: new Date().toISOString().split('T')[0]
       };
       
+      console.log('🔍 Final calculated stats:', stats);
       setAccountStats(stats);
       
       // Update profileData with calculated seller rating
@@ -344,7 +345,16 @@ function ProfilePage() {
       }));
     };
 
-    calculateStats();
+    if (user && allProducts && orderHistory && favorites) {
+      calculateStats();
+    } else {
+      console.log('⚠️ Missing data for stats calculation:', {
+        hasUser: !!user,
+        hasAllProducts: !!allProducts,
+        hasOrderHistory: !!orderHistory,
+        hasFavorites: !!favorites
+      });
+    }
   }, [allProducts, orderHistory, favorites, user]);
 
   const handleInputChange = (e) => {
