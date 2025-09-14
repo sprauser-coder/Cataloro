@@ -10388,15 +10388,15 @@ async def get_public_profile(user_id: str):
                         
                     date_obj = datetime.fromisoformat(date_str)
                     formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
-                    print(f"DEBUG: Public profile string date formatted: {formatted_date}")
+                    logger.info(f"Public profile string date formatted: {formatted_date}")
                 elif isinstance(date_joined, datetime):
                     # Handle datetime objects directly
                     formatted_date = date_joined.strftime("%b %Y")  # e.g., "Sep 2025"
-                    print(f"DEBUG: Public profile datetime object formatted: {formatted_date}")
+                    logger.info(f"Public profile datetime object formatted: {formatted_date}")
                 else:
                     # Convert other types to string and try parsing
                     date_str = str(date_joined)
-                    print(f"DEBUG: Public profile converted to string: {date_str}")
+                    logger.info(f"Public profile converted to string: {date_str}")
                     
                     # Remove microseconds if present
                     if '.' in date_str:
@@ -10413,9 +10413,8 @@ async def get_public_profile(user_id: str):
                         date_obj = datetime.strptime(date_str[:10], "%Y-%m-%d")
                     
                     formatted_date = date_obj.strftime("%b %Y")
-                    print(f"DEBUG: Public profile converted string formatted: {formatted_date}")
+                    logger.info(f"Public profile converted string formatted: {formatted_date}")
             except Exception as e:
-                print(f"DEBUG: Error formatting public profile date {date_joined}: {str(e)}")
                 logger.error(f"Error formatting public profile date {date_joined}: {str(e)}")
                 # Fallback parsing
                 try:
@@ -10427,11 +10426,11 @@ async def get_public_profile(user_id: str):
                                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                         month_name = month_names[int(month_num)]
                         formatted_date = f"{month_name} {year}"
-                        print(f"DEBUG: Public profile fallback parsing successful: {formatted_date}")
+                        logger.info(f"Public profile fallback parsing successful: {formatted_date}")
                     else:
                         formatted_date = "Unknown"
                 except Exception as e2:
-                    print(f"DEBUG: Public profile fallback parsing failed: {str(e2)}")
+                    logger.error(f"Public profile fallback parsing failed: {str(e2)}")
                     formatted_date = "Unknown"
         else:
             formatted_date = "Unknown"
