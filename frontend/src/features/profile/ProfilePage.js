@@ -599,25 +599,28 @@ function ProfilePage() {
           
           {/* Navigation Tabs */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 mb-8">
-            <div className="flex space-x-1 p-2">
+            <div className="flex px-1 sm:px-2 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {[
-                { id: 'profile', label: 'Profile Info', icon: User },
-                { id: 'security', label: 'Security', icon: Shield },
-                { id: 'preferences', label: 'Preferences', icon: Settings },
-                { id: 'partners', label: 'Partners', icon: Users },
-                { id: 'stats', label: 'Statistics', icon: TrendingUp }
+                { id: 'profile', label: 'Profile Info', shortLabel: 'Profile', icon: User },
+                { id: 'security', label: 'Security', shortLabel: 'Security', icon: Shield },
+                { id: 'preferences', label: 'Preferences', shortLabel: 'Prefs', icon: Settings },
+                { id: 'partners', label: 'Partners', shortLabel: 'Partners', icon: Users },
+                { id: 'stats', label: 'Statistics', shortLabel: 'Stats', icon: TrendingUp }
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-colors flex-1 justify-center ${
+                  className={`flex-1 py-3 sm:py-4 px-1 sm:px-3 rounded-lg font-medium transition-colors whitespace-nowrap text-center flex-shrink-0 ${
                     activeTab === tab.id
                       ? 'bg-blue-600 text-white'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <tab.icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
+                  <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+                    <tab.icon className="w-4 h-4" />
+                    <span className="hidden sm:inline text-xs sm:text-sm">{tab.label}</span>
+                    <span className="sm:hidden text-xs">{tab.shortLabel}</span>
+                  </div>
                 </button>
               ))}
             </div>
