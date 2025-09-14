@@ -330,8 +330,8 @@ function ProfilePage() {
       // Use seller_id to match listings instead of username/full_name for consistency
       const userListings = allProducts.filter(p => p.seller_id === user?.id);
       const activeListings = userListings.filter(p => p.inStock !== false);
-      const userOrders = orderHistory || [];
-      const completedOrders = userOrders.filter(o => o.status === 'completed');
+      const userOrders = Array.isArray(orderHistory) ? orderHistory : [];
+      const completedOrders = userOrders.filter(o => o && o.status === 'completed');
       
       console.log('🔍 Stats calculation:', {
         userListingsCount: userListings.length,
