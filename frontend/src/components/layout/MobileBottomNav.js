@@ -105,7 +105,50 @@ function MobileBottomNav() {
     return location.pathname === path;
   };
 
-  const allBottomNavItems = [
+  // Check if user is seller-only (you can define this logic based on user role/preferences)
+  const isSellerOnly = user?.role === 'seller' || user?.account_type === 'seller_only' || 
+                      (user?.is_business && !user?.can_buy);
+
+  const allBottomNavItems = isSellerOnly ? [
+    // Seller-only navigation: Browse, Messages, Add Listing, Notifications, Sell
+    {
+      label: 'Browse',
+      path: '/browse',
+      icon: Store,
+      badge: null,
+      key: 'browse'
+    },
+    {
+      label: 'Messages',
+      path: '/messages',
+      icon: MessageCircle,
+      badge: unreadMessages > 0 ? unreadMessages : null,
+      key: 'messages'
+    },
+    {
+      label: 'Add Listing',
+      path: '/create-listing',
+      icon: Plus,
+      badge: null,
+      highlight: true, // Central create button
+      key: 'create'
+    },
+    {
+      label: 'Notifications',
+      path: '/notifications',
+      icon: Bell,
+      badge: null, // Could add notification count here
+      key: 'notifications'
+    },
+    {
+      label: 'Sell',
+      path: '/sell',
+      icon: Package,
+      badge: null,
+      key: 'sell'
+    }
+  ] : [
+    // Regular navigation: Browse, Messages, Create, Buy, Sell
     {
       label: 'Browse',
       path: '/browse',
