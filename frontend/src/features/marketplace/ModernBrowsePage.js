@@ -1626,17 +1626,45 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
             </div>
           )}
 
-          {/* Partner Offer Badge - Show for active partner-only listings */}
-          {item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() && (
-            <div>
-              <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
-                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                </svg>
-                Partner Offer
-              </span>
-            </div>
-          )}
+          {/* Partner Offer Badge - Show for active partner-only listings with countdown */}
+          {item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() && (() => {
+            const publicDate = new Date(item.public_at);
+            const now = new Date();
+            const timeRemaining = publicDate - now;
+            
+            // Calculate hours and minutes remaining
+            const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
+            const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            
+            // Format time display
+            let timeText = '';
+            if (hoursRemaining > 0) {
+              timeText = `${hoursRemaining}h ${minutesRemaining}m left`;
+            } else if (minutesRemaining > 0) {
+              timeText = `${minutesRemaining}m left`;
+            } else {
+              timeText = 'Ending soon';
+            }
+            
+            return (
+              <div>
+                <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                  Partner Offer
+                </span>
+                <div className="mt-1">
+                  <span className="inline-flex items-center text-white text-xs px-2 py-0.5 rounded-full font-medium bg-gradient-to-r from-orange-500 to-red-500 shadow-sm">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    {timeText}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Enhanced Favorite Button - Only Favorite, No Share */}
