@@ -752,24 +752,49 @@ function ProfilePage() {
       return;
     }
 
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file', 'error');
+      return;
+    }
+
     try {
       setIsUploading(true);
       
-      // Create a preview URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('user_id', user.id);
+      formData.append('upload_type', 'avatar');
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/upload-avatar`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Update profile data with new avatar URL
         setProfileData(prev => ({
           ...prev,
-          avatar_url: e.target.result
+          avatar_url: result.avatar_url
         }));
-      };
-      reader.readAsDataURL(file);
-
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      showToast('Profile picture updated successfully!', 'success');
+        
+        // Update user context
+        const updatedUser = { ...user, avatar_url: result.avatar_url };
+        localStorage.setItem('cataloro_user', JSON.stringify(updatedUser));
+        
+        showToast('Profile picture updated successfully!', 'success');
+      } else {
+        const error = await response.json();
+        showToast(error.detail || 'Failed to upload image', 'error');
+      }
     } catch (error) {
+      console.error('Error uploading avatar:', error);
       showToast('Failed to upload image', 'error');
     } finally {
       setIsUploading(false);
