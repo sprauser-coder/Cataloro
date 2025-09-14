@@ -1212,10 +1212,20 @@ function UsersTab({ users, onUpdateUser, showToast }) {
       });
 
       if (response.ok) {
+        const result = await response.json();
         showToast(
           verified ? 'User verified successfully' : 'User verification removed successfully',
           'success'
         );
+        
+        // Show additional info about listings updated if provided
+        if (result.listings_updated > 0) {
+          showToast(
+            `${result.listings_updated} listings updated with new verification status`,
+            'info'
+          );
+        }
+        
         onUpdateUser(); // Refresh the users list
       } else {
         const errorText = await response.text();
