@@ -1415,61 +1415,70 @@ function CreateListingPage() {
           </div>
 
 
-          {/* Submit Section */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Ready to publish your listing?</h3>
-                <p className="text-blue-100">
-                  Review all information above and click create to publish your listing to the marketplace.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-                <Link
-                  to="/browse"
-                  className="w-full sm:w-auto px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors text-center"
-                >
-                  Cancel
-                </Link>
-                
-                {/* Save as Draft Button */}
-                <button
-                  type="button"
-                  onClick={handleSaveDraft}
-                  disabled={isSavingDraft || isSubmitting}
-                  className="w-full sm:w-auto px-6 py-3 bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-400 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
-                >
-                  {isSavingDraft ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      <span>Save as Draft</span>
-                    </>
-                  )}
-                </button>
-                
-                <button
-                  type="submit"
-                  disabled={isSubmitting || isSavingDraft}
-                  className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-5 h-5" />
-                      <span>Create Listing</span>
-                    </>
-                  )}
-                </button>
-              </div>
+          {/* Submit Section - Redesigned */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Ready to publish your listing?</h3>
+              <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                Review all information above and choose how you'd like to proceed with your listing.
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto">
+              {/* Cancel Button */}
+              <Link
+                to="/browse"
+                className="w-full sm:w-auto px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-all duration-200 text-center flex items-center justify-center space-x-2 group"
+              >
+                <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
+                <span>Cancel</span>
+              </Link>
+              
+              {/* Save as Draft Button */}
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                disabled={isSavingDraft || isSubmitting}
+                className="w-full sm:w-auto px-6 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:transform-none"
+              >
+                {isSavingDraft ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    <span>Save as Draft</span>
+                  </>
+                )}
+              </button>
+              
+              {/* Create Listing Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting || isSavingDraft}
+                className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:transform-none"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Publishing...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-5 h-5" />
+                    <span>Create Listing</span>
+                  </>
+                )}
+              </button>
+            </div>
+            
+            {/* Additional Info */}
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                By creating a listing, you agree to our terms of service and marketplace guidelines.
+              </p>
             </div>
           </div>
         </form>
