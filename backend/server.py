@@ -4819,23 +4819,13 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
             # Calculate when listing becomes public
             public_at = datetime.utcnow() + timedelta(hours=partners_visibility_hours)
             listing_data["public_at"] = public_at.isoformat()
-            listing_data["partners_visibility_hours"] = int(partners_visibility_hours)  # Ensure integer
+            listing_data["partners_visibility_hours"] = partners_visibility_hours
             listing_data["is_partners_only"] = True
-            listing_data["show_partners_first"] = True  # Explicitly set to True
-            
-            logger.info(f"🔍 PARTNER DEBUG: Created partner-only listing")
-            logger.info(f"🔍 PARTNER DEBUG: Title: {listing_data.get('title', 'Unknown')}")
-            logger.info(f"🔍 PARTNER DEBUG: Seller: {listing_data.get('seller_id')}")
-            logger.info(f"🔍 PARTNER DEBUG: public_at = {public_at.isoformat()}")
-            logger.info(f"🔍 PARTNER DEBUG: partners_visibility_hours = {partners_visibility_hours}")
-            logger.info(f"🔍 PARTNER DEBUG: is_partners_only = True")
         else:
             listing_data["show_partners_first"] = False
             listing_data["partners_visibility_hours"] = None
             listing_data["public_at"] = datetime.utcnow().isoformat()  # Immediately public
             listing_data["is_partners_only"] = False
-            
-            logger.info(f"🔍 PARTNER DEBUG: Created regular listing - no partner visibility")
         
         # Validate required fields
         required_fields = ['title', 'description', 'price', 'category', 'condition', 'seller_id']
