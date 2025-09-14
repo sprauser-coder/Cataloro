@@ -606,7 +606,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               <nav className="flex px-2 sm:px-6 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} aria-label="Tabs">
               <button
                 onClick={() => setActiveTab('tenders')}
-                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
+                className={`py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'tenders'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -620,7 +620,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               
               <button
                 onClick={() => setActiveTab('bought-items')}
-                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
+                className={`py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'bought-items'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -635,7 +635,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               
               <button
                 onClick={() => setActiveTab('baskets')}
-                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
+                className={`py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'baskets'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -649,7 +649,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
+                className={`py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'completed'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
