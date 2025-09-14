@@ -109,6 +109,19 @@ function MobileBottomNav() {
   // Check if user is seller-only (you can define this logic based on user role/preferences)
   const isSellerOnly = user?.role === 'seller' || user?.account_type === 'seller_only' || 
                       (user?.is_business && !user?.can_buy);
+  
+  console.log('🔍 MobileBottomNav - User role debug:', {
+    user: user ? {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      account_type: user.account_type,
+      is_business: user.is_business,
+      can_buy: user.can_buy
+    } : null,
+    isSellerOnly: isSellerOnly
+  });
 
   const allBottomNavItems = isSellerOnly ? [
     // Seller-only navigation: Browse, Messages, Add Listing, Notifications, Sell
