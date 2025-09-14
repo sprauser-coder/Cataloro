@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://mobileui-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
 
 # Real Navigation Data Structure (based on actual frontend components)
 REAL_NAVIGATION_DATA = {

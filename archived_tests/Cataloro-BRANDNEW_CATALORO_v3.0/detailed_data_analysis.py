@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class DetailedDataAnalyzer:
-    def __init__(self, base_url="https://mobileui-sync.preview.emergentagent.com"):
+    def __init__(self, base_url="https://marketplace-fix-9.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
 

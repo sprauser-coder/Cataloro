@@ -9,7 +9,7 @@ import aiohttp
 import time
 from datetime import datetime
 
-BACKEND_URL = "https://mobileui-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
 
 async def test_admin_endpoints_security():
     """Test that admin endpoints properly reject unauthorized access"""

@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 # Test Configuration
-BACKEND_URL = "https://mobileui-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@cataloro.com"
 
 class NotificationsCollectionChecker:

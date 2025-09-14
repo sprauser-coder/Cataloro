@@ -48,7 +48,7 @@ from datetime import datetime, timezone
 import pytz
 
 # Configuration - Use production URL from frontend/.env
-BACKEND_URL = "https://mobileui-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
 
 class MarketplacePerformanceTester:
     def __init__(self):

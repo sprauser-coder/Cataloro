@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://mobileui-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
 
 async def test_admin_dashboard_counts():
     """Test admin dashboard count fix with correct response structure"""
