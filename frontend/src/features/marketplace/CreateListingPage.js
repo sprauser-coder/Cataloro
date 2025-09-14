@@ -1242,7 +1242,13 @@ function CreateListingPage() {
                   name="show_partners_first"
                   checked={formData.show_partners_first}
                   onChange={(e) => setFormData({...formData, show_partners_first: e.target.checked})}
-                  className="w-5 h-5 text-purple-600 bg-gray-50 border-2 border-gray-400 rounded focus:ring-purple-500 focus:ring-2 dark:focus:ring-purple-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  className="appearance-none w-5 h-5 bg-gray-100 border-2 border-gray-500 rounded checked:bg-purple-600 checked:border-purple-600 focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-purple-600 dark:checked:border-purple-600"
+                  style={{
+                    backgroundImage: formData.show_partners_first ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e")` : 'none',
+                    backgroundSize: '14px 14px',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
                 />
                 <label htmlFor="show_partners_first" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Show Partners First
