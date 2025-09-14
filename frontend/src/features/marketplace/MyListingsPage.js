@@ -380,6 +380,25 @@ function MyListingCard({ listing, onDelete, onReactivate }) {
                 <Edit className="w-4 h-4 mr-3" />
                 {(listing.is_draft || listing.status === 'draft') ? 'Continue Editing' : 'Edit Listing'}
               </Link>
+              
+              {/* Set Online Again button for expired listings */}
+              {listing.status === 'expired' && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onReactivate(listing.id);
+                      setShowMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center transition-colors duration-200"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-3" />
+                    Set Online Again
+                  </button>
+                  <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
+                </>
+              )}
+              
               <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
               <button
                 onClick={(e) => {
