@@ -408,7 +408,15 @@ class PartnerBadgeTester:
                 public_at = test_listing.get('public_at')
                 
                 try:
-                    public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
+                    # Handle both timezone-aware and naive datetime strings
+                    if public_at.endswith('Z'):
+                        public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
+                    elif '+' in public_at or public_at.endswith('00:00'):
+                        public_at_dt = datetime.fromisoformat(public_at)
+                    else:
+                        # Assume UTC if no timezone info
+                        public_at_dt = datetime.fromisoformat(public_at).replace(tzinfo=timezone.utc)
+                    
                     current_time = datetime.utcnow().replace(tzinfo=timezone.utc)
                     is_future = public_at_dt > current_time
                     
