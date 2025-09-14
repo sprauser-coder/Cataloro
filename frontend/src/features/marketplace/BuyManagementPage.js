@@ -727,10 +727,10 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
 // Bought Items Tab Component
 function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentFilter, setAssignmentFilter, onAssignToBasket, onUnassignFromBasket, onCreateBasket, onMarkComplete, isItemCompleted, loading }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex-1 max-w-md">
+      <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex-1 max-w-full sm:max-w-md">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
@@ -738,40 +738,43 @@ function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentF
               placeholder="Search bought items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
         </div>
         
         {/* Assignment Filter */}
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
           <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-500" />
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter:</label>
             <select
               value={assignmentFilter}
               onChange={(e) => setAssignmentFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Items</option>
-              <option value="assigned">Assigned</option>
-              <option value="not-assigned">Not Assigned</option>
+              <option value="assigned">Assigned to Basket</option>
+              <option value="unassigned">Not in Basket</option>
             </select>
-          </div>
-          
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            {items.length} items found
           </div>
         </div>
       </div>
 
-      {/* Items List */}
+      {/* Items Count */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {items.length} items found
+        </p>
+      </div>
+
+      {/* Items Grid */}
       {loading ? (
-        <div className="text-center py-8">
+        <div className="text-center py-8 sm:py-12">
           <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-400" />
           <p className="mt-2 text-sm text-gray-500">Loading bought items...</p>
         </div>
       ) : items.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {items.map((item) => (
             <BoughtItemCard 
               key={item.id} 
@@ -786,8 +789,8 @@ function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentF
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <Package className="mx-auto h-12 w-12 text-gray-400" />
+        <div className="text-center py-8 sm:py-12">
+          <Package className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No bought items</h3>
           <p className="mt-1 text-sm text-gray-500">Items you purchase will appear here.</p>
         </div>
