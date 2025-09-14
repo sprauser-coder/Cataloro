@@ -418,12 +418,17 @@ function PublicProfilePage() {
 
             {/* Profile Info */}
             <div className="flex-1 text-center lg:text-left">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 mb-4">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {profileUser.username || profileUser.full_name}
-                </h1>
-                
-                <div className="flex items-center justify-center lg:justify-start space-x-2 mt-2 lg:mt-0">
+              {/* Name Display - First Name + Last Name */}
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                {profileUser.full_name || 'Unknown User'}
+              </h1>
+              
+              {/* Username Display */}
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
+                @{profileUser.username || 'unknown'}
+              </p>
+              
+              <div className="flex items-center justify-center lg:justify-start space-x-2 mb-4">
                   {/* User Role Badge */}
                   {(() => {
                     const badgeInfo = getUserBadgeInfo(profileUser);
