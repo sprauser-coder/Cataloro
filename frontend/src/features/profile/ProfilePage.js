@@ -1534,7 +1534,6 @@ function ProfilePage() {
                   { label: 'Active Listings', value: accountStats.activeListings, icon: CheckCircle, color: 'green' },
                   { label: 'Total Deals', value: accountStats.totalDeals, icon: DollarSign, color: 'purple' },
                   { label: 'Completed Deals', value: accountStats.completedDeals, icon: Award, color: 'yellow' },
-                  { label: 'Total Revenue', value: `€${accountStats.totalRevenue.toFixed(2)}`, icon: TrendingUp, color: 'indigo' },
                   { label: 'Favorites', value: accountStats.totalFavorites, icon: Heart, color: 'red' }
                 ].map((stat, index) => (
                   <div key={index} className={`bg-gradient-to-r from-${stat.color}-50 to-${stat.color}-100 dark:from-${stat.color}-900/20 dark:to-${stat.color}-800/30 border border-${stat.color}-200 dark:border-${stat.color}-800 rounded-lg p-4`}>
