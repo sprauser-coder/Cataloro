@@ -25,6 +25,37 @@ function MobileBottomNav() {
   const [cartCount, setCartCount] = useState(0);
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
+
+  // Check if user is seller-only based on actual user properties
+  const isSellerOnly = user && (
+    user.email?.includes('seller') || 
+    user.username?.includes('seller') ||
+    user.email === 'ana@cataloro.com' || // Specific seller account mentioned by user
+    user.username === 'ana_admin' ||
+    (user.is_business === true && user.full_name?.toLowerCase().includes('business'))
+  );
+  
+  console.log('🔍 MobileBottomNav - User role debug:', {
+    user: user ? {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      full_name: user.full_name,
+      is_business: user.is_business,
+      role: user.role,
+      account_type: user.account_type,
+      can_buy: user.can_buy
+    } : null,
+    isSellerOnly: isSellerOnly,
+    sellerChecks: user ? {
+      emailIncludesSeller: user.email?.includes('seller'),
+      usernameIncludesSeller: user.username?.includes('seller'),
+      isAnaAccount: user.email === 'ana@cataloro.com',
+      isAnaUsername: user.username === 'ana_admin',
+      isBusiness: user.is_business === true
+    } : null
+  });
+
   const { isMenuItemVisible } = useMenuSettings();
   const location = useLocation();
 
