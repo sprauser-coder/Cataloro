@@ -66,6 +66,8 @@ function ProfilePage() {
   
   const [profileData, setProfileData] = useState({
     full_name: user?.full_name || '',
+    first_name: user?.first_name || (user?.full_name ? user.full_name.split(' ')[0] : ''),
+    last_name: user?.last_name || (user?.full_name ? user.full_name.split(' ').slice(1).join(' ') : ''),
     username: user?.username || '',
     email: user?.email || '',
     phone: user?.phone || '',
