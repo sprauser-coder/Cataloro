@@ -307,10 +307,21 @@ function ProfilePage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfileData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setProfileData(prev => {
+      const newData = {
+        ...prev,
+        [name]: value
+      };
+      
+      // Update full_name when first_name or last_name changes
+      if (name === 'first_name' || name === 'last_name') {
+        const firstName = name === 'first_name' ? value : prev.first_name;
+        const lastName = name === 'last_name' ? value : prev.last_name;
+        newData.full_name = `${firstName} ${lastName}`.trim();
+      }
+      
+      return newData;
+    });
   };
 
   const handleCityChange = (e) => {
