@@ -220,6 +220,12 @@ function MobileBottomNav() {
     isMenuItemVisible('mobile_menu', item.key)
   );
 
+  console.log('🔍 MobileBottomNav rendering with:', {
+    isSellerOnly,
+    navigationItemsCount: allBottomNavItems.length,
+    navigationLabels: allBottomNavItems.map(item => item.label)
+  });
+
   return (
     <>
       {/* Bottom Navigation Bar */}
