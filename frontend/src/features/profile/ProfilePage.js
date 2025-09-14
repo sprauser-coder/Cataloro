@@ -367,12 +367,12 @@ function ProfilePage() {
         userIdToMatch: user.id
       });
       
-      // Try multiple matching strategies for listings
+      // Try multiple matching strategies for listings - prioritize username matching
       const userListings = allProducts.filter(p => {
-        const sellerIdMatch = p.seller_id === user?.id;
         const sellerMatch = p.seller === user?.username;
+        const sellerIdMatch = p.seller_id === user?.id;
         const sellerNameMatch = p.seller_name === user?.full_name || p.seller_name === user?.username;
-        const matches = sellerIdMatch || sellerMatch || sellerNameMatch;
+        const matches = sellerMatch || sellerIdMatch || sellerNameMatch;
         
         if (matches) {
           console.log('🔍 Found user listing:', {
