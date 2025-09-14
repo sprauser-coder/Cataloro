@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
+import { formatPartnerTimeRemaining } from '../../utils/timezone';
 import {
   ArrowLeft,
   Heart,
