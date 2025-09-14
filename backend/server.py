@@ -5913,16 +5913,18 @@ async def mark_notification_read(user_id: str, notification_id: str):
     try:
         result = await db.user_notifications.update_one(
             {"user_id": user_id, "id": notification_id},
-            {"$set": {"read": True, "read_at": datetime.utcnow().isoformat()}}
+            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
         )
         
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Notification not found")
         
+        logger.info(f"📧 Marked notification {notification_id} as read for user {user_id}")
         return {"message": "Notification marked as read"}
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Error marking notification as read: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
 
 @app.put("/api/user/{user_id}/notifications/{notification_id}")
