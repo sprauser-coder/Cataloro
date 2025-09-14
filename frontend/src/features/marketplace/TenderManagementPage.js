@@ -824,7 +824,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                   
                   {/* Special message for accepted tenders */}
                   {tender.status === 'accepted' && (
-                    <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
+                    <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
                       <div className="flex items-center">
                         <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2 flex-shrink-0" />
                         <p className="text-sm text-green-800 dark:text-green-300 font-medium">
