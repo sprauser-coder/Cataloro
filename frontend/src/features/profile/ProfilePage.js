@@ -308,10 +308,17 @@ function ProfilePage() {
       };
       
       setAccountStats(stats);
+      
+      // Update profileData with calculated seller rating
+      setProfileData(prev => ({
+        ...prev,
+        seller_rating: stats.avgRating,
+        total_sales: stats.completedDeals
+      }));
     };
 
     calculateStats();
-  }, [allProducts, orderHistory, favorites, user, profileData]);
+  }, [allProducts, orderHistory, favorites, user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
