@@ -9,6 +9,7 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { formatPartnerTimeRemaining, calculateTimeRemaining } from '../../utils/timezone';
+import { formatEuro } from '../../utils/currency';
 import usePermissions from '../../hooks/usePermissions';
 import SimplePrice from '../../components/ui/SimplePrice';
 import {
