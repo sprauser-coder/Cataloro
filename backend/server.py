@@ -1597,7 +1597,26 @@ async def browse_listings(
         
         # Add time-based expiration filtering for active listings
         if status != "expired" and status != "all":
-            # For active/pending listings, also filter out time-expired ones
+            # First, update expired listings status in database
+            current_time_iso = current_time.isoformat()
+            
+            # Find listings that have expired but still have active status
+            expired_query = {
+                "status": "active",
+                "has_time_limit": True,
+                "expires_at": {"$lte": current_time_iso}
+            }
+            
+            # Update expired listings to have status "expired"
+            update_result = await db.listings.update_many(
+                expired_query,
+                {"$set": {"status": "expired"}}
+            )
+            
+            if update_result.modified_count > 0:
+                logger.info(f"🔄 AUTO-EXPIRE: Updated {update_result.modified_count} expired listings from active to expired status")
+            
+            # Now apply filtering for non-expired active listings
             base_query = {
                 "$and": [
                     base_query,
@@ -1608,15 +1627,15 @@ async def browse_listings(
                             # Listings with time limit that haven't expired yet
                             {
                                 "has_time_limit": True,
-                                "expires_at": {"$gt": current_time.isoformat()}
+                                "expires_at": {"$gt": current_time_iso}
                             }
                         ]
                     }
                 ]
             }
-            logger.info("🔍 EXPIRY DEBUG: Added time-based expiration filtering")
+            logger.info("🔍 EXPIRY DEBUG: Added time-based expiration filtering with auto-status update")
             
-            # DEBUG: Count how many listings are filtered by expiration
+            # DEBUG: Count how many listings are filtered by expiration (should be 0 now after status update)
             total_before_expiry = await db.listings.count_documents({"status": "active"})
             total_after_expiry = await db.listings.count_documents(base_query)
             logger.info(f"🔍 EXPIRY DEBUG: Before expiry filter: {total_before_expiry}, After: {total_after_expiry}, Filtered out: {total_before_expiry - total_after_expiry}")
