@@ -57,6 +57,13 @@ function ProfilePage() {
     confirmPassword: ''
   });
   
+  // Partners management state
+  const [partners, setPartners] = useState([]);
+  const [partnersLoading, setPartnersLoading] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [userSearchResults, setUserSearchResults] = useState([]);
+  const [selectedPartners, setSelectedPartners] = useState([]);
+  
   const [profileData, setProfileData] = useState({
     full_name: user?.full_name || '',
     username: user?.username || '',
