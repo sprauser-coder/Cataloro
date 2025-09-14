@@ -1636,34 +1636,16 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
               has_public_at: !!item.public_at
             });
             
-            // Test badge - show for first 3 listings to verify rendering works
-            if (item.title === 'HyundaiKiaTA311') {
-              console.log('🔍 TEST BADGE SHOULD SHOW FOR:', item.title);
-              return true;
-            }
-            
-            // Original logic for partner listings
-            if (item.is_partners_only) {
-              console.log('🔍 PARTNER BADGE DEBUG:', {
-                title: item.title,
-                is_partners_only: item.is_partners_only,
-                public_at: item.public_at,
-                public_at_date: item.public_at ? new Date(item.public_at) : null,
-                current_date: new Date(),
-                is_future: item.public_at ? new Date(item.public_at) > new Date() : false,
-                should_show: item.is_partners_only && item.public_at && new Date(item.public_at) > new Date()
-              });
-              return item.public_at && new Date(item.public_at) > new Date();
-            }
-            
-            return false;
+            // TEST: Show test badge on ALL items to verify rendering works
+            console.log('🔍 FORCING TEST BADGE FOR ALL ITEMS');
+            return true; // Force show badge on everything for testing
           })() && (
             <div>
               <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                Partner Offer
+                TEST BADGE
               </span>
             </div>
           )}
