@@ -4307,12 +4307,14 @@ async def get_menu_settings(current_user: dict = Depends(require_admin_role)):
             "desktop_menu": {
                 "about": {"enabled": True, "label": "About", "roles": ["admin", "manager", "seller", "buyer"]},
                 "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
+                "buy": {"enabled": True, "label": "Buy", "roles": ["admin", "manager", "buyer"]},
+                "sell": {"enabled": True, "label": "Sell", "roles": ["admin", "manager", "seller"]},
                 "create_listing": {"enabled": True, "label": "Create Listing", "roles": ["admin", "manager", "seller"]},
                 "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
                 "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
                 "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
                 "admin_panel": {"enabled": True, "label": "Administration", "roles": ["admin", "manager"]},
-                "buy_management": {"enabled": True, "label": "Inventory", "roles": ["admin", "manager", "buyer"]},
+                "buy_management": {"enabled": False, "label": "Inventory", "roles": ["admin", "manager", "buyer"]},
                 "my_listings": {"enabled": True, "label": "My Listings", "roles": ["admin", "manager", "seller"]},
                 "favorites": {"enabled": True, "label": "Favorites", "roles": ["admin", "manager", "seller", "buyer"]},
                 "custom_items": []
