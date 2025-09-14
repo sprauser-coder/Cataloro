@@ -10072,34 +10072,30 @@ async def get_registration_date(user_id: str):
                                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                             month_name = month_names[int(month_num)]
                             formatted_date = f"{month_name} {year}"
-                            print(f"DEBUG: Fallback parsing successful: {formatted_date}")
                             logger.info(f"Fallback parsing successful: {formatted_date}")
                         else:
                             formatted_date = "Unknown"
                     except Exception as e2:
-                        print(f"DEBUG: Fallback parsing also failed: {str(e2)}")
                         logger.error(f"Fallback parsing also failed: {str(e2)}")
                         formatted_date = "Unknown"
             elif isinstance(registration_date, datetime):
                 # Handle datetime objects directly
                 try:
                     formatted_date = registration_date.strftime("%b %Y")  # e.g., "Sep 2025"
-                    print(f"DEBUG: Successfully formatted datetime object: {formatted_date}")
                     logger.info(f"Successfully formatted datetime object: {formatted_date}")
                 except Exception as e:
-                    print(f"DEBUG: Error formatting datetime object {registration_date}: {str(e)}")
                     logger.error(f"Error formatting datetime object {registration_date}: {str(e)}")
                     formatted_date = "Unknown"
             else:
                 # Convert other types to string and try parsing
                 try:
                     date_str = str(registration_date)
-                    print(f"DEBUG: Converted to string: {date_str}")
+                    logger.info(f"Converted to string: {date_str}")
                     
                     # Remove microseconds if present
                     if '.' in date_str:
                         date_str = date_str.split('.')[0]
-                        print(f"DEBUG: Removed microseconds from converted string: {date_str}")
+                        logger.info(f"Removed microseconds from converted string: {date_str}")
                     
                     # Try to parse as datetime
                     if 'T' in date_str:
@@ -10112,10 +10108,8 @@ async def get_registration_date(user_id: str):
                         date_obj = datetime.strptime(date_str[:10], "%Y-%m-%d")
                     
                     formatted_date = date_obj.strftime("%b %Y")
-                    print(f"DEBUG: Successfully formatted converted string: {formatted_date}")
                     logger.info(f"Successfully formatted converted string: {formatted_date}")
                 except Exception as e:
-                    print(f"DEBUG: Error formatting converted string {registration_date}: {str(e)}")
                     logger.error(f"Error formatting converted string {registration_date}: {str(e)}")
                     formatted_date = "Unknown"
         else:
