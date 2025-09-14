@@ -1689,6 +1689,13 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
               </span>
             </div>
           )}
+
+          {/* Partner-Only Countdown Badge - Small badge on image */}
+          {item.is_partners_only && item.public_at && (
+            <div>
+              <PartnerCountdownBadge item={item} />
+            </div>
+          )}
         </div>
 
         {/* Enhanced Favorite Button - Only Favorite, No Share */}
