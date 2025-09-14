@@ -603,7 +603,7 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4 sm:mb-6">
           {!hideNavigation && (
             <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="-mb-px flex px-1 sm:px-6">
+              <nav className="-mb-px flex px-0 sm:px-6">
               <button
                 onClick={() => setActiveTab('tenders')}
                 className={`flex-1 py-3 sm:py-4 px-0.5 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
