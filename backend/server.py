@@ -10470,7 +10470,19 @@ async def get_public_profile(user_id: str):
         else:
             formatted_date = "Unknown"
         
-        # Calculate last active
+        # Determine account status based on user role
+        user_role = user.get("role", "User-Buyer")
+        if user_role == "Admin":
+            account_status = "Admin"
+        elif user_role == "Admin-Manager":
+            account_status = "Manager"
+        elif user_role == "User-Seller":
+            account_status = "Seller"
+        elif user_role == "User-Buyer":
+            account_status = "Buyer"
+        else:
+            # Fallback logic based on is_business
+            account_status = "Seller" if user.get("is_business") else "Buyer"
         last_active = "Active today"
         if listings:
             latest_listing = sorted(listings, key=lambda x: x.get("created_at", ""), reverse=True)[0]
