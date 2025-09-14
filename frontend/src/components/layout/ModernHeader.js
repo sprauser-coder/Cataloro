@@ -885,7 +885,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                         <Bell className="w-4 h-4 mr-2" />
                         Notifications
                         {unreadNotifications > 0 && (
-                          <span className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full animate-pulse">
+                          <span className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                             {unreadNotifications}
                           </span>
                         )}
