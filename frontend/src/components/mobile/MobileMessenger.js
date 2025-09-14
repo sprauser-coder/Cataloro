@@ -208,7 +208,8 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
                       ? { ...msg, is_read: true }
                       : msg
                   ),
-                  unread_count: Math.max(0, (conv.unread_count || 0) - unreadMessages.length)
+                  unreadCount: 0, // Reset unread count to 0
+                  unread_count: 0 // Reset both property variations
                 }
               : conv
           )
