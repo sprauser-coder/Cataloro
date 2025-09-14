@@ -583,6 +583,9 @@ function CreateListingPage() {
         // Time limit functionality
         has_time_limit: formData.has_time_limit,
         time_limit_hours: formData.has_time_limit ? formData.time_limit_hours : null,
+        // Partners functionality
+        show_partners_first: formData.show_partners_first,
+        partners_visibility_hours: formData.show_partners_first ? formData.partners_visibility_hours : null,
         // Include comprehensive catalyst data from unified calculations (Admin/Admin-Manager only)
         ...(selectedCatalyst && {
           catalyst_id: selectedCatalyst.cat_id,
