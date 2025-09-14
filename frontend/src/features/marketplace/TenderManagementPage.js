@@ -242,7 +242,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
       });
 
       if (response.ok) {
-        showToast(`Tender offer of €${offerAmount.toFixed(2)} accepted!`, 'success');
+        showToast(`Tender offer of ${formatEuro(offerAmount)} accepted!`, 'success');
         fetchTendersOverview(); // Refresh tenders data
         fetchMyListings(); // Refresh listings data so it appears in Closed tab
       } else {
