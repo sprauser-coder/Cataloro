@@ -106,6 +106,20 @@ function MobileBrowsePage() {
       
     } catch (error) {
       console.error('❌ Mobile browse: Error loading listings:', error);
+      setListings([]);
+      
+      // Better error handling - show user-friendly message
+      if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+        // Network/connection error
+        console.error('❌ Mobile browse: Network error - check connection');
+      } else if (error.message.includes('401') || error.message.includes('403')) {
+        // Authentication error
+        console.error('❌ Mobile browse: Authentication error - redirecting to login');
+        window.location.href = '/login';
+      } else {
+        // Other API error
+        console.error('❌ Mobile browse: API error:', error.message);
+      }
     } finally {
       setLoading(false);
     }
