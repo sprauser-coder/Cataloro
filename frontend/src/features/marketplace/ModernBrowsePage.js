@@ -1626,26 +1626,14 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
             </div>
           )}
 
-          {/* Simple Partner Offer Badge */}
-          {(() => {
-            // Debug: Log every listing to see what's happening
-            console.log('🔍 BADGE RENDER CHECK:', {
-              title: item.title,
-              id: item.id,
-              is_partners_only: item.is_partners_only,
-              has_public_at: !!item.public_at
-            });
-            
-            // TEST: Show test badge on ALL items to verify rendering works
-            console.log('🔍 FORCING TEST BADGE FOR ALL ITEMS');
-            return true; // Force show badge on everything for testing
-          })() && (
+          {/* Partner Offer Badge - Show for active partner-only listings */}
+          {item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() && (
             <div>
               <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
-                TEST BADGE
+                Partner Offer
               </span>
             </div>
           )}
