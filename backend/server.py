@@ -4325,6 +4325,7 @@ async def get_menu_settings(current_user: dict = Depends(require_admin_role)):
                 "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
                 "listings": {"enabled": True, "label": "Listings", "roles": ["admin", "manager", "seller"]},
                 "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                "view_public_profile": {"enabled": False, "label": "View Public Profile", "roles": ["admin", "manager", "seller", "buyer"]},
                 "admin_drawer": {"enabled": True, "label": "Admin", "roles": ["admin", "manager"]},
                 "custom_items": []
             }
