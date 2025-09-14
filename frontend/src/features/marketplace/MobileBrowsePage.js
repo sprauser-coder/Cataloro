@@ -32,14 +32,43 @@ function MobileBrowsePage() {
     avgPrice: 0
   });
 
-  // Simple, direct API call - no context complexity
+  // Simple, direct API call with proper authentication
   const loadListings = async () => {
     try {
       setLoading(true);
       console.log('📱 Mobile browse: Loading listings directly from API');
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
-      if (!response.ok) throw new Error('Failed to fetch');
+      // Get authentication data
+      const token = localStorage.getItem('cataloro_token');
+      const userData = localStorage.getItem('cataloro_user');
+      let user_id = null;
+      
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          user_id = user.id;
+        } catch (e) {
+          console.warn('Error parsing user data:', e);
+        }
+      }
+      
+      // Build API URL with user_id if available
+      let apiUrl = `${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse?limit=50&offset=0`;
+      if (user_id) {
+        apiUrl += `&user_id=${user_id}`;
+      }
+      
+      // Make authenticated request
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(apiUrl, { headers });
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       
       const data = await response.json();
       
