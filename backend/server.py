@@ -34,9 +34,14 @@ from websocket_service import init_websocket_service, get_websocket_service
 from multicurrency_service import init_multicurrency_service, get_multicurrency_service
 from escrow_service import init_escrow_service, get_escrow_service
 from ai_recommendation_service import init_ai_recommendation_service, get_ai_recommendation_service
+import jwt
 
 # Load environment variables
 load_dotenv()
+
+# JWT Configuration
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+ALGORITHM = "HS256"
 
 # Setup logging
 logger = logging.getLogger(__name__)
