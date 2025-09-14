@@ -459,9 +459,6 @@ function PublicProfilePage() {
                     </span>
                   )}
                 </div>
-              </div>
-              
-              <p className="text-gray-600 dark:text-gray-300 mb-2 text-lg">@{profileUser.username}</p>
               
               {profileUser.is_business && profileUser.company_name && (
                 <p className="text-blue-600 dark:text-blue-400 font-medium mb-4">
