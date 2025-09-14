@@ -2515,11 +2515,19 @@ async def get_user_notifications(user_id: str, current_user: dict = Depends(get_
             "user_id": user_id
         }).sort("created_at", -1).limit(50).to_list(length=50)
         
-        # Process notifications
+        # Process notifications and ensure consistent field naming
         for notification in notifications:
             notification.pop('_id', None)
             if 'id' not in notification and '_id' in notification:
                 notification['id'] = str(notification['_id'])
+            
+            # Ensure is_read field exists (backward compatibility)
+            if 'is_read' not in notification:
+                if 'read' in notification:
+                    notification['is_read'] = notification['read']
+                    notification.pop('read', None)  # Remove old field
+                else:
+                    notification['is_read'] = False
         
         return notifications
         
