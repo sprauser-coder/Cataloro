@@ -1451,7 +1451,7 @@ function CountdownTimer({ timeInfo }) {
     if (days > 0) {
       return `${days}d ${hours}h ${minutes}m`;
     } else if (hours > 0) {
-      return `${hours}h ${minutes}m`;
+      return `${hours}h ${minutes}m ${secs}s`;
     } else if (minutes > 0) {
       return `${minutes}m ${secs}s`;
     } else {
@@ -1463,6 +1463,72 @@ function CountdownTimer({ timeInfo }) {
   
   return (
     <span>{isExpired ? 'EXPIRED' : formatTime(timeRemaining)}</span>
+  );
+}
+
+// Partner Countdown Timer Component - Shows when partner-only listing becomes public
+function PartnerCountdownTimer({ item }) {
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [isPublic, setIsPublic] = useState(false);
+  
+  useEffect(() => {
+    if (!item.is_partners_only || !item.public_at) {
+      return;
+    }
+    
+    const publicTime = new Date(item.public_at);
+    const currentTime = new Date();
+    let initialSeconds = Math.floor((publicTime - currentTime) / 1000);
+    
+    setTimeRemaining(initialSeconds);
+    setIsPublic(initialSeconds <= 0);
+    
+    const interval = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          setIsPublic(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [item.is_partners_only, item.public_at]);
+  
+  const formatPartnerTime = (seconds) => {
+    if (seconds <= 0) return "NOW PUBLIC";
+    
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    if (days > 0) {
+      return `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
+    } else if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
+    } else {
+      return `${minutes}m`;
+    }
+  };
+  
+  if (!item.is_partners_only || !item.public_at) return null;
+  
+  return (
+    <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+      <div className="flex items-center space-x-2">
+        <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
+        <div className="text-xs font-medium text-purple-700 dark:text-purple-300 uppercase tracking-wide">
+          Partner-Only Until
+        </div>
+      </div>
+      <div className="text-sm font-bold text-purple-900 dark:text-purple-100 mt-1">
+        {isPublic ? 'NOW PUBLIC' : formatPartnerTime(timeRemaining)}
+      </div>
+      <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+        {isPublic ? 'Everyone can now see this listing' : 'Then becomes public to everyone'}
+      </div>
+    </div>
   );
 }
 
