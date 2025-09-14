@@ -158,7 +158,12 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
       
       console.log('📋 Setting conversations list:', conversationsList);
       setRealConversations(conversationsList);
+      console.log(`✅ Conversations loaded successfully: ${conversationsList.length} conversations`);
       
+      // Log conversation summary
+      conversationsList.forEach(conv => {
+        console.log(`🔍 Conversation "${conv.name}": ${conv.unreadCount} unread messages`);
+      });
     } catch (error) {
       console.error('❌ Error loading conversations:', error);
       showToast('Error loading conversations', 'error');
