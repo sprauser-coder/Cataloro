@@ -10531,7 +10531,7 @@ async def get_public_profile(user_id: str):
                 "response_rate": 95,  # Default high response rate
                 "member_since": formatted_date,
                 "last_active": last_active,
-                "account_status": "Active" if user.get("status") != "suspended" else "Suspended",
+                "account_status": account_status,
                 "profile_type": "Business" if user.get("is_business") else "Private"
             },
             # Recent listings (first 6) - serialize to remove ObjectId issues
