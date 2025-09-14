@@ -10034,6 +10034,7 @@ async def get_registration_date(user_id: str):
             raise HTTPException(status_code=404, detail="User not found")
         
         registration_date = user.get("created_at") or user.get("date_joined")
+        print(f"🔍 DEBUG: Registration date raw value: {registration_date}")
         logger.info(f"🔍 Registration date raw value: {registration_date}")
         
         if registration_date:
