@@ -992,7 +992,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                               notification.type === 'buy_approved' ? 'bg-green-100 text-green-600' :
                               notification.type === 'buy_rejected' ? 'bg-red-100 text-red-600' :
                               'bg-gray-100 text-gray-600'
-                            } ${!notification.is_read ? 'animate-pulse' : ''}`}>
+                            }`}>
                               {notification.type === 'message' ? <MessageCircle className="w-3.5 h-3.5" /> :
                                notification.type === 'favorite' ? <Heart className="w-3.5 h-3.5" /> :
                                notification.type === 'payment' ? <DollarSign className="w-3.5 h-3.5" /> :
