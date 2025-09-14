@@ -174,6 +174,59 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     }
   };
 
+  // Mark all unread messages in a conversation as read
+  const markConversationAsRead = async (conversation) => {
+    if (!user || !conversation || !conversation.messages) return;
+    
+    try {
+      // Find all unread messages in this conversation that were sent by the other person
+      const unreadMessages = conversation.messages.filter(msg => 
+        !msg.is_read && msg.sender_id !== user.id
+      );
+      
+      console.log(`📖 Marking ${unreadMessages.length} messages as read in conversation`);
+      
+      // Mark each unread message as read
+      for (const msg of unreadMessages) {
+        try {
+          await liveService.markMessageRead(user.id, msg.id);
+          console.log(`✅ Marked message ${msg.id} as read`);
+        } catch (error) {
+          console.error(`❌ Failed to mark message ${msg.id} as read:`, error);
+        }
+      }
+      
+      // Update the conversation in local state to reflect read status
+      if (unreadMessages.length > 0) {
+        setRealConversations(prevConversations => 
+          prevConversations.map(conv => 
+            conv.id === conversation.id 
+              ? {
+                  ...conv,
+                  messages: conv.messages.map(msg => 
+                    unreadMessages.find(unread => unread.id === msg.id)
+                      ? { ...msg, is_read: true }
+                      : msg
+                  ),
+                  unread_count: Math.max(0, (conv.unread_count || 0) - unreadMessages.length)
+                }
+              : conv
+          )
+        );
+        
+        // Also update the messages state to reflect read status
+        setMessages(prevMessages => 
+          prevMessages.map(msg => ({
+            ...msg,
+            status: msg.sender === 'them' ? 'read' : msg.status
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('❌ Error marking conversation as read:', error);
+    }
+  };
+
   const handleConversationSelect = async (conversation) => {
     setCurrentConversation(conversation);
     setView('conversation');
