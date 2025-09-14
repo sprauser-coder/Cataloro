@@ -392,16 +392,6 @@ function PublicProfilePage() {
         
         {/* Profile Header */}
         <div className="cataloro-card-glass p-8 mb-8">
-          {/* Verified Badge at Top */}
-          {profileUser.is_verified && (
-            <div className="mb-6 flex justify-center lg:justify-start">
-              <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:bg-gradient-to-r dark:from-green-800 dark:to-emerald-800 text-green-800 dark:text-green-100 px-6 py-3 rounded-full text-lg font-bold flex items-center shadow-lg border-2 border-green-200 dark:border-green-600">
-                <CheckCircle className="w-6 h-6 mr-3" />
-                ✓ Verified User
-              </div>
-            </div>
-          )}
-          
           <div className="flex flex-col lg:flex-row lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
             
             {/* Avatar */}
