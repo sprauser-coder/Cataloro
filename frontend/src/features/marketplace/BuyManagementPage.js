@@ -606,58 +606,59 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               <nav className="-mb-px flex px-0 sm:px-6">
               <button
                 onClick={() => setActiveTab('tenders')}
-                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'tenders'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <div className="flex flex-col items-center space-y-0.5 sm:flex-row sm:space-y-0 sm:space-x-1">
-                  <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-sm">Tenders</span>
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <BookOpen className="w-4 h-4" />
+                  <span className="sm:inline">Tenders</span>
                 </div>
               </button>
               
               <button
                 onClick={() => setActiveTab('bought-items')}
-                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'bought-items'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <div className="flex flex-col items-center space-y-0.5 sm:flex-row sm:space-y-0 sm:space-x-1">
-                  <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline text-xs sm:text-sm">Bought Items</span>
-                  <span className="sm:hidden text-xs">Items</span>
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <Package className="w-4 h-4" />
+                  <span className="hidden sm:inline">Bought Items</span>
+                  <span className="sm:hidden">Items</span>
                 </div>
               </button>
               
               <button
                 onClick={() => setActiveTab('baskets')}
-                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'baskets'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <div className="flex flex-col items-center space-y-0.5 sm:flex-row sm:space-y-0 sm:space-x-1">
-                  <Archive className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-sm">Baskets</span>
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <Archive className="w-4 h-4" />
+                  <span className="sm:inline">Baskets</span>
                 </div>
               </button>
               
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`flex-1 py-3 sm:py-4 px-0 sm:px-3 border-b-2 font-medium whitespace-nowrap text-center ${
+                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'completed'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <div className="flex flex-col items-center space-y-0.5 sm:flex-row sm:space-y-0 sm:space-x-1">
-                  <Check className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="text-xs sm:text-sm">Done</span>
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <Check className="w-4 h-4" />
+                  <span className="hidden sm:inline">Completed</span>
+                  <span className="sm:hidden">Done</span>
                 </div>
               </button>
             </nav>
