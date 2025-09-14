@@ -841,7 +841,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                       <div className="text-center sm:text-left">
                         <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Your Offer</p>
                         <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
-                          €{tender.offer_amount.toFixed(2)}
+                          {formatEuro(tender.offer_amount)}
                         </p>
                       </div>
                       
