@@ -745,6 +745,35 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
   );
 }
 
+// Tenders Tab Component
+function TendersTab({ loading }) {
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Tenders</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          View tender requests you have submitted
+        </p>
+      </div>
+
+      {/* Content */}
+      {loading ? (
+        <div className="text-center py-8">
+          <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-400" />
+          <p className="mt-2 text-sm text-gray-500">Loading tenders...</p>
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No tenders</h3>
+          <p className="mt-1 text-sm text-gray-500">Tender requests you submit will appear here.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Bought Items Tab Component
 function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentFilter, setAssignmentFilter, onAssignToBasket, onUnassignFromBasket, onCreateBasket, onMarkComplete, isItemCompleted, loading }) {
   return (
