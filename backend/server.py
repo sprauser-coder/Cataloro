@@ -10039,15 +10039,32 @@ async def get_registration_date(user_id: str):
             if isinstance(registration_date, str):
                 try:
                     # Handle different date formats
-                    date_str = registration_date.replace('Z', '+00:00')
-                    # If no timezone info, assume UTC
-                    if '+' not in date_str and 'Z' not in registration_date:
+                    date_str = registration_date
+                    logger.info(f"Original date string: {date_str}")
+                    
+                    # Try different parsing approaches
+                    if 'T' in date_str and '+' not in date_str and 'Z' not in date_str:
+                        # Add UTC timezone if missing
                         date_str = date_str + '+00:00'
+                        logger.info(f"Added timezone: {date_str}")
+                    elif 'Z' in date_str:
+                        date_str = date_str.replace('Z', '+00:00')
+                        logger.info(f"Replaced Z with +00:00: {date_str}")
+                    
                     date_obj = datetime.fromisoformat(date_str)
                     formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
+                    logger.info(f"Successfully formatted date: {formatted_date}")
                 except Exception as e:
                     logger.error(f"Error formatting date {registration_date}: {str(e)}")
-                    formatted_date = "Unknown"
+                    # Try alternative parsing
+                    try:
+                        from dateutil import parser
+                        date_obj = parser.parse(registration_date)
+                        formatted_date = date_obj.strftime("%b %Y")
+                        logger.info(f"Alternative parsing successful: {formatted_date}")
+                    except Exception as e2:
+                        logger.error(f"Alternative parsing also failed: {str(e2)}")
+                        formatted_date = "Unknown"
             else:
                 formatted_date = "Unknown"
         else:
