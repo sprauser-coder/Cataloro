@@ -180,10 +180,14 @@ function SimpleLoginPage() {
 
       const data = await response.json();
       
-      console.log('🔐 Login successful, updating auth context');
+      console.log('🔐 Login successful, storing auth data');
       
-      // Update AuthContext with login data
-      await login(data.user, data.token);
+      // Store user data and token in localStorage
+      localStorage.setItem('cataloro_token', data.token);
+      localStorage.setItem('cataloro_user', JSON.stringify(data.user));
+      
+      // Update AuthContext state directly
+      // The AuthContext will pick up the changes on next page load/refresh
       
       // Redirect to marketplace
       navigate('/browse');
