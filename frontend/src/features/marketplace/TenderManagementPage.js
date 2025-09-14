@@ -322,15 +322,16 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
             // Only tenders-related actions in Sell tab now
             <button
               onClick={fetchTendersOverview}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm w-full sm:w-auto"
             >
               <RefreshCw className="w-4 h-4" />
-              <span>Refresh Tenders</span>
+              <span className="hidden sm:inline">Refresh Tenders</span>
+              <span className="sm:hidden">Refresh</span>
             </button>
           ) : activeTab === 'buy' ? (
             <button
               onClick={fetchMyTenders}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm w-full sm:w-auto"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Refresh</span>
@@ -338,10 +339,11 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
           ) : activeTab === 'listings' ? (
             <button
               onClick={handleCreateListing}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm w-full sm:w-auto"
             >
               <Plus className="w-4 h-4" />
-              <span>Create New Listing</span>
+              <span className="hidden sm:inline">Create New Listing</span>
+              <span className="sm:hidden">Create</span>
             </button>
           ) : null}
         </div>
