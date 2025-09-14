@@ -222,7 +222,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     if (!user) return;
     
     const confirmed = window.confirm(
-      `Accept tender offer of €${offerAmount.toFixed(2)} for "${listingTitle}"?\n\nThis will:\n- Accept this tender\n- Reject all other tenders for this listing\n- Mark the listing as SOLD\n- Send notifications to all bidders\n- Create a message thread with the winning bidder`
+      `Accept tender offer of ${formatEuro(offerAmount)} for "${listingTitle}"?\n\nThis will:\n- Accept this tender\n- Reject all other tenders for this listing\n- Mark the listing as SOLD\n- Send notifications to all bidders\n- Create a message thread with the winning bidder`
     );
     
     if (!confirmed) return;
