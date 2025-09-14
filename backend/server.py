@@ -1365,9 +1365,37 @@ async def update_user_role(user_id: str, role_data: dict):
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Get user data for notification
+        # Get user data for notification and listing updates
         user = await db.users.find_one({"id": user_id})
         if user:
+            # Update all user's listings with new role information if it affects seller data
+            listing_updates = {}
+            
+            # Update seller role-related information in listings if applicable
+            if user.get("full_name"):
+                listing_updates["seller.full_name"] = user.get("full_name")
+            if user.get("username"):
+                listing_updates["seller.username"] = user.get("username")
+            if user.get("is_business") is not None:
+                listing_updates["seller.is_business"] = user.get("is_business")
+            if user.get("company_name"):
+                listing_updates["seller.company_name"] = user.get("company_name")
+            if user.get("verified") is not None:
+                listing_updates["seller.verified"] = user.get("verified")
+            
+            # Update listings if there are changes to propagate
+            listings_updated = 0
+            if listing_updates:
+                listing_updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+                
+                listings_result = await db.listings.update_many(
+                    {"seller_id": user_id},
+                    {"$set": listing_updates}
+                )
+                listings_updated = listings_result.modified_count
+                
+                logger.info(f"Updated {listings_updated} listings for user {user_id} after role change")
+            
             # Send role change notification to user
             role_notification = {
                 "user_id": user_id,
@@ -1380,7 +1408,10 @@ async def update_user_role(user_id: str, role_data: dict):
             }
             await db.user_notifications.insert_one(role_notification)
         
-        return {"message": "User role updated successfully"}
+        return {
+            "message": "User role updated successfully",
+            "listings_updated": listings_updated if 'listings_updated' in locals() else 0
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update user role: {str(e)}")
 
