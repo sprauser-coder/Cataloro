@@ -153,16 +153,27 @@ function SellPage() {
         {/* Tab Navigation */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 mb-4 sm:mb-6">
           <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 overflow-x-auto" aria-label="Tabs">
+            <nav className="flex px-4 sm:px-6 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} aria-label="Tabs">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
+                
+                // Mobile-friendly tab labels
+                const getMobileLabel = (tabId) => {
+                  switch(tabId) {
+                    case 'listings': return 'Listings';
+                    case 'tenders': return 'Tenders';
+                    case 'accepted': return 'Accepted';
+                    case 'completed': return 'Done';
+                    default: return tab.label;
+                  }
+                };
                 
                 return (
                   <button
                     key={tab.id}
                     onClick={() => handleTabChange(tab.id)}
-                    className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap ${
+                    className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0 ${
                       isActive
                         ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -171,11 +182,7 @@ function SellPage() {
                     <div className="flex items-center space-x-1 sm:space-x-2">
                       <Icon className="w-4 h-4" />
                       <span className="hidden sm:inline">{tab.label}</span>
-                      <span className="sm:hidden">
-                        {tab.id === 'listings' ? 'Listings' : 
-                         tab.id === 'tenders' ? 'Tenders' : 
-                         tab.id === 'accepted' ? 'Accepted' : 'Completed'}
-                      </span>
+                      <span className="sm:hidden">{getMobileLabel(tab.id)}</span>
                     </div>
                   </button>
                 );
