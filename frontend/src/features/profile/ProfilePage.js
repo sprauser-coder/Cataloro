@@ -359,22 +359,14 @@ function ProfilePage() {
     }
   }, [user?.id]);
 
-  // Calculate real statistics from marketplace data
+  // Calculate stats using the same logic as working tiles
   useEffect(() => {
-    const calculateStats = () => {
-      console.log('🔍 ProfilePage calculateStats - Debug Info:', {
-        user: user ? {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          account_type: user.account_type,
-          is_business: user.is_business,
-          can_buy: user.can_buy
-        } : null,
-        allProductsCount: allProducts?.length || 0,
-        orderHistoryCount: orderHistory?.length || 0,
-        favoritesCount: favorites?.length || 0
+    const calculateStatsFromTiles = () => {
+      console.log('🔍 ProfilePage calculateStatsFromTiles - Using working tile logic:', {
+        myListingsCount: myListings.length,
+        myTendersCount: myTenders.length,
+        listingsLoading,
+        tendersLoading
       });
       
       if (!user?.id) {
@@ -382,124 +374,30 @@ function ProfilePage() {
         return;
       }
       
-      console.log('🔍 COMPLETE DIAGNOSTIC - allProducts analysis:', {
-        totalProducts: allProducts?.length,
-        firstProductComplete: allProducts?.[0] ? Object.keys(allProducts[0]) : [],
-        sampleProducts: allProducts?.slice(0, 5).map(p => ({
-          id: p.id,
-          title: p.title,
-          seller_id: p.seller_id,
-          seller: p.seller,
-          seller_name: p.seller_name,
-          seller_username: p.seller_username || 'N/A',
-          seller_email: p.seller_email || 'N/A',
-          inStock: p.inStock,
-          seller_id_matches: p.seller_id === user.id,
-          seller_matches: p.seller === user.username,
-          seller_name_matches: p.seller_name === user.full_name
-        })),
-        UNIQUE_SELLERS_LIST: JSON.stringify([...new Set(allProducts?.map(p => p.seller))]),
-        UNIQUE_SELLER_IDS_LIST: JSON.stringify([...new Set(allProducts?.map(p => p.seller_id))]),
-        UNIQUE_SELLER_NAMES_LIST: JSON.stringify([...new Set(allProducts?.map(p => p.seller_name))]),
-        USER_TO_MATCH: {
-          id: user.id,
-          username: user.username,
-          full_name: user.full_name,
-          email: user.email
-        }
-      });
+      // Use same logic as MyListingsPage tiles
+      const totalListings = myListings.length;
+      const activeListings = myListings.filter(l => l.status === 'active').length;
+      const closedListings = myListings.filter(l => l.status === 'sold' || l.status === 'closed').length;
       
-      console.log('🔍 Debugging orderHistory structure:', {
-        sampleOrders: orderHistory?.slice(0, 3).map(o => ({
-          id: o?.id,
-          buyer_id: o?.buyer_id,
-          seller_id: o?.seller_id,
-          status: o?.status,
-          total: o?.total,
-          amount: o?.amount
-        })),
-        allBuyerIds: [...new Set(orderHistory?.map(o => o?.buyer_id).filter(Boolean))],
-        allSellerIds: [...new Set(orderHistory?.map(o => o?.seller_id).filter(Boolean))],
-        userIdToMatch: user.id
-      });
+      // Use same logic as TenderManagementPage tiles
+      const acceptedTenders = myTenders.filter(t => t.status === 'accepted').length;
       
-      // Try multiple matching strategies for listings - seller is an object!
-      const userListings = allProducts.filter(p => {
-        const sellerUsernameMatch = p.seller?.username === user?.username;
-        const sellerStringMatch = p.seller === user?.username; // Fallback for string seller
-        const sellerIdMatch = p.seller_id === user?.id;
-        const sellerNameMatch = p.seller_name === user?.full_name || p.seller_name === user?.username;
-        const sellerFullNameMatch = p.seller?.full_name === user?.full_name;
-        const matches = sellerUsernameMatch || sellerStringMatch || sellerIdMatch || sellerNameMatch || sellerFullNameMatch;
-        
-        if (matches) {
-          console.log('🔍 Found user listing:', {
-            id: p.id,
-            title: p.title,
-            seller_id: p.seller_id,
-            seller: p.seller,
-            seller_name: p.seller_name,
-            inStock: p.inStock,
-            matchedBy: sellerUsernameMatch ? 'seller.username' : sellerStringMatch ? 'seller' : sellerIdMatch ? 'seller_id' : sellerFullNameMatch ? 'seller.full_name' : 'seller_name'
-          });
-        }
-        return matches;
-      });
-      
-      const activeListings = userListings.filter(p => p.inStock !== false);
-      const userOrders = Array.isArray(orderHistory) ? orderHistory : [];
-      
-      // Check for orders where user is buyer OR seller (orders might use username/object too)
-      const userBuyOrders = userOrders.filter(o => o && (
-        o.buyer_id === user?.id || 
-        o.buyer?.username === user?.username ||
-        o.buyer === user?.username
-      ));
-      const userSellOrders = userOrders.filter(o => o && (
-        o.seller_id === user?.id || 
-        o.seller?.username === user?.username ||
-        o.seller === user?.username
-      ));
-      const completedBuyOrders = userBuyOrders.filter(o => o.status === 'completed');
-      const completedSellOrders = userSellOrders.filter(o => o.status === 'completed');
-      
-      console.log('🔍 Detailed stats calculation:', {
-        userListingsCount: userListings.length,
-        activeListingsCount: activeListings.length,
-        userBuyOrdersCount: userBuyOrders.length,
-        userSellOrdersCount: userSellOrders.length,
-        completedBuyOrdersCount: completedBuyOrders.length,
-        completedSellOrdersCount: completedSellOrders.length,
-        totalUserOrders: userOrders.length
-      });
-      
-      // Calculate actual seller rating from completed transactions (if available)
-      const allCompletedOrders = [...completedBuyOrders, ...completedSellOrders];
-      const actualRating = allCompletedOrders.length > 0 
-        ? allCompletedOrders.reduce((sum, order) => sum + (order.rating || 5), 0) / allCompletedOrders.length 
-        : (userListings.length > 0 ? 4.5 : 0); // Default rating for sellers with listings but no orders
-      
-      // Calculate total revenue from completed sales (as seller)
-      const actualRevenue = completedSellOrders.reduce((sum, order) => sum + (order.total || order.amount || 0), 0);
-      
-      // Count total deals (bought + sold)
-      const totalDeals = userBuyOrders.length + userSellOrders.length;
-      const completedDeals = completedBuyOrders.length + completedSellOrders.length;
+      // Calculate rating from existing logic (keep from previous implementation)
+      const actualRating = totalListings > 0 ? 4.5 : 0; // Default rating for sellers with listings
       
       const stats = {
-        totalListings: userListings.length,
-        activeListings: activeListings.length,
-        totalDeals: totalDeals, // Total transactions (buy + sell)
-        completedDeals: completedDeals, // Completed transactions (buy + sell)
-        totalRevenue: actualRevenue, // Revenue from selling
+        totalListings: totalListings,          // From Sell > Listings > Total Listings Tile
+        activeListings: activeListings,        // From Sell > Listings > Active Listings Tile  
+        totalDeals: closedListings,           // From Sell > Listings > Closed Tile
+        completedDeals: acceptedTenders,      // From Buy > Tenders > Accepted Tile
         avgRating: parseFloat(actualRating.toFixed(1)),
         totalFavorites: favorites?.length || 0,
-        profileViews: userListings.reduce((sum, listing) => sum + (listing.views || 0), 0), // Sum of listing views
+        profileViews: myListings.reduce((sum, listing) => sum + (listing.views || 0), 0), // Sum of listing views
         joinDate: user?.date_joined || user?.created_at,
         lastActive: new Date().toISOString().split('T')[0]
       };
       
-      console.log('🔍 Final calculated stats:', stats);
+      console.log('🔍 Final calculated stats using tile logic:', stats);
       setAccountStats(stats);
       
       // Update profileData with calculated seller rating
@@ -510,17 +408,19 @@ function ProfilePage() {
       }));
     };
 
-    if (user && allProducts && favorites !== undefined) {
-      calculateStats();
+    // Only calculate when we have the data and it's not loading
+    if (user && !listingsLoading && !tendersLoading) {
+      calculateStatsFromTiles();
     } else {
-      console.log('⚠️ Missing data for stats calculation:', {
+      console.log('⚠️ Waiting for data to calculate stats:', {
         hasUser: !!user,
-        hasAllProducts: !!allProducts,
-        hasOrderHistory: !!orderHistory,
-        hasFavorites: !!favorites
+        listingsLoading,
+        tendersLoading,
+        myListingsLength: myListings.length,
+        myTendersLength: myTenders.length
       });
     }
-  }, [allProducts, orderHistory, favorites, user]);
+  }, [myListings, myTenders, favorites, user, listingsLoading, tendersLoading]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
