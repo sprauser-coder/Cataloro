@@ -1641,8 +1641,7 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
         <div className="absolute bottom-2 left-2 z-20">
           {/* Combined Partner Offer Badge with Countdown */}
           {item.is_partners_only && item.public_at && (() => {
-            // Import timezone utility functions
-            const { formatPartnerTimeRemaining } = require('../../utils/timezone');
+            // Use imported timezone utility functions
             const timeText = formatPartnerTimeRemaining(item.public_at);
             
             // Only show if time remaining is positive
