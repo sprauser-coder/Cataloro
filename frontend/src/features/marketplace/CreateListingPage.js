@@ -1285,7 +1285,7 @@ function CreateListingPage() {
                   <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                     <User className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                     <div className="text-sm text-blue-700 dark:text-blue-300">
-                      <strong>Note:</strong> You can manage your preferred partners in Profile Settings > Partners. Partners will be notified when you post listings with early access enabled.
+                      <strong>Note:</strong> You can manage your preferred partners in Profile Settings &gt; Partners. Partners will be notified when you post listings with early access enabled.
                     </div>
                   </div>
                 </div>
