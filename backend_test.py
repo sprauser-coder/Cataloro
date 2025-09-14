@@ -216,13 +216,13 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_mark_notification_as_read(self, token, notification_id):
-        """Test PUT /api/notifications/{notification_id}/read endpoint"""
+    async def test_mark_notification_as_read(self, token, user_id, notification_id):
+        """Test PUT /api/user/{user_id}/notifications/{notification_id}/read endpoint"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/notifications/{notification_id}/read"
+            url = f"{BACKEND_URL}/user/{user_id}/notifications/{notification_id}/read"
             
             async with self.session.put(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
