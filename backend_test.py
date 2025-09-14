@@ -604,8 +604,8 @@ class BackendTester:
             print("   ❌ No routing types supported")
         
         # Check mark as read functionality
-        demo_mark_read = all_results.get('Demo User', {}).get('mark_as_read', {})
-        admin_mark_read = all_results.get('Admin User', {}).get('mark_as_read', {})
+        demo_mark_read = demo_notifications.get('mark_as_read', {}) if isinstance(demo_notifications, dict) else {}
+        admin_mark_read = admin_notifications.get('mark_as_read', {}) if isinstance(admin_notifications, dict) else {}
         
         if demo_mark_read.get('success') or admin_mark_read.get('success'):
             print("   ✅ Mark-as-read functionality is working")
