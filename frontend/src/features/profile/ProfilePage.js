@@ -389,23 +389,28 @@ function ProfilePage() {
       });
       
       // Calculate actual seller rating from completed transactions (if available)
-      const actualRating = completedOrders.length > 0 
-        ? completedOrders.reduce((sum, order) => sum + (order.rating || 5), 0) / completedOrders.length 
+      const allCompletedOrders = [...completedBuyOrders, ...completedSellOrders];
+      const actualRating = allCompletedOrders.length > 0 
+        ? allCompletedOrders.reduce((sum, order) => sum + (order.rating || 5), 0) / allCompletedOrders.length 
         : (userListings.length > 0 ? 4.5 : 0); // Default rating for sellers with listings but no orders
       
-      // Calculate total revenue from completed sales
-      const actualRevenue = completedOrders.reduce((sum, order) => sum + (order.total || order.amount || 0), 0);
+      // Calculate total revenue from completed sales (as seller)
+      const actualRevenue = completedSellOrders.reduce((sum, order) => sum + (order.total || order.amount || 0), 0);
+      
+      // Count total deals (bought + sold)
+      const totalDeals = userBuyOrders.length + userSellOrders.length;
+      const completedDeals = completedBuyOrders.length + completedSellOrders.length;
       
       const stats = {
         totalListings: userListings.length,
         activeListings: activeListings.length,
-        totalDeals: userOrders.length,
-        completedDeals: completedOrders.length,
-        totalRevenue: actualRevenue,
+        totalDeals: totalDeals, // Total transactions (buy + sell)
+        completedDeals: completedDeals, // Completed transactions (buy + sell)
+        totalRevenue: actualRevenue, // Revenue from selling
         avgRating: parseFloat(actualRating.toFixed(1)),
-        totalFavorites: favorites.length,
+        totalFavorites: favorites?.length || 0,
         profileViews: userListings.reduce((sum, listing) => sum + (listing.views || 0), 0), // Sum of listing views
-        joinDate: profileData.date_joined,
+        joinDate: user?.date_joined || user?.created_at,
         lastActive: new Date().toISOString().split('T')[0]
       };
       
