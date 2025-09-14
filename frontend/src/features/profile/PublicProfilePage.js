@@ -395,9 +395,9 @@ function PublicProfilePage() {
           {/* Verified Badge at Top */}
           {profileUser.is_verified && (
             <div className="mb-6 flex justify-center lg:justify-start">
-              <div className="bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100 px-4 py-2 rounded-full text-lg font-semibold flex items-center shadow-md">
-                <CheckCircle className="w-6 h-6 mr-2" />
-                Verified User
+              <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:bg-gradient-to-r dark:from-green-800 dark:to-emerald-800 text-green-800 dark:text-green-100 px-6 py-3 rounded-full text-lg font-bold flex items-center shadow-lg border-2 border-green-200 dark:border-green-600">
+                <CheckCircle className="w-6 h-6 mr-3" />
+                ✓ Verified User
               </div>
             </div>
           )}
