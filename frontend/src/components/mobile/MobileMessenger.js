@@ -141,6 +141,8 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         }
       });
       
+      console.log(`🔍 Processing complete: ${processedMessages} messages processed, ${unreadMessages} unread messages found`);
+      
       // Convert to array and sort by last message time
       const conversationsList = Array.from(conversationsMap.values()).sort((a, b) => {
         if (!a.lastMessage && !b.lastMessage) return 0;
