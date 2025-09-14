@@ -1548,9 +1548,13 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
     <div 
       className={`product-card group bg-white dark:bg-gray-800 rounded-xl transition-all duration-300 overflow-hidden cursor-pointer ${
         // Partner listing border
-        item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() 
-          ? 'border border-pink-600 shadow-lg shadow-pink-100 dark:shadow-pink-900/20' 
-          : 'border border-gray-200 dark:border-gray-700'
+        (() => {
+          const { calculateTimeRemaining } = require('../../utils/timezone');
+          const { expired } = calculateTimeRemaining(item.public_at);
+          return item.is_partners_only && item.public_at && !expired
+            ? 'border border-pink-600 shadow-lg shadow-pink-100 dark:shadow-pink-900/20' 
+            : 'border border-gray-200 dark:border-gray-700';
+        })()
       } ${
         isGridView ? 'hover:-translate-y-1 hover:shadow-xl' : 'flex space-x-4 p-4'
       }`}
