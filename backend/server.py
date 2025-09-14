@@ -1556,19 +1556,88 @@ async def browse_listings(
     limit: int = 50, 
     offset: int = 0,
     user_id: str = None,
-    bid_filter: str = "all"  # New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
+    bid_filter: str = "all",  # New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
+    request: Request = None  # For optional authentication
 ):
-    """Browse available listings with enhanced filtering options"""
+    """Browse available listings with enhanced filtering options and partner visibility"""
     try:
         logger.info(f"📋 Browse request - status: {status}, bid_filter: {bid_filter}, user_id: {user_id}")
         
-        # Build query based on status filter
+        # Get current user if authenticated (optional for partner visibility)
+        current_user = None
+        try:
+            auth_header = request.headers.get("authorization") if request else None
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                if payload:
+                    current_user = await db.users.find_one({"id": payload.get("user_id")})
+        except:
+            # Authentication is optional for browsing
+            pass
+        
+        current_time = datetime.utcnow()
+        
+        # Build base query based on status filter
         if status == "all":
-            query = {}  # Get all listings regardless of status
+            base_query = {}  # Get all listings regardless of status
         elif status in ["active", "pending", "expired", "sold", "draft"]:
-            query = {"status": status}
+            base_query = {"status": status}
         else:
-            query = {"status": "active"}  # Default to active
+            base_query = {"status": "active"}  # Default to active
+        
+        # Add partner visibility filtering
+        if current_user:
+            current_user_id = current_user.get("id")
+            current_username = current_user.get("username", "unknown")
+            logger.info(f"🔍 BROWSE DEBUG: Authenticated user {current_user_id} ({current_username})")
+            
+            # Get user's partnerships (where current user is the partner)
+            user_partnerships = await db.user_partners.find({
+                "partner_id": current_user_id,
+                "status": "active"
+            }).to_list(length=None)
+            partner_of_users = [p.get("user_id") for p in user_partnerships]
+            
+            logger.info(f"🔍 BROWSE DEBUG: User {current_user_id} is partner of sellers: {partner_of_users}")
+            
+            # Combine base query with partner visibility
+            query = {
+                "$and": [
+                    base_query,  # Status filter
+                    {
+                        "$or": [
+                            # Public listings (either never had partner restriction or time has passed)
+                            {
+                                "$or": [
+                                    {"is_partners_only": {"$ne": True}},
+                                    {"public_at": {"$lte": current_time.isoformat()}}
+                                ]
+                            },
+                            # Partner-only listings from sellers who have current user as partner
+                            {
+                                "is_partners_only": True,
+                                "public_at": {"$gt": current_time.isoformat()},
+                                "seller_id": {"$in": partner_of_users}
+                            }
+                        ]
+                    }
+                ]
+            }
+        else:
+            logger.info("🔍 BROWSE DEBUG: Anonymous user - only public listings")
+            # Anonymous users only see public listings
+            query = {
+                "$and": [
+                    base_query,  # Status filter
+                    {
+                        "$or": [
+                            {"is_partners_only": {"$ne": True}},
+                            {"public_at": {"$lte": current_time.isoformat()}}
+                        ]
+                    }
+                ]
+            }
         
         # First, get total count for pagination (before applying limit)
         total_count = await db.listings.count_documents(query)
