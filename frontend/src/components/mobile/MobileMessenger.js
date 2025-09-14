@@ -253,7 +253,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
 
   const handleSendMessage = async () => {
     if (!message.trim() || !currentConversation) {
-      alert('No message or conversation selected');
+      showToast('No message or conversation selected', 'error');
       return;
     }
     
