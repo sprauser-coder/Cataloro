@@ -777,10 +777,10 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
       ) : (
         <div className="space-y-4">
           {myTenders.map((tender) => (
-            <div key={tender.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-              <div className="flex items-start space-x-4">
+            <div key={tender.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
                 {/* Listing Image */}
-                <div className="w-20 h-20 flex-shrink-0">
+                <div className="w-full sm:w-20 sm:h-20 h-32 flex-shrink-0">
                   <img
                     src={tender.listing.images?.[0] || '/api/placeholder/400/300'}
                     alt={tender.listing.title}
@@ -789,10 +789,10 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                 </div>
                 
                 {/* Tender Details */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                <div className="flex-1 min-w-0 space-y-3 sm:space-y-0">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
                         {tender.listing.title}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -800,7 +800,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                       </p>
                       {/* Seller Information */}
                       {tender.seller && (
-                        <div className="mt-2 flex items-center space-x-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
                           <span className="text-xs text-gray-500 dark:text-gray-500">Seller:</span>
                           <div className="flex items-center space-x-1">
                             {tender.seller.is_business && (
@@ -808,7 +808,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                                 Business
                               </span>
                             )}
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                               {tender.seller.business_name || tender.seller.full_name || tender.seller.username}
                             </span>
                           </div>
@@ -816,7 +816,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                       )}
                     </div>
                     
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(tender.status)}`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor(tender.status)}`}>
                       {getStatusIcon(tender.status)}
                       <span className="ml-1">{getStatusText(tender.status)}</span>
                     </span>
@@ -826,7 +826,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                   {tender.status === 'accepted' && (
                     <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
                       <div className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
+                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2 flex-shrink-0" />
                         <p className="text-sm text-green-800 dark:text-green-300 font-medium">
                           Item has been moved to Bought Items
                         </p>
@@ -834,16 +834,16 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                     </div>
                   )}
                   
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="text-center">
+                  <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                      <div className="text-center sm:text-left">
                         <p className="text-sm text-gray-600 dark:text-gray-400">Your Offer</p>
-                        <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                        <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
                           €{tender.offer_amount.toFixed(2)}
                         </p>
                       </div>
                       
-                      <div className="text-center">
+                      <div className="text-center sm:text-left">
                         <p className="text-sm text-gray-600 dark:text-gray-400">Submitted</p>
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
                           {new Date(tender.created_at).toLocaleDateString()}
