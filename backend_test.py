@@ -1179,103 +1179,85 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_verify_api_response_structure(self, token, listing_id):
-        """Verify the NEW listing has future public_at date and correct partner fields"""
-        start_time = datetime.now()
-        
+    async def test_profile_stats_data_consistency(self, listings_result, tenders_result):
+        """Test that the data from both endpoints is consistent and suitable for Profile stats"""
         try:
-            headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/listings/{listing_id}"
+            if not listings_result.get('success') or not tenders_result.get('success'):
+                self.log_result(
+                    "Profile Stats Data Consistency", 
+                    False, 
+                    "❌ PREREQUISITE FAILED: One or both endpoints failed, cannot test consistency"
+                )
+                return {'success': False, 'error': 'Prerequisite endpoints failed'}
             
-            async with self.session.get(url, headers=headers) as response:
-                response_time = (datetime.now() - start_time).total_seconds() * 1000
-                
-                if response.status == 200:
-                    data = await response.json()
-                    
-                    # Check required partner fields
-                    is_partners_only = data.get('is_partners_only')
-                    public_at = data.get('public_at')
-                    show_partners_first = data.get('show_partners_first')
-                    
-                    # Verify current time is BEFORE public_at
-                    current_time = datetime.now(timezone.utc)
-                    
-                    if public_at:
-                        try:
-                            # Parse public_at datetime
-                            if public_at.endswith('Z'):
-                                public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
-                            elif '+' in public_at or public_at.endswith('00:00'):
-                                public_at_dt = datetime.fromisoformat(public_at)
-                            else:
-                                public_at_dt = datetime.fromisoformat(public_at).replace(tzinfo=timezone.utc)
-                            
-                            time_diff = (public_at_dt - current_time).total_seconds()
-                            hours_diff = time_diff / 3600
-                            
-                            # Check if all conditions are met
-                            if (is_partners_only is True and 
-                                public_at and 
-                                show_partners_first is True and 
-                                time_diff > 0 and 
-                                150 <= hours_diff <= 170):  # Allow some tolerance around 168 hours
-                                
-                                self.log_result(
-                                    "Verify API Response Structure", 
-                                    True, 
-                                    f"✅ STRUCTURE CONFIRMED: is_partners_only=True, public_at={public_at} ({hours_diff:.1f}h future), show_partners_first=True, current time is BEFORE public_at",
-                                    response_time
-                                )
-                                return {
-                                    'success': True, 
-                                    'is_partners_only': is_partners_only,
-                                    'public_at': public_at,
-                                    'show_partners_first': show_partners_first,
-                                    'hours_in_future': hours_diff,
-                                    'badge_condition_met': True
-                                }
-                            else:
-                                self.log_result(
-                                    "Verify API Response Structure", 
-                                    False, 
-                                    f"❌ STRUCTURE INVALID: is_partners_only={is_partners_only}, public_at={public_at}, show_partners_first={show_partners_first}, hours_diff={hours_diff:.1f}",
-                                    response_time
-                                )
-                                return {'success': False, 'error': 'Invalid partner structure'}
-                        except Exception as date_error:
-                            self.log_result(
-                                "Verify API Response Structure", 
-                                False, 
-                                f"❌ DATE PARSING ERROR: {str(date_error)}, public_at={public_at}",
-                                response_time
-                            )
-                            return {'success': False, 'error': f'Date parsing error: {str(date_error)}'}
-                    else:
-                        self.log_result(
-                            "Verify API Response Structure", 
-                            False, 
-                            f"❌ MISSING public_at: is_partners_only={is_partners_only}, show_partners_first={show_partners_first}",
-                            response_time
-                        )
-                        return {'success': False, 'error': 'Missing public_at field'}
-                else:
-                    error_text = await response.text()
-                    self.log_result(
-                        "Verify API Response Structure", 
-                        False, 
-                        f"❌ FETCH FAILED: Status {response.status}: {error_text}",
-                        response_time
-                    )
-                    return {'success': False, 'error': error_text}
-                    
-        except Exception as e:
-            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            # Extract data from both endpoints
+            listings_count = listings_result.get('listings_count', 0)
+            listings_status_counts = listings_result.get('status_counts', {})
+            tenders_count = tenders_result.get('tenders_count', 0)
+            tenders_status_counts = tenders_result.get('status_counts', {})
+            
+            # Check for expected status fields
+            expected_listing_statuses = ['active', 'pending', 'expired', 'sold', 'draft']
+            expected_tender_statuses = ['pending', 'accepted', 'rejected', 'expired']
+            
+            found_listing_statuses = list(listings_status_counts.keys())
+            found_tender_statuses = list(tenders_status_counts.keys())
+            
+            # Calculate stats that Profile would use
+            active_listings = listings_status_counts.get('active', 0)
+            accepted_tenders = tenders_status_counts.get('accepted', 0)
+            
+            consistency_checks = []
+            
+            # Check 1: Data structure consistency
+            if listings_count >= 0 and tenders_count >= 0:
+                consistency_checks.append("✅ Both endpoints return valid counts")
+            else:
+                consistency_checks.append("❌ Invalid counts returned")
+            
+            # Check 2: Status field presence
+            if found_listing_statuses and found_tender_statuses:
+                consistency_checks.append("✅ Both endpoints return status fields")
+            else:
+                consistency_checks.append("❌ Missing status fields")
+            
+            # Check 3: Profile stats calculation readiness
+            if active_listings >= 0 and accepted_tenders >= 0:
+                consistency_checks.append(f"✅ Profile stats ready: {active_listings} active listings, {accepted_tenders} accepted tenders")
+            else:
+                consistency_checks.append("❌ Profile stats calculation not possible")
+            
+            # Check 4: User email consistency
+            listings_user = listings_result.get('user_email', '')
+            tenders_user = tenders_result.get('user_email', '')
+            if listings_user == tenders_user:
+                consistency_checks.append(f"✅ User consistency: Both endpoints tested with {listings_user}")
+            else:
+                consistency_checks.append(f"❌ User inconsistency: {listings_user} vs {tenders_user}")
+            
+            all_checks_passed = all("✅" in check for check in consistency_checks)
+            
             self.log_result(
-                "Verify API Response Structure", 
+                "Profile Stats Data Consistency", 
+                all_checks_passed, 
+                f"{'✅ CONSISTENCY VERIFIED' if all_checks_passed else '❌ CONSISTENCY ISSUES'}: {'; '.join(consistency_checks)}",
+            )
+            
+            return {
+                'success': all_checks_passed,
+                'listings_count': listings_count,
+                'tenders_count': tenders_count,
+                'active_listings': active_listings,
+                'accepted_tenders': accepted_tenders,
+                'consistency_checks': consistency_checks,
+                'profile_stats_ready': all_checks_passed
+            }
+            
+        except Exception as e:
+            self.log_result(
+                "Profile Stats Data Consistency", 
                 False, 
-                f"❌ VERIFICATION EXCEPTION: {str(e)}",
-                response_time
+                f"❌ CONSISTENCY EXCEPTION: {str(e)}"
             )
             return {'success': False, 'error': str(e)}
 
