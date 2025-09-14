@@ -468,6 +468,56 @@ function ProductDetailPage() {
                 {product.title}
               </h1>
 
+              {/* Partner Offer Badge */}
+              {product.is_partners_only && product.public_at && (() => {
+                // Ensure consistent timezone handling
+                let publicDate;
+                try {
+                  // Handle different date formats from backend
+                  if (product.public_at.includes('Z') || product.public_at.includes('+')) {
+                    // Already has timezone info
+                    publicDate = new Date(product.public_at);
+                  } else {
+                    // Assume UTC if no timezone specified
+                    publicDate = new Date(product.public_at + 'Z');
+                  }
+                } catch (e) {
+                  // Fallback parsing
+                  publicDate = new Date(product.public_at);
+                }
+                
+                const now = new Date();
+                const timeRemaining = publicDate - now;
+                
+                // Only show if time remaining is positive
+                if (timeRemaining <= 0) return null;
+                
+                // Calculate hours and minutes remaining
+                const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
+                const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                
+                // Format time display
+                let timeText = '';
+                if (hoursRemaining > 0) {
+                  timeText = `${hoursRemaining}h ${minutesRemaining}m left`;
+                } else if (minutesRemaining > 0) {
+                  timeText = `${minutesRemaining}m left`;
+                } else {
+                  timeText = 'Ending soon';
+                }
+                
+                return (
+                  <div className="mb-4">
+                    <span className="inline-flex items-center text-white text-sm px-3 py-2 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
+                      <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                      Partner Listing • {timeText}
+                    </span>
+                  </div>
+                );
+              })()}
+
               {/* Views Counter */}
               <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 mb-4">
                 <Eye className="w-4 h-4" />
