@@ -465,7 +465,7 @@ function SellTab({
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Tender Management</h2>
         
         {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center">
               <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
