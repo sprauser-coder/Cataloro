@@ -122,59 +122,69 @@ function SellPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-8">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Sell Management
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your listings, received offers, and completed sales
-          </p>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <a
-            href="/create-listing"
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Listing
-          </a>
-        </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700">
-        <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="flex space-x-8 px-6" aria-label="Tabs">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
-                    isActive
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <Icon className="w-4 h-4" />
-                    <span>{tab.label}</span>
-                  </div>
-                </button>
-              );
-            })}
-          </nav>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Page Header */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-green-600" />
+                Sell Management
+              </h1>
+              <p className="mt-1 sm:mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Manage your listings, received offers, and completed sales
+              </p>
+            </div>
+            
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <a
+                href="/create-listing"
+                className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Create Listing</span>
+                <span className="sm:hidden">Create</span>
+              </a>
+            </div>
+          </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="p-6">
+        {/* Tab Navigation */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 mb-4 sm:mb-6">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 overflow-x-auto" aria-label="Tabs">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap ${
+                      isActive
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-1 sm:space-x-2">
+                      <Icon className="w-4 h-4" />
+                      <span className="hidden sm:inline">{tab.label}</span>
+                      <span className="sm:hidden">
+                        {tab.id === 'listings' ? 'Listings' : 
+                         tab.id === 'tenders' ? 'Tenders' : 
+                         tab.id === 'accepted' ? 'Accepted' : 'Completed'}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Tab Content */}
+          <div className="p-4 sm:p-6">
           <div style={{ display: activeTab === 'tenders' ? 'block' : 'none' }}>
             <TenderManagementPage showSellTabOnly={true} />
           </div>
