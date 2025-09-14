@@ -306,6 +306,27 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
               </div>
             )}
 
+            {/* Partner Offer Badge */}
+            {currentListing.is_partners_only && currentListing.public_at && (() => {
+              // Import timezone utility functions
+              const { formatPartnerTimeRemaining } = require('../../utils/timezone');
+              const timeText = formatPartnerTimeRemaining(currentListing.public_at);
+              
+              // Only show if time remaining is positive
+              if (!timeText) return null;
+              
+              return (
+                <div className="absolute bottom-2 left-2">
+                  <span className="inline-flex items-center text-white text-xs px-2 py-1 rounded-full font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    Partner • {timeText}
+                  </span>
+                </div>
+              );
+            })()}
+
             {/* Image count indicator */}
             {currentListing.images && currentListing.images.length > 1 && (
               <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
