@@ -237,6 +237,11 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         }));
         
         console.log(`🔔 Updated unread message count to: ${totalUnreadMessages}`);
+        
+        // Force a small delay to ensure UI updates are visible
+        setTimeout(() => {
+          console.log('🔄 Triggering UI refresh after marking messages as read');
+        }, 100);
       }
     } catch (error) {
       console.error('❌ Error marking conversation as read:', error);
