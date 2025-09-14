@@ -260,11 +260,15 @@ function PublicProfilePage() {
             avatar_url: fetchedUser.avatar_url || '',
             city: fetchedUser.city || 'Not specified',
             country: fetchedUser.country || 'Not specified',
-            date_joined: fetchedUser.date_joined || fetchedUser.created_at || '2023-01-01',
-            verified: fetchedUser.verified || false,
+            date_joined: fetchedUser.date_joined || fetchedUser.created_at || 'Unknown',
+            is_verified: fetchedUser.is_verified || fetchedUser.verified || false,
             is_business: fetchedUser.is_business || false,
             company_name: fetchedUser.company_name || '',
-            seller_rating: fetchedUser.seller_rating || 0
+            seller_rating: fetchedUser.seller_rating || 0,
+            phone: fetchedUser.phone || '',
+            publicProfile: true,  // Always make fallback profiles public
+            showEmail: !!fetchedUser.email,
+            showPhone: !!fetchedUser.phone
           };
           
           setProfileUser(realUserData);
@@ -286,9 +290,61 @@ function PublicProfilePage() {
             memberSince: fetchedUser.date_joined || 'Unknown',
             lastActive: 'Active recently'
           });
+        } else {
+          // If no user found, create a minimal profile to prevent "not available" error
+          console.log('No user data found, creating minimal profile');
+          setProfileUser({
+            id: userId,
+            full_name: 'Unknown User',
+            username: userId,
+            email: null,
+            bio: 'This user has not set up their profile yet.',
+            avatar_url: '',
+            city: 'Not specified',
+            country: 'Not specified',
+            date_joined: 'Unknown',
+            is_verified: false,
+            is_business: false,
+            company_name: '',
+            seller_rating: 0,
+            phone: '',
+            publicProfile: true,  // Keep public even for minimal profiles
+            showEmail: false,
+            showPhone: false
+          });
+          
+          setUserStats({
+            totalListings: 0,
+            activeListings: 0,
+            totalSales: 0,
+            avgRating: 0,
+            responseRate: 0,
+            memberSince: 'Unknown',
+            lastActive: 'Unknown'
+          });
         }
       } catch (error) {
         console.error('Fallback profile loading failed:', error);
+        // Even if fallback fails, create a minimal profile
+        setProfileUser({
+          id: userId,
+          full_name: 'Unknown User',
+          username: userId,
+          email: null,
+          bio: 'Profile temporarily unavailable.',
+          avatar_url: '',
+          city: 'Not specified',
+          country: 'Not specified',
+          date_joined: 'Unknown',
+          is_verified: false,
+          is_business: false,
+          company_name: '',
+          seller_rating: 0,
+          phone: '',
+          publicProfile: true,  // Always keep public
+          showEmail: false,
+          showPhone: false
+        });
       }
     };
 
