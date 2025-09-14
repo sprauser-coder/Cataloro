@@ -2304,29 +2304,162 @@ class BackendTester:
         
         print("\n" + "="*80)
 
+async def run_partner_badge_future_date_tests():
+    """
+    Run the specific partner badge tests requested in the review:
+    Create a NEW partner-only listing with FUTURE public_at date to test badge display
+    """
+    print("🚀 CATALORO MARKETPLACE - PARTNER BADGE FUTURE DATE TESTING")
+    print("=" * 80)
+    print("GOAL: Create a test case where badge display condition evaluates to TRUE")
+    print("Condition: is_partners_only=true && public_at && new Date(public_at) > new Date()")
+    print("=" * 80)
+    print()
+    
+    async with BackendTester() as tester:
+        # Test 1: Admin Authentication
+        print("🔐 TEST 1: Admin Authentication")
+        print("-" * 40)
+        admin_token, admin_user_id, admin_user = await tester.test_login_and_get_token(
+            "admin@cataloro.com", "admin123"
+        )
+        
+        if not admin_token:
+            print("❌ CRITICAL FAILURE: Admin authentication failed - cannot proceed")
+            return False
+        
+        print(f"✅ Admin authenticated: {admin_user.get('full_name')} (ID: {admin_user_id})")
+        print()
+        
+        # Test 2: Create NEW Partner-Only Listing with LONG duration
+        print("📝 TEST 2: Create NEW Partner-Only Listing with LONG Duration")
+        print("-" * 60)
+        listing_result = await tester.test_create_new_partner_listing_with_future_date(admin_token, admin_user_id)
+        
+        if not listing_result.get('success'):
+            print("❌ CRITICAL FAILURE: Could not create partner-only listing")
+            return False
+        
+        listing_id = listing_result.get('listing_id')
+        print(f"✅ Partner-only listing created: {listing_id}")
+        print()
+        
+        # Test 3: Verify API Response Structure
+        print("🔍 TEST 3: Verify API Response Structure")
+        print("-" * 40)
+        structure_result = await tester.test_verify_api_response_structure(admin_token, listing_id)
+        
+        if not structure_result.get('success'):
+            print("❌ CRITICAL FAILURE: API response structure invalid")
+            return False
+        
+        hours_future = structure_result.get('hours_in_future', 0)
+        print(f"✅ API structure verified: public_at is {hours_future:.1f} hours in the future")
+        print()
+        
+        # Test 4: Test Authenticated Browse Endpoint
+        print("👤 TEST 4: Test Authenticated Browse Endpoint")
+        print("-" * 45)
+        auth_browse_result = await tester.test_authenticated_browse_endpoint(admin_token, listing_id)
+        
+        if not auth_browse_result.get('success'):
+            print("❌ FAILURE: Authenticated browse endpoint issues")
+            return False
+        
+        print("✅ Authenticated browse working: Admin can see partner-only listing with metadata")
+        print()
+        
+        # Test 5: Test Anonymous Browse Endpoint
+        print("🕶️ TEST 5: Test Anonymous Browse Endpoint")
+        print("-" * 40)
+        anon_browse_result = await tester.test_anonymous_browse_endpoint(listing_id)
+        
+        if not anon_browse_result.get('success'):
+            print("❌ FAILURE: Anonymous browse filtering issues")
+            return False
+        
+        public_count = anon_browse_result.get('public_listings_count', 0)
+        print(f"✅ Anonymous filtering working: {public_count} public listings visible, partner-only listing hidden")
+        print()
+        
+        # Final Analysis
+        print("📊 FINAL ANALYSIS: Partner Badge Future Date Test Results")
+        print("=" * 60)
+        
+        all_tests_passed = (
+            listing_result.get('success') and
+            structure_result.get('success') and
+            auth_browse_result.get('success') and
+            anon_browse_result.get('success')
+        )
+        
+        if all_tests_passed:
+            print("🎉 ✅ ALL TESTS PASSED - PARTNER BADGE BACKEND WORKING CORRECTLY")
+            print()
+            print("CRITICAL FINDINGS:")
+            print("- ✅ ADMIN AUTHENTICATION WORKING - Login with admin@cataloro.com / admin123 successful")
+            print("- ✅ FRESH PARTNER-ONLY LISTING CREATION WORKING - New listings created with correct partner fields")
+            print("- ✅ API RESPONSE STRUCTURE CORRECT - All required fields (is_partners_only, public_at, show_partners_first) present")
+            print("- ✅ AUTHENTICATED BROWSE WORKING - Admin can see partner-only listings with all metadata")
+            print("- ✅ ANONYMOUS FILTERING WORKING - Anonymous users cannot see partner-only listings")
+            print("- ✅ BADGE LOGIC CONDITIONS MET - Frontend badge logic (is_partners_only && public_at && future) satisfied")
+            print()
+            print("TECHNICAL VERIFICATION:")
+            print("- POST /api/auth/login: ✅ Working (admin authentication successful, token returned)")
+            print("- POST /api/listings: ✅ Working (creates partner-only listings with show_partners_first=true, partners_visibility_hours=168)")
+            print("- GET /api/listings/{listing_id}: ✅ Working (returns listing with partner fields: is_partners_only, public_at, show_partners_first)")
+            print("- GET /api/marketplace/browse (authenticated): ✅ Working (returns partner-only listings with metadata for admin)")
+            print("- GET /api/marketplace/browse (anonymous): ✅ Working (filters out partner-only listings for anonymous users)")
+            print("- Partner Data Structure: ✅ Working (all required fields present: is_partners_only=bool, public_at=str, show_partners_first=bool)")
+            print("- Badge Logic Validation: ✅ Working (is_partners_only=True, public_at exists and is future, badge should display=True)")
+            print()
+            print("🎯 GOAL ACHIEVED: Created test case where badge display condition evaluates to TRUE")
+            print("   Condition: is_partners_only=true && public_at && new Date(public_at) > new Date() ✅")
+            print()
+            print("📋 SUMMARY FOR USER:")
+            print("The backend is providing all the correct data structure and fields needed for frontend badge display.")
+            print("If badges are still not showing in the frontend, the issue is in the frontend badge rendering component, not the backend data.")
+            print("The backend Partner Badge functionality is fully operational.")
+            
+        else:
+            print("❌ SOME TESTS FAILED - PARTNER BADGE BACKEND ISSUES IDENTIFIED")
+            print()
+            print("FAILED TESTS:")
+            if not listing_result.get('success'):
+                print("- ❌ Partner-only listing creation failed")
+            if not structure_result.get('success'):
+                print("- ❌ API response structure invalid")
+            if not auth_browse_result.get('success'):
+                print("- ❌ Authenticated browse endpoint issues")
+            if not anon_browse_result.get('success'):
+                print("- ❌ Anonymous browse filtering issues")
+        
+        print("=" * 80)
+        return all_tests_passed
+
 async def main():
     """Main test execution"""
-    print("🚀 Starting Partner Badge Functionality Testing...")
+    print("🚀 Starting Partner Badge Future Date Testing...")
     print(f"🌐 Backend URL: {BACKEND_URL}")
     print("="*80)
     
-    async with BackendTester() as tester:
-        try:
-            # Run partner badge tests
-            success = await tester.run_all_tests()
-            
-            # Print summary
-            tester.print_summary()
-            
-            if success:
-                print("🎉 All Partner Badge tests passed!")
-            else:
-                print("⚠️ Some Partner Badge tests failed - check details above")
-            
-        except Exception as e:
-            print(f"❌ Test execution failed: {e}")
-            import traceback
-            traceback.print_exc()
+    try:
+        # Run partner badge future date tests
+        success = await run_partner_badge_future_date_tests()
+        
+        if success:
+            print("🎉 All Partner Badge Future Date tests passed!")
+        else:
+            print("⚠️ Some Partner Badge Future Date tests failed - check details above")
+        
+        return success
+        
+    except Exception as e:
+        print(f"❌ Test execution failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    success = asyncio.run(main())
+    sys.exit(0 if success else 1)
