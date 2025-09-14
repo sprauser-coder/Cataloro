@@ -471,6 +471,7 @@ function ProfilePage() {
                 { id: 'profile', label: 'Profile Info', icon: User },
                 { id: 'security', label: 'Security', icon: Shield },
                 { id: 'preferences', label: 'Preferences', icon: Settings },
+                { id: 'partners', label: 'Partners', icon: Users },
                 { id: 'stats', label: 'Statistics', icon: TrendingUp }
               ].map((tab) => (
                 <button
