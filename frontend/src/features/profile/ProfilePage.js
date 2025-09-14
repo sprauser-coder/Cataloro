@@ -327,17 +327,65 @@ function ProfilePage() {
         return;
       }
       
+      console.log('🔍 Debugging allProducts structure:', {
+        sampleProducts: allProducts?.slice(0, 3).map(p => ({
+          id: p.id,
+          title: p.title,
+          seller_id: p.seller_id,
+          seller: p.seller,
+          seller_name: p.seller_name,
+          inStock: p.inStock,
+          price: p.price
+        })),
+        allSellerIds: [...new Set(allProducts?.map(p => p.seller_id))],
+        userIdToMatch: user.id
+      });
+      
+      console.log('🔍 Debugging orderHistory structure:', {
+        sampleOrders: orderHistory?.slice(0, 3).map(o => ({
+          id: o?.id,
+          buyer_id: o?.buyer_id,
+          seller_id: o?.seller_id,
+          status: o?.status,
+          total: o?.total,
+          amount: o?.amount
+        })),
+        allBuyerIds: [...new Set(orderHistory?.map(o => o?.buyer_id).filter(Boolean))],
+        allSellerIds: [...new Set(orderHistory?.map(o => o?.seller_id).filter(Boolean))],
+        userIdToMatch: user.id
+      });
+      
       // Use seller_id to match listings instead of username/full_name for consistency
-      const userListings = allProducts.filter(p => p.seller_id === user?.id);
+      const userListings = allProducts.filter(p => {
+        const matches = p.seller_id === user?.id;
+        if (matches) {
+          console.log('🔍 Found user listing:', {
+            id: p.id,
+            title: p.title,
+            seller_id: p.seller_id,
+            inStock: p.inStock
+          });
+        }
+        return matches;
+      });
+      
       const activeListings = userListings.filter(p => p.inStock !== false);
       const userOrders = Array.isArray(orderHistory) ? orderHistory : [];
-      const completedOrders = userOrders.filter(o => o && o.status === 'completed');
       
-      console.log('🔍 Stats calculation:', {
+      // Check for orders where user is buyer OR seller
+      const userBuyOrders = userOrders.filter(o => o && o.buyer_id === user?.id);
+      const userSellOrders = userOrders.filter(o => o && o.seller_id === user?.id);
+      const completedBuyOrders = userBuyOrders.filter(o => o.status === 'completed');
+      const completedSellOrders = userSellOrders.filter(o => o.status === 'completed');
+      
+      console.log('🔍 Detailed stats calculation:', {
         userListingsCount: userListings.length,
         activeListingsCount: activeListings.length,
-        userOrdersCount: userOrders.length,
-        completedOrdersCount: completedOrders.length
+        userBuyOrdersCount: userBuyOrders.length,
+        userSellOrdersCount: userSellOrders.length,
+        completedBuyOrdersCount: completedBuyOrders.length,
+        completedSellOrdersCount: completedSellOrders.length,
+        totalUserOrders: userOrders.length
       });
       
       // Calculate actual seller rating from completed transactions (if available)
