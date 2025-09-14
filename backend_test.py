@@ -1046,13 +1046,13 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_my_listings_endpoint(self, token, user_id, user_email):
-        """Test GET /api/marketplace/my-listings endpoint for Profile stats synchronization"""
+    async def test_notifications_endpoint(self, token, user_id, user_email):
+        """Test GET /api/notifications endpoint for notification routing support"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/marketplace/my-listings"
+            url = f"{BACKEND_URL}/notifications"
             
             async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -1061,44 +1061,65 @@ class BackendTester:
                     data = await response.json()
                     
                     # Check if response has the expected structure
-                    if isinstance(data, dict) and 'listings' in data:
-                        listings = data['listings']
-                        total_count = data.get('total', 0)
+                    if isinstance(data, list):
+                        notifications = data
                         
-                        # Verify listings structure for stats calculation
-                        status_counts = {}
-                        for listing in listings:
-                            status = listing.get('status', 'unknown')
-                            status_counts[status] = status_counts.get(status, 0) + 1
+                        # Verify notification structure for routing
+                        notification_types = set()
+                        required_fields = ['id', 'type', 'title', 'message', 'read', 'created_at']
+                        
+                        for notification in notifications:
+                            notification_type = notification.get('type', 'unknown')
+                            notification_types.add(notification_type)
+                            
+                            # Check for required fields
+                            missing_fields = [field for field in required_fields if field not in notification]
+                            if missing_fields:
+                                self.log_result(
+                                    "Notifications Endpoint", 
+                                    False, 
+                                    f"❌ MISSING FIELDS: Notification missing fields {missing_fields}",
+                                    response_time
+                                )
+                                return {'success': False, 'error': f'Missing fields: {missing_fields}'}
+                        
+                        # Check for expected notification types for routing
+                        expected_types = {
+                            'tender_accepted', 'transaction_completed', 'transaction_marked_completed',
+                            'transaction_fully_completed', 'new_tender_offer', 'tender_offer',
+                            'new_user_registration'
+                        }
+                        
+                        found_routing_types = notification_types.intersection(expected_types)
                         
                         self.log_result(
-                            "My Listings Endpoint", 
+                            "Notifications Endpoint", 
                             True, 
-                            f"✅ MY LISTINGS WORKING: Found {len(listings)} listings (total: {total_count}), Status breakdown: {status_counts}",
+                            f"✅ NOTIFICATIONS WORKING: Found {len(notifications)} notifications, Types: {list(notification_types)}, Routing types found: {list(found_routing_types)}",
                             response_time
                         )
                         return {
                             'success': True, 
-                            'listings_count': len(listings),
-                            'total_count': total_count,
-                            'status_counts': status_counts,
-                            'listings': listings,
+                            'notifications_count': len(notifications),
+                            'notification_types': list(notification_types),
+                            'routing_types_found': list(found_routing_types),
+                            'notifications': notifications,
                             'user_email': user_email
                         }
                     else:
                         self.log_result(
-                            "My Listings Endpoint", 
+                            "Notifications Endpoint", 
                             False, 
-                            f"❌ WRONG STRUCTURE: Expected dict with 'listings' key, got {type(data)}",
+                            f"❌ WRONG STRUCTURE: Expected array, got {type(data)}",
                             response_time
                         )
                         return {'success': False, 'error': 'Wrong response structure'}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "My Listings Endpoint", 
+                        "Notifications Endpoint", 
                         False, 
-                        f"❌ LISTINGS FAILED: Status {response.status}: {error_text}",
+                        f"❌ NOTIFICATIONS FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'success': False, 'error': error_text}
@@ -1106,9 +1127,9 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "My Listings Endpoint", 
+                "Notifications Endpoint", 
                 False, 
-                f"❌ LISTINGS EXCEPTION: {str(e)}",
+                f"❌ NOTIFICATIONS EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
