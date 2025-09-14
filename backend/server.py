@@ -1595,6 +1595,27 @@ async def browse_listings(
         else:
             base_query = {"status": "active"}  # Default to active
         
+        # Add time-based expiration filtering for active listings
+        if status != "expired" and status != "all":
+            # For active/pending listings, also filter out time-expired ones
+            base_query = {
+                "$and": [
+                    base_query,
+                    {
+                        "$or": [
+                            # Listings without time limit
+                            {"has_time_limit": {"$ne": True}},
+                            # Listings with time limit that haven't expired yet
+                            {
+                                "has_time_limit": True,
+                                "expires_at": {"$gt": current_time.isoformat()}
+                            }
+                        ]
+                    }
+                ]
+            }
+            logger.info("🔍 EXPIRY DEBUG: Added time-based expiration filtering")
+        
         # Add partner visibility filtering
         if current_user:
             current_user_id = current_user.get("id")
