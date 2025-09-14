@@ -9273,6 +9273,7 @@ function CompletedTransactionsTab({ showToast, permissions }) {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // all, pending, completed
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   useEffect(() => {
     fetchCompletedTransactions();
