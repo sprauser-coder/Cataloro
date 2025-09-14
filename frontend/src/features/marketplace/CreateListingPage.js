@@ -1137,7 +1137,7 @@ function CreateListingPage() {
                   name="has_time_limit"
                   checked={formData.has_time_limit}
                   onChange={(e) => setFormData({...formData, has_time_limit: e.target.checked})}
-                  className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  className="w-5 h-5 text-blue-600 bg-white border-gray-400 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
                 <label htmlFor="has_time_limit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Set a time limit for this listing
