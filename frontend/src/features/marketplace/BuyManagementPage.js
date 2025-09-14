@@ -603,23 +603,24 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4 sm:mb-6">
           {!hideNavigation && (
             <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="-mb-px flex space-x-4 sm:space-x-8 px-4 sm:px-6 overflow-x-auto">
+              <nav className="-mb-px flex px-4 sm:px-6 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <button
                 onClick={() => setActiveTab('bought-items')}
-                className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'bought-items'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
                 <Package className="w-4 h-4 inline mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Bought Items</span>
-                <span className="sm:hidden">Items</span>
+                <span className="hidden xs:inline sm:hidden">Items</span>
+                <span className="xs:hidden sm:inline">Bought Items</span>
+                <span className="sm:hidden xs:hidden">Items</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('baskets')}
-                className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'baskets'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
@@ -631,14 +632,14 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
               
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'completed'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
                 <Check className="w-4 h-4 inline mr-1 sm:mr-2" />
-                Completed
+                Done
               </button>
             </nav>
             </div>
