@@ -435,8 +435,8 @@ function PublicProfilePage() {
                     );
                   })()}
                   
-                  {profileUser.verified && (
-                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                  {profileUser.is_verified && (
+                    <span className="bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Verified
                     </span>
