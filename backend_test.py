@@ -452,61 +452,124 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_seller_completion(self, listing_id, seller_token):
-        """Test POST /api/user/complete-transaction from seller perspective"""
+    async def test_partner_visibility_functionality(self, admin_token, demo_token, admin_user_id, demo_user_id):
+        """Test partner visibility functionality in listings"""
+        try:
+            # Step 1: Create partnership between admin and demo user
+            print("      Step 1: Creating partnership for visibility testing...")
+            partnership_result = await self.add_user_partner(demo_user_id, admin_token)
+            
+            if not partnership_result.get('success'):
+                self.log_result(
+                    "Partner Visibility Setup", 
+                    False, 
+                    f"❌ PARTNERSHIP CREATION FAILED: {partnership_result.get('error')}"
+                )
+                return partnership_result
+            
+            # Step 2: Create a listing with partner visibility
+            print("      Step 2: Creating listing with partner visibility...")
+            listing_result = await self.create_partner_visible_listing(admin_token, admin_user_id)
+            
+            if not listing_result.get('success'):
+                return listing_result
+            
+            listing_id = listing_result.get('listing_id')
+            
+            # Step 3: Test partner can see the listing
+            print("      Step 3: Testing partner can see the listing...")
+            partner_visibility_result = await self.test_partner_can_see_listing(demo_token, listing_id)
+            
+            # Step 4: Test anonymous user cannot see the listing
+            print("      Step 4: Testing anonymous user cannot see the listing...")
+            anonymous_visibility_result = await self.test_anonymous_cannot_see_listing(listing_id)
+            
+            # Step 5: Clean up - remove partnership
+            print("      Step 5: Cleaning up partnership...")
+            await self.remove_user_partner(demo_user_id, admin_token)
+            
+            # Analyze results
+            if (partner_visibility_result.get('success') and 
+                anonymous_visibility_result.get('success')):
+                self.log_result(
+                    "Partner Visibility Functionality", 
+                    True, 
+                    "✅ PARTNER VISIBILITY WORKING: Partners can see listings, anonymous users cannot"
+                )
+                return {'success': True, 'visibility_verified': True}
+            else:
+                issues = []
+                if not partner_visibility_result.get('success'):
+                    issues.append("Partner visibility failed")
+                if not anonymous_visibility_result.get('success'):
+                    issues.append("Anonymous filtering failed")
+                
+                self.log_result(
+                    "Partner Visibility Functionality", 
+                    False, 
+                    f"❌ VISIBILITY ISSUES: {'; '.join(issues)}"
+                )
+                return {'success': False, 'error': 'Visibility functionality failed'}
+            
+        except Exception as e:
+            self.log_result(
+                "Partner Visibility Functionality", 
+                False, 
+                f"❌ VISIBILITY EXCEPTION: {str(e)}"
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def create_partner_visible_listing(self, token, seller_id):
+        """Create a listing with partner visibility enabled"""
         start_time = datetime.now()
         
         try:
-            headers = {"Authorization": f"Bearer {seller_token}"}
-            url = f"{BACKEND_URL}/user/complete-transaction"
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/listings"
             
-            transaction_data = {
-                "listing_id": listing_id,
-                "notes": "Seller completion test",
-                "method": "meeting"
+            listing_data = {
+                "title": "Partner Visibility Test Listing",
+                "description": "This listing should only be visible to partners initially",
+                "price": 100.0,
+                "category": "Electronics",
+                "condition": "New",
+                "seller_id": seller_id,
+                "show_partners_first": True,
+                "partners_visibility_hours": 1,  # 1 hour for testing
+                "images": [],
+                "tags": ["test", "partner-visibility"],
+                "features": []
             }
             
-            async with self.session.post(url, headers=headers, json=transaction_data) as response:
+            async with self.session.post(url, headers=headers, json=listing_data) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
-                if response.status == 200:
+                if response.status == 201:
                     data = await response.json()
+                    listing_id = data.get('listing', {}).get('id') or data.get('id')
                     
-                    completion = data.get('completion', {})
-                    is_fully_completed = data.get('is_fully_completed', False)
-                    
-                    # Verify seller completion fields
-                    seller_confirmed_at = completion.get('seller_confirmed_at')
-                    buyer_confirmed_at = completion.get('buyer_confirmed_at')
-                    
-                    if seller_confirmed_at and not buyer_confirmed_at and not is_fully_completed:
+                    if listing_id:
                         self.log_result(
-                            "Seller Completion Logic", 
+                            "Create Partner Visible Listing", 
                             True, 
-                            f"✅ SELLER COMPLETION WORKING: seller_confirmed_at set, buyer_confirmed_at null, is_fully_completed=false",
+                            f"✅ LISTING CREATED: Partner-visible listing created with ID {listing_id}",
                             response_time
                         )
-                        return {
-                            'success': True,
-                            'completion': completion,
-                            'is_fully_completed': is_fully_completed,
-                            'seller_confirmed_at': seller_confirmed_at,
-                            'buyer_confirmed_at': buyer_confirmed_at
-                        }
+                        return {'success': True, 'listing_id': listing_id, 'listing': data}
                     else:
                         self.log_result(
-                            "Seller Completion Logic", 
+                            "Create Partner Visible Listing", 
                             False, 
-                            f"❌ SELLER COMPLETION LOGIC FAILED: seller_confirmed_at={seller_confirmed_at}, buyer_confirmed_at={buyer_confirmed_at}, is_fully_completed={is_fully_completed}",
+                            f"❌ NO LISTING ID: Response missing listing ID: {data}",
                             response_time
                         )
-                        return {'success': False, 'error': 'Seller completion logic incorrect', 'data': data}
+                        return {'success': False, 'error': 'No listing ID in response'}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Seller Completion Logic", 
+                        "Create Partner Visible Listing", 
                         False, 
-                        f"❌ SELLER COMPLETION FAILED: Status {response.status}: {error_text}",
+                        f"❌ CREATION FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'success': False, 'error': error_text}
@@ -514,9 +577,121 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Seller Completion Logic", 
+                "Create Partner Visible Listing", 
                 False, 
-                f"❌ SELLER COMPLETION EXCEPTION: {str(e)}",
+                f"❌ CREATION EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_partner_can_see_listing(self, partner_token, listing_id):
+        """Test that partner can see the partner-only listing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {partner_token}"}
+            url = f"{BACKEND_URL}/listings"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listings = data.get('listings', []) if isinstance(data, dict) else data
+                    
+                    # Check if our test listing is visible
+                    test_listing_found = any(
+                        listing.get('id') == listing_id for listing in listings
+                    )
+                    
+                    if test_listing_found:
+                        self.log_result(
+                            "Partner Can See Listing", 
+                            True, 
+                            f"✅ PARTNER VISIBILITY WORKING: Partner can see partner-only listing",
+                            response_time
+                        )
+                        return {'success': True, 'listing_visible': True}
+                    else:
+                        self.log_result(
+                            "Partner Can See Listing", 
+                            False, 
+                            f"❌ PARTNER VISIBILITY FAILED: Partner cannot see partner-only listing",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Partner cannot see listing'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Partner Can See Listing", 
+                        False, 
+                        f"❌ LISTINGS FETCH FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Partner Can See Listing", 
+                False, 
+                f"❌ PARTNER VISIBILITY EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_anonymous_cannot_see_listing(self, listing_id):
+        """Test that anonymous user cannot see the partner-only listing"""
+        start_time = datetime.now()
+        
+        try:
+            # No authorization header for anonymous request
+            url = f"{BACKEND_URL}/listings"
+            
+            async with self.session.get(url) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listings = data.get('listings', []) if isinstance(data, dict) else data
+                    
+                    # Check if our test listing is NOT visible
+                    test_listing_found = any(
+                        listing.get('id') == listing_id for listing in listings
+                    )
+                    
+                    if not test_listing_found:
+                        self.log_result(
+                            "Anonymous Cannot See Listing", 
+                            True, 
+                            f"✅ ANONYMOUS FILTERING WORKING: Anonymous user cannot see partner-only listing",
+                            response_time
+                        )
+                        return {'success': True, 'listing_hidden': True}
+                    else:
+                        self.log_result(
+                            "Anonymous Cannot See Listing", 
+                            False, 
+                            f"❌ ANONYMOUS FILTERING FAILED: Anonymous user can see partner-only listing",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Anonymous can see partner-only listing'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Anonymous Cannot See Listing", 
+                        False, 
+                        f"❌ ANONYMOUS FETCH FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Anonymous Cannot See Listing", 
+                False, 
+                f"❌ ANONYMOUS FILTERING EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
