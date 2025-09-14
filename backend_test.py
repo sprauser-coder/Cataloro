@@ -134,13 +134,13 @@ class BackendTester:
             )
             return None, None, None
 
-    async def test_notifications_endpoint(self, token, user_id, user_email):
-        """Test GET /api/user/{user_id}/notifications endpoint for notification routing support"""
+    async def test_registration_date_endpoint(self, token, user_id, user_email):
+        """Test GET /api/user/{user_id}/registration-date endpoint for date parsing fix"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/user/{user_id}/notifications"
+            url = f"{BACKEND_URL}/user/{user_id}/registration-date"
             
             async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -149,65 +149,62 @@ class BackendTester:
                     data = await response.json()
                     
                     # Check if response has the expected structure
-                    if isinstance(data, list):
-                        notifications = data
-                        
-                        # Verify notification structure for routing
-                        notification_types = set()
-                        required_fields = ['id', 'type', 'title', 'message', 'read', 'created_at']
-                        
-                        for notification in notifications:
-                            notification_type = notification.get('type', 'unknown')
-                            notification_types.add(notification_type)
-                            
-                            # Check for required fields
-                            missing_fields = [field for field in required_fields if field not in notification]
-                            if missing_fields:
-                                self.log_result(
-                                    "Notifications Endpoint", 
-                                    False, 
-                                    f"❌ MISSING FIELDS: Notification missing fields {missing_fields}",
-                                    response_time
-                                )
-                                return {'success': False, 'error': f'Missing fields: {missing_fields}'}
-                        
-                        # Check for expected notification types for routing
-                        expected_types = {
-                            'tender_accepted', 'transaction_completed', 'transaction_marked_completed',
-                            'transaction_fully_completed', 'new_tender_offer', 'tender_offer',
-                            'new_user_registration'
-                        }
-                        
-                        found_routing_types = notification_types.intersection(expected_types)
-                        
+                    registration_date = data.get('registration_date')
+                    created_at = data.get('created_at')
+                    date_joined = data.get('date_joined')
+                    
+                    # Check if date parsing is working correctly
+                    if registration_date and registration_date != "Unknown":
+                        # Check if it's in the expected format (e.g., "Sep 2025")
+                        if len(registration_date.split()) == 2:  # Month Year format
+                            self.log_result(
+                                "Registration Date Endpoint", 
+                                True, 
+                                f"✅ DATE PARSING WORKING: Registration date formatted correctly as '{registration_date}' (created_at: {created_at})",
+                                response_time
+                            )
+                            return {
+                                'success': True, 
+                                'registration_date': registration_date,
+                                'created_at': created_at,
+                                'date_joined': date_joined,
+                                'user_email': user_email,
+                                'formatted_correctly': True
+                            }
+                        else:
+                            self.log_result(
+                                "Registration Date Endpoint", 
+                                False, 
+                                f"❌ DATE FORMAT INCORRECT: Registration date '{registration_date}' not in expected 'Month Year' format (created_at: {created_at})",
+                                response_time
+                            )
+                            return {
+                                'success': False, 
+                                'registration_date': registration_date,
+                                'created_at': created_at,
+                                'error': 'Date format incorrect',
+                                'formatted_correctly': False
+                            }
+                    else:
                         self.log_result(
-                            "Notifications Endpoint", 
-                            True, 
-                            f"✅ NOTIFICATIONS WORKING: Found {len(notifications)} notifications, Types: {list(notification_types)}, Routing types found: {list(found_routing_types)}",
+                            "Registration Date Endpoint", 
+                            False, 
+                            f"❌ DATE PARSING FAILED: Registration date is 'Unknown' or missing (created_at: {created_at}, response: {data})",
                             response_time
                         )
                         return {
-                            'success': True, 
-                            'notifications_count': len(notifications),
-                            'notification_types': list(notification_types),
-                            'routing_types_found': list(found_routing_types),
-                            'notifications': notifications,
-                            'user_email': user_email
+                            'success': False, 
+                            'registration_date': registration_date,
+                            'created_at': created_at,
+                            'error': 'Date parsing failed - returned Unknown',
+                            'formatted_correctly': False
                         }
-                    else:
-                        self.log_result(
-                            "Notifications Endpoint", 
-                            False, 
-                            f"❌ WRONG STRUCTURE: Expected array, got {type(data)}",
-                            response_time
-                        )
-                        return {'success': False, 'error': 'Wrong response structure'}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Notifications Endpoint", 
+                        "Registration Date Endpoint", 
                         False, 
-                        f"❌ NOTIFICATIONS FAILED: Status {response.status}: {error_text}",
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'success': False, 'error': error_text}
@@ -215,9 +212,94 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Notifications Endpoint", 
+                "Registration Date Endpoint", 
                 False, 
-                f"❌ NOTIFICATIONS EXCEPTION: {str(e)}",
+                f"❌ ENDPOINT EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_public_profile_endpoint(self, token, user_id, user_email):
+        """Test GET /api/user/{user_id}/public-profile endpoint for date parsing fix"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/user/{user_id}/public-profile"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check if response has the expected structure
+                    stats = data.get('stats', {})
+                    member_since = stats.get('member_since')
+                    profile_data = data.get('profile', {})
+                    
+                    # Check if date parsing is working correctly in member_since
+                    if member_since and member_since != "Unknown":
+                        # Check if it's in the expected format (e.g., "Sep 2025")
+                        if len(member_since.split()) == 2:  # Month Year format
+                            self.log_result(
+                                "Public Profile Endpoint", 
+                                True, 
+                                f"✅ PUBLIC PROFILE DATE WORKING: Member since formatted correctly as '{member_since}' (profile: {profile_data.get('full_name', 'Unknown')})",
+                                response_time
+                            )
+                            return {
+                                'success': True, 
+                                'member_since': member_since,
+                                'stats': stats,
+                                'profile': profile_data,
+                                'user_email': user_email,
+                                'formatted_correctly': True
+                            }
+                        else:
+                            self.log_result(
+                                "Public Profile Endpoint", 
+                                False, 
+                                f"❌ PUBLIC PROFILE DATE FORMAT INCORRECT: Member since '{member_since}' not in expected 'Month Year' format",
+                                response_time
+                            )
+                            return {
+                                'success': False, 
+                                'member_since': member_since,
+                                'stats': stats,
+                                'error': 'Date format incorrect',
+                                'formatted_correctly': False
+                            }
+                    else:
+                        self.log_result(
+                            "Public Profile Endpoint", 
+                            False, 
+                            f"❌ PUBLIC PROFILE DATE PARSING FAILED: Member since is 'Unknown' or missing (stats: {stats})",
+                            response_time
+                        )
+                        return {
+                            'success': False, 
+                            'member_since': member_since,
+                            'stats': stats,
+                            'error': 'Date parsing failed - returned Unknown',
+                            'formatted_correctly': False
+                        }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Public Profile Endpoint", 
+                        False, 
+                        f"❌ PUBLIC PROFILE ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Public Profile Endpoint", 
+                False, 
+                f"❌ PUBLIC PROFILE EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
