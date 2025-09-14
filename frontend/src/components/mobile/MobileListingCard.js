@@ -308,8 +308,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
 
             {/* Partner Offer Badge */}
             {currentListing.is_partners_only && currentListing.public_at && (() => {
-              // Import timezone utility functions
-              const { formatPartnerTimeRemaining } = require('../../utils/timezone');
+              // Use imported timezone utility functions
               const timeText = formatPartnerTimeRemaining(currentListing.public_at);
               
               // Only show if time remaining is positive
