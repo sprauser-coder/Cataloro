@@ -857,15 +857,6 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                     <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                     </div>
                     
-                    {tender.status === 'accepted' && (
-                      <div className="hidden sm:flex items-center space-x-2">
-                        <div className="text-center">
-                          <p className="text-sm text-green-600 dark:text-green-400 font-medium">Congratulations!</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">Your tender was accepted</p>
-                        </div>
-                      </div>
-                    )}
-                    
                     {tender.status === 'active' && (
                       <div className="text-center">
                         <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">Waiting for response</p>
