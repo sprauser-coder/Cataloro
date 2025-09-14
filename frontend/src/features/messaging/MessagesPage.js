@@ -200,13 +200,23 @@ function MessagesPage() {
     }
   };
 
-  // Enhanced scroll to message function
+  // Enhanced scroll to message function - Fixed to only scroll within messages container
   const scrollToMessage = (messageId) => {
     const messageElement = messageRefs.current[messageId];
-    if (messageElement) {
-      messageElement.scrollIntoView({ 
-        behavior: "smooth", 
-        block: "center" 
+    const messagesContainer = document.getElementById('desktop-messages-container');
+    
+    if (messageElement && messagesContainer) {
+      // Calculate the position of the message relative to the container
+      const containerRect = messagesContainer.getBoundingClientRect();
+      const messageRect = messageElement.getBoundingClientRect();
+      
+      // Calculate the scroll position to center the message in the container
+      const scrollTop = messagesContainer.scrollTop + (messageRect.top - containerRect.top) - (containerRect.height / 2);
+      
+      // Smooth scroll within the messages container only
+      messagesContainer.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
       });
       
       // Highlight the message
