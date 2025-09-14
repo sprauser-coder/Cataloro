@@ -25,7 +25,8 @@ import {
   AlertTriangle,
   Check,
   Square,
-  CheckSquare
+  CheckSquare,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
