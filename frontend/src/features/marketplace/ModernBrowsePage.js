@@ -1720,11 +1720,11 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
         <div className="mb-3">
           <div className="flex items-center space-x-2">
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              €{((item.bid_info?.has_bids && item.bid_info?.highest_bid) ? item.bid_info.highest_bid : item.price).toFixed(2)}
+              {formatEuro((item.bid_info?.has_bids && item.bid_info?.highest_bid) ? item.bid_info.highest_bid : item.price)}
             </span>
             {item.bid_info?.has_bids && (
               <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                €{item.price.toFixed(2)} starting
+                {formatEuro(item.price)} starting
               </span>
             )}
           </div>
