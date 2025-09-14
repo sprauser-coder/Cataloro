@@ -4655,8 +4655,24 @@ async def get_all_listings(
         if status and status != 'all':
             query['status'] = status
         
-        # Partner visibility filtering - Skip for admin users viewing all listings
+        # Handle partner visibility filtering with admin bypass
         if current_user and status != 'all':
+            # Auto-expire listings before applying filters
+            current_time_iso = current_time.isoformat()
+            expired_query = {
+                "status": "active",
+                "has_time_limit": True,
+                "expires_at": {"$lte": current_time_iso}
+            }
+            
+            update_result = await db.listings.update_many(
+                expired_query,
+                {"$set": {"status": "expired"}}
+            )
+            
+            if update_result.modified_count > 0:
+                logger.info(f"🔄 ADMIN AUTO-EXPIRE: Updated {update_result.modified_count} expired listings from active to expired status")
+            
             # Only apply partner filtering if not requesting all listings (admin bypass)
             current_user_id = current_user.get("id")
             current_username = current_user.get("username", "unknown")
@@ -4693,6 +4709,22 @@ async def get_all_listings(
             
             logger.info(f"🔍 PARTNER DEBUG: Final query $or conditions: {len(query['$or'])}")
         elif current_user and status == 'all':
+            # Auto-expire listings for admin consistency
+            current_time_iso = current_time.isoformat()
+            expired_query = {
+                "status": "active",
+                "has_time_limit": True,
+                "expires_at": {"$lte": current_time_iso}
+            }
+            
+            update_result = await db.listings.update_many(
+                expired_query,
+                {"$set": {"status": "expired"}}
+            )
+            
+            if update_result.modified_count > 0:
+                logger.info(f"🔄 ADMIN AUTO-EXPIRE: Updated {update_result.modified_count} expired listings from active to expired status")
+            
             # Admin viewing all listings - no partner filtering, show everything
             logger.info(f"🔧 ADMIN DEBUG: User {current_user.get('id')} requesting all listings - bypassing partner filtering")
         elif not current_user:
