@@ -86,6 +86,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     console.log('🔍 Loading conversations for user:', user.id);
 
     try {
+      setLoading(true);
       const userMessages = await liveService.getUserMessages(user.id);
       console.log(`🔍 Loaded ${userMessages.length} total messages`);
       
