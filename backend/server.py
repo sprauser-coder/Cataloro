@@ -4846,9 +4846,15 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
         # Insert into database
         logger.info(f"🔍 DB DEBUG: About to save listing to database")
         logger.info(f"🔍 DB DEBUG: Title: {listing_data.get('title')}")
-        logger.info(f"🔍 DB DEBUG: is_partners_only: {listing_data.get('is_partners_only')}")
-        logger.info(f"🔍 DB DEBUG: show_partners_first: {listing_data.get('show_partners_first')}")
-        logger.info(f"🔍 DB DEBUG: public_at: {listing_data.get('public_at')}")
+        logger.info(f"🔍 DB DEBUG: is_partners_only: {listing_data.get('is_partners_only')} (type: {type(listing_data.get('is_partners_only'))})")
+        logger.info(f"🔍 DB DEBUG: show_partners_first: {listing_data.get('show_partners_first')} (type: {type(listing_data.get('show_partners_first'))})")
+        logger.info(f"🔍 DB DEBUG: public_at: {listing_data.get('public_at')} (type: {type(listing_data.get('public_at'))})")
+        
+        # Ensure boolean fields are proper booleans for MongoDB
+        if 'is_partners_only' in listing_data:
+            listing_data['is_partners_only'] = bool(listing_data['is_partners_only'])
+        if 'show_partners_first' in listing_data:
+            listing_data['show_partners_first'] = bool(listing_data['show_partners_first'])
         
         result = await db.listings.insert_one(listing_data)
         
