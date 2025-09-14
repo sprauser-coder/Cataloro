@@ -4631,8 +4631,9 @@ async def get_all_listings(
         if status and status != 'all':
             query['status'] = status
         
-        # Partner visibility filtering
-        if current_user:
+        # Partner visibility filtering - Skip for admin users viewing all listings
+        if current_user and status != 'all':
+            # Only apply partner filtering if not requesting all listings (admin bypass)
             current_user_id = current_user.get("id")
             current_username = current_user.get("username", "unknown")
             logger.info(f"🔍 PARTNER DEBUG: Checking visibility for user {current_user_id} ({current_username})")
@@ -4667,7 +4668,10 @@ async def get_all_listings(
             ]
             
             logger.info(f"🔍 PARTNER DEBUG: Final query $or conditions: {len(query['$or'])}")
-        else:
+        elif current_user and status == 'all':
+            # Admin viewing all listings - no partner filtering, show everything
+            logger.info(f"🔧 ADMIN DEBUG: User {current_user.get('id')} requesting all listings - bypassing partner filtering")
+        elif not current_user:
             logger.info("🔍 PARTNER DEBUG: Anonymous user - only public listings")
             # Anonymous users only see public listings
             query["$or"] = [
