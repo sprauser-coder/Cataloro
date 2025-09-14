@@ -286,15 +286,23 @@ function ProfilePage() {
       const userOrders = orderHistory || [];
       const completedOrders = userOrders.filter(o => o.status === 'completed');
       
+      // Calculate actual seller rating from completed transactions (if available)
+      const actualRating = completedOrders.length > 0 
+        ? completedOrders.reduce((sum, order) => sum + (order.rating || 5), 0) / completedOrders.length 
+        : (userListings.length > 0 ? 4.5 : 0); // Default rating for sellers with listings but no orders
+      
+      // Calculate total revenue from completed sales
+      const actualRevenue = completedOrders.reduce((sum, order) => sum + (order.total || order.amount || 0), 0);
+      
       const stats = {
         totalListings: userListings.length,
         activeListings: activeListings.length,
         totalDeals: userOrders.length,
         completedDeals: completedOrders.length,
-        totalRevenue: userListings.reduce((sum, p) => sum + (p.price || 0), 0),
-        avgRating: profileData.seller_rating,
+        totalRevenue: actualRevenue,
+        avgRating: parseFloat(actualRating.toFixed(1)),
         totalFavorites: favorites.length,
-        profileViews: Math.floor(Math.random() * 500) + 100,
+        profileViews: userListings.reduce((sum, listing) => sum + (listing.views || 0), 0), // Sum of listing views
         joinDate: profileData.date_joined,
         lastActive: new Date().toISOString().split('T')[0]
       };
