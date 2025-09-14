@@ -47,6 +47,33 @@ function ProfilePage() {
   const { showToast } = useNotifications();
   const { allProducts, favorites, orderHistory, refreshListings } = useMarketplace();
   
+  // Debug logging for mobile vs desktop differences
+  useEffect(() => {
+    console.log('🔍 ProfilePage mounted - Context data check:', {
+      hasUser: !!user,
+      userInfo: user ? {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        account_type: user.account_type,
+        is_business: user.is_business,
+        can_buy: user.can_buy
+      } : null,
+      hasAllProducts: !!allProducts,
+      allProductsLength: allProducts?.length || 0,
+      hasOrderHistory: !!orderHistory,
+      orderHistoryLength: orderHistory?.length || 0,
+      hasFavorites: !!favorites,
+      favoritesLength: favorites?.length || 0,
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        isMobile: window.innerWidth < 768
+      }
+    });
+  }, [user, allProducts, orderHistory, favorites]);
+  
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
