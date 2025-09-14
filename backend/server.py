@@ -10338,21 +10338,39 @@ async def get_public_profile(user_id: str):
         
         # Format dates
         date_joined = user.get("created_at") or user.get("date_joined")
+        logger.info(f"🔍 Public profile date raw value: {date_joined}")
+        
         if date_joined:
             try:
                 if isinstance(date_joined, str):
-                    # Handle different date formats
-                    date_str = date_joined.replace('Z', '+00:00')
-                    # If no timezone info, assume UTC
-                    if '+' not in date_str and 'Z' not in date_joined:
+                    # Remove microseconds if present (e.g., 2025-09-09T10:20:41.643000 -> 2025-09-09T10:20:41)
+                    date_str = date_joined
+                    if '.' in date_str:
+                        date_str = date_str.split('.')[0]
+                        
+                    # Add timezone if missing
+                    if 'T' in date_str and not ('+' in date_str or 'Z' in date_joined):
                         date_str = date_str + '+00:00'
+                    elif 'Z' in date_str:
+                        date_str = date_str.replace('Z', '+00:00')
+                        
                     date_obj = datetime.fromisoformat(date_str)
                     formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
                 else:
                     formatted_date = "Unknown"
             except Exception as e:
                 logger.error(f"Error formatting public profile date {date_joined}: {str(e)}")
-                formatted_date = "Unknown"
+                # Fallback parsing
+                try:
+                    if len(date_joined) >= 10:
+                        year = date_joined[:4]
+                        month_num = date_joined[5:7]
+                        month_names = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        month_name = month_names[int(month_num)]
+                        formatted_date = f"{month_name} {year}"
+                except:
+                    formatted_date = "Unknown"
         else:
             formatted_date = "Unknown"
         
