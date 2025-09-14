@@ -10269,8 +10269,11 @@ async def soft_delete_account(request: Request):
 async def get_public_profile(user_id: str):
     """Get public profile data with real statistics"""
     try:
-        # Find user
+        # Find user by id or username
         user = await db.users.find_one({"id": user_id})
+        if not user:
+            # Try finding by username if id lookup fails
+            user = await db.users.find_one({"username": user_id})
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
