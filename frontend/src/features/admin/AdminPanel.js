@@ -9498,14 +9498,18 @@ function CompletedTransactionsTab({ showToast, permissions }) {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 py-4 whitespace-nowrap w-32">
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        <div>Method: {transaction.completion_method || 'N/A'}</div>
-                        <div>Date: {new Date(transaction.created_at).toLocaleDateString()}</div>
-                        {transaction.completion_notes && (
-                          <div className="mt-1 italic">"{transaction.completion_notes}"</div>
-                        )}
+                        <div className="font-medium">{transaction.completion_method || 'N/A'}</div>
+                        <div>{new Date(transaction.created_at).toLocaleDateString('de-DE')}</div>
                       </div>
+                      <button
+                        onClick={() => setSelectedTransaction(transaction)}
+                        className="mt-1 inline-flex items-center px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-medium rounded-md transition-colors"
+                      >
+                        <Info className="w-3 h-3 mr-1" />
+                        Info
+                      </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {transaction.is_fully_completed ? (
