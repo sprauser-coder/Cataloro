@@ -4,38 +4,27 @@ CATALORO MARKETPLACE - PARTNER BADGE FUNCTIONALITY TESTING
 Testing the Partner Badge fix by creating fresh partner-only listings and verifying badge data
 
 SPECIFIC TESTS REQUESTED (Review Request):
-1. **Create a NEW partner-only listing** with:
-   - Title: "Badge Test - $(current_timestamp)" (unique identifier)
-   - Basic listing details (description: "Testing badge fix", price: 50, category: "Testing", condition: "New")
-   - Set `show_partners_first: true`
-   - Set `partners_visibility_hours: 48` (48 hours so it definitely won't expire during testing)
-
-2. **Verify API response structure**:
-   - Confirm the new listing has `is_partners_only: true`
-   - Confirm `public_at` is set 48 hours in the future
-   - Confirm `show_partners_first: true`
-
-3. **Test authenticated browse endpoint**:
-   - Verify authenticated admin can see the partner-only listing
-   - Verify listing contains all required partner fields in API response
-
-4. **Test anonymous browse endpoint**:
-   - Verify anonymous users cannot see the partner-only listing
-   - This confirms partner filtering is working correctly
-
-CRITICAL ENDPOINTS BEING TESTED:
-- POST /api/auth/login (admin authentication)
-- POST /api/listings (create partner-only listing with badge data)
-- GET /api/listings/{listing_id} (verify individual listing partner data)
-- GET /api/marketplace/browse (authenticated - verify partner data in browse)
-- GET /api/marketplace/browse (anonymous - verify partner filtering)
+1. **Login as admin** (admin@cataloro.com / admin123) 
+2. **Create a NEW partner-only listing with LONG duration** to ensure badge will show:
+   - Title: "BADGE TEST - Future Date"
+   - Basic details (description: "Testing badge display", price: 25, category: "Electronics", condition: "New")  
+   - **CRITICAL**: Set `show_partners_first: true`
+   - **CRITICAL**: Set `partners_visibility_hours: 168` (1 week = 168 hours)
+   
+3. **Verify the NEW listing has future public_at date:**
+   - Confirm `is_partners_only: true`
+   - Confirm `public_at` is approximately 1 week (168 hours) in the future
+   - Confirm current time is BEFORE the `public_at` date
+   
+4. **Test the browse endpoint shows the new listing with correct partner data**
 
 EXPECTED RESULTS:
-- ✅ New partner-only listing created successfully with proper partner data
-- ✅ Backend returns correct partner data structure (is_partners_only, public_at, show_partners_first)
-- ✅ Authenticated admin can see partner-only listing with all badge fields
-- ✅ Anonymous users cannot see partner-only listing (filtering works)
-- ✅ Frontend will receive correct data for badge display
+- New listing created with `public_at` date that is 1 week in the future  
+- Current datetime should be BEFORE the `public_at` datetime
+- This will create the condition where badge SHOULD display: `is_partners_only=true && public_at > current_date`
+- This will give the user a listing that definitely shows a partner badge
+
+GOAL: Create a test case where the badge display condition `is_partners_only && public_at && new Date(public_at) > new Date()` will evaluate to TRUE so we can test if badges appear.
 """
 
 import asyncio
