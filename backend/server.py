@@ -4980,6 +4980,29 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
         # Auto-populate seller_id from authenticated user
         listing_data["seller_id"] = current_user["id"]
         
+        # Get current user data to populate seller information in listing
+        user = await db.users.find_one({"id": current_user["id"]})
+        if user:
+            # Add current seller information to the listing
+            listing_data["seller"] = {
+                "username": user.get("username", ""),
+                "full_name": user.get("full_name", ""),
+                "verified": user.get("verified", False),
+                "is_business": user.get("is_business", False),
+                "company_name": user.get("company_name", "") if user.get("is_business") else ""
+            }
+        else:
+            # Fallback seller data if user not found
+            listing_data["seller"] = {
+                "username": current_user.get("username", ""),
+                "full_name": current_user.get("full_name", ""),
+                "verified": current_user.get("verified", False),
+                "is_business": current_user.get("is_business", False),
+                "company_name": current_user.get("company_name", "") if current_user.get("is_business") else ""
+            }
+        
+        logger.info(f"🔍 SELLER DEBUG: Setting seller info for listing: {listing_data['seller']}")
+        
         logger.info(f"🔍 FORM DEBUG: Received form data")
         logger.info(f"🔍 FORM DEBUG: show_partners_first: {listing_data.get('show_partners_first')} (type: {type(listing_data.get('show_partners_first'))})")
         logger.info(f"🔍 FORM DEBUG: partners_visibility_hours: {listing_data.get('partners_visibility_hours')} (type: {type(listing_data.get('partners_visibility_hours'))})")
