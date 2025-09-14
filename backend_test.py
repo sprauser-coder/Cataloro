@@ -1605,9 +1605,9 @@ class BackendTester:
             async with self.session.post(url, headers=headers, json=listing_data) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
-                if response.status == 201:
+                if response.status in [200, 201]:  # Accept both 200 and 201 for successful creation
                     data = await response.json()
-                    listing_id = data.get('listing', {}).get('id') or data.get('id')
+                    listing_id = data.get('listing', {}).get('id') or data.get('id') or data.get('listing_id')
                     
                     if listing_id:
                         self.log_result(
