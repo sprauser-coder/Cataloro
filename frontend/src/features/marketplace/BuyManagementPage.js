@@ -606,54 +606,51 @@ function BuyManagementPage({ initialTab = 'tenders', hideNavigation = false, sho
               <nav className="-mb-px flex px-4 sm:px-6">
               <button
                 onClick={() => setActiveTab('tenders')}
-                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
                   activeTab === 'tenders'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <BookOpen className="w-4 h-4 inline mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Tenders</span>
-                <span className="sm:hidden">Tenders</span>
+                <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Tenders</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('bought-items')}
-                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
                   activeTab === 'bought-items'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <Package className="w-4 h-4 inline mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Bought Items</span>
-                <span className="sm:hidden">Items</span>
+                <Package className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
+                <span className="hidden sm:inline text-xs sm:text-sm">Bought Items</span>
+                <span className="sm:hidden text-xs">Items</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('baskets')}
-                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
                   activeTab === 'baskets'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <Archive className="w-4 h-4 inline mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Baskets</span>
-                <span className="sm:hidden">Baskets</span>
+                <Archive className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Baskets</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
+                className={`flex-1 py-3 sm:py-4 px-1 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
                   activeTab === 'completed'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <Check className="w-4 h-4 inline mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Completed</span>
-                <span className="sm:hidden">Done</span>
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Done</span>
               </button>
             </nav>
             </div>
