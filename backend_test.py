@@ -1,34 +1,40 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - NOTIFICATION SYSTEM BACKEND TESTING
-Testing the backend notification system to ensure it supports the new notification routing
+CATALORO MARKETPLACE - BACKEND DATE PARSING FIX TESTING
+Testing the backend date parsing fix for registration date formatting
 
 SPECIFIC TESTS REQUESTED (Review Request):
-Test the backend notification system to ensure it supports the new notification routing I just implemented.
+Test the backend date parsing fix I just made for the registration date formatting issue.
 
-**Context**: Updated notification routing in both desktop (ModernHeader.js) and mobile (NotificationsCenterPage.js) 
-to route to specific Buy/Sell page tabs based on notification types.
+**CONTEXT**: Fixed the date parsing logic in both endpoints:
+- `/api/user/{user_id}/registration-date` 
+- `/api/user/{user_id}/public-profile`
 
-**Test Requirements**:
-1. **Verify notification endpoints work correctly** - Test GET /api/notifications endpoints
-2. **Test notification marking as read** - Ensure mark-as-read functionality works
-3. **Check notification types** - Verify the system supports the notification types I'm routing:
-   - tender_accepted
-   - transaction_completed / transaction_marked_completed
-   - transaction_fully_completed
-   - new_tender_offer / tender_offer
-   - new_user_registration (for admin users)
+**CHANGES MADE**:
+- Added microsecond removal from date strings (2025-09-09T10:20:41.643000 -> 2025-09-09T10:20:41)
+- Enhanced timezone handling for ISO date strings
+- Added comprehensive logging for debugging
+- Added fallback date parsing logic
 
-**Expected Results**:
-- Notification endpoints should return proper data structure with type, title, message fields
-- Mark-as-read functionality should work correctly
-- Notification types should be consistent and match the routing logic I implemented
+**TEST REQUIREMENTS**:
+1. **Test Registration Date Endpoint**: 
+   - Call `/api/user/demo_user/registration-date` or `/api/user/{actual_user_id}/registration-date`
+   - Expected: Should return formatted date like {"registration_date": "Sep 2025"} instead of "Unknown"
 
-**Login Credentials**:
-- Use demo_user@cataloro.com / demo123 or admin@cataloro.com / admin123
-- Test with both regular user and admin to verify admin-specific notifications
+2. **Test Public Profile Endpoint**:
+   - Call `/api/user/demo_user/public-profile` or `/api/user/{actual_user_id}/public-profile`
+   - Expected: Should include formatted date in stats.member_since field
 
-GOAL: Ensure the backend properly supports the notification routing changes implemented for both mobile and desktop platforms.
+3. **Verify Date Parsing Logic**:
+   - Check backend logs for date parsing steps
+   - Ensure microsecond removal is working
+   - Verify timezone addition and date object creation
+
+**LOGIN CREDENTIALS**: Use demo_user@cataloro.com / demo123 or admin@cataloro.com / admin123
+
+**FOCUS**: Specifically test that the date string "2025-09-09T10:20:41.643000" gets properly parsed and formatted to "Sep 2025" format.
+
+GOAL: Verify the date parsing fix is working correctly for both registration date and public profile endpoints.
 """
 
 import asyncio
