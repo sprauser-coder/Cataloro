@@ -935,7 +935,10 @@ function NotificationsCenterPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
-                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                        <h4 
+                          className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          onClick={() => handleNotificationClick(notification)}
+                        >
                           {notification.title}
                         </h4>
                         
