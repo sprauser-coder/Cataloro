@@ -1,7 +1,7 @@
 {
   "test_timestamp": "2025-09-10T09:39:19.247354",
   "test_configuration": {
-    "backend_url": "https://cataloro-marketplace-6.preview.emergentagent.com/api",
+    "backend_url": "https://marketplace-perf-1.preview.emergentagent.com/api",
     "browse_response_size_target_kb": 15,
     "placeholder_image_size_target_bytes": 1000,
     "performance_target_ms": 1000

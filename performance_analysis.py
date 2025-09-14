@@ -26,7 +26,7 @@ import json
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-marketplace-6.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-perf-1.preview.emergentagent.com/api"
 
 class PerformanceAnalyzer:
     def __init__(self):

@@ -15,7 +15,7 @@ from io import BytesIO
 from PIL import Image
 
 # Test Configuration
-BACKEND_URL = "https://cataloro-marketplace-6.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-perf-1.preview.emergentagent.com/api"
 
 class LogoTester:
     def __init__(self):
@@ -261,7 +261,7 @@ class LogoTester:
         print("🖥️ Testing frontend logo integration...")
         
         # Test the corrected frontend URL (without double /api)
-        frontend_url = "https://cataloro-marketplace-6.preview.emergentagent.com/api/admin/logo"
+        frontend_url = "https://marketplace-perf-1.preview.emergentagent.com/api/admin/logo"
         
         try:
             start_time = time.time()
