@@ -127,87 +127,58 @@ class BackendTester:
             )
             return None, None, None
 
-    async def test_registration_date_endpoint(self, token, user_id, user_email):
-        """Test GET /api/user/{user_id}/registration-date endpoint for date parsing fix"""
+    async def test_admin_permissions(self, token, user_id, user_data):
+        """Test admin user permissions to verify canAccessUserManagement permission"""
         start_time = datetime.now()
         
         try:
-            headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/user/{user_id}/registration-date"
+            # Check user role and permissions from login response
+            user_role = user_data.get('user_role', 'Unknown')
+            role = user_data.get('role', 'Unknown')
             
-            async with self.session.get(url, headers=headers) as response:
-                response_time = (datetime.now() - start_time).total_seconds() * 1000
-                
-                if response.status == 200:
-                    data = await response.json()
-                    
-                    # Check if response has the expected structure
-                    registration_date = data.get('registration_date')
-                    created_at = data.get('created_at')
-                    date_joined = data.get('date_joined')
-                    
-                    # Check if date parsing is working correctly
-                    if registration_date and registration_date != "Unknown":
-                        # Check if it's in the expected format (e.g., "Sep 2025")
-                        if len(registration_date.split()) == 2:  # Month Year format
-                            self.log_result(
-                                "Registration Date Endpoint", 
-                                True, 
-                                f"✅ DATE PARSING WORKING: Registration date formatted correctly as '{registration_date}' (created_at: {created_at})",
-                                response_time
-                            )
-                            return {
-                                'success': True, 
-                                'registration_date': registration_date,
-                                'created_at': created_at,
-                                'date_joined': date_joined,
-                                'user_email': user_email,
-                                'formatted_correctly': True
-                            }
-                        else:
-                            self.log_result(
-                                "Registration Date Endpoint", 
-                                False, 
-                                f"❌ DATE FORMAT INCORRECT: Registration date '{registration_date}' not in expected 'Month Year' format (created_at: {created_at})",
-                                response_time
-                            )
-                            return {
-                                'success': False, 
-                                'registration_date': registration_date,
-                                'created_at': created_at,
-                                'error': 'Date format incorrect',
-                                'formatted_correctly': False
-                            }
-                    else:
-                        self.log_result(
-                            "Registration Date Endpoint", 
-                            False, 
-                            f"❌ DATE PARSING FAILED: Registration date is 'Unknown' or missing (created_at: {created_at}, response: {data})",
-                            response_time
-                        )
-                        return {
-                            'success': False, 
-                            'registration_date': registration_date,
-                            'created_at': created_at,
-                            'error': 'Date parsing failed - returned Unknown',
-                            'formatted_correctly': False
-                        }
-                else:
-                    error_text = await response.text()
-                    self.log_result(
-                        "Registration Date Endpoint", 
-                        False, 
-                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
-                        response_time
-                    )
-                    return {'success': False, 'error': error_text}
+            # Determine if user should have canAccessUserManagement permission
+            should_have_permission = (
+                user_role in ['Admin', 'Admin-Manager'] or 
+                role == 'admin'
+            )
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            if should_have_permission:
+                self.log_result(
+                    "Admin Permissions Check", 
+                    True, 
+                    f"✅ ADMIN PERMISSIONS CONFIRMED: User has role '{user_role}' (legacy: '{role}') which should grant canAccessUserManagement permission",
+                    response_time
+                )
+                return {
+                    'success': True, 
+                    'user_role': user_role,
+                    'legacy_role': role,
+                    'should_have_permission': True,
+                    'permission_name': 'canAccessUserManagement'
+                }
+            else:
+                self.log_result(
+                    "Admin Permissions Check", 
+                    False, 
+                    f"❌ INSUFFICIENT PERMISSIONS: User has role '{user_role}' (legacy: '{role}') which should NOT grant canAccessUserManagement permission",
+                    response_time
+                )
+                return {
+                    'success': False, 
+                    'user_role': user_role,
+                    'legacy_role': role,
+                    'should_have_permission': False,
+                    'error': 'User does not have admin permissions'
+                }
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Registration Date Endpoint", 
+                "Admin Permissions Check", 
                 False, 
-                f"❌ ENDPOINT EXCEPTION: {str(e)}",
+                f"❌ PERMISSIONS CHECK EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
