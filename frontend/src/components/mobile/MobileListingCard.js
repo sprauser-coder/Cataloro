@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { formatPartnerTimeRemaining, calculateTimeRemaining } from '../../utils/timezone';
+import { formatEuro } from '../../utils/currency';
 
 function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
   const { user } = useAuth();
