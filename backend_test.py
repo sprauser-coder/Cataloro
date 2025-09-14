@@ -2488,6 +2488,115 @@ async def run_partner_badge_future_date_tests():
         print("=" * 80)
         return all_tests_passed
 
+async def run_profile_stats_synchronization_tests():
+    """Run comprehensive Profile stats synchronization endpoint tests"""
+    print("🚀 CATALORO MARKETPLACE - PROFILE STATS SYNCHRONIZATION TESTING")
+    print("=" * 80)
+    print()
+    
+    async with BackendTester() as tester:
+        # Test with both demo_user@cataloro.com and admin@cataloro.com
+        test_users = [
+            {"email": "demo_user@cataloro.com", "password": "demo123"},
+            {"email": "admin@cataloro.com", "password": "admin123"}
+        ]
+        
+        all_results = {}
+        
+        for user_config in test_users:
+            email = user_config["email"]
+            password = user_config["password"]
+            
+            print(f"🔍 TESTING PROFILE STATS ENDPOINTS FOR: {email}")
+            print("-" * 60)
+            
+            # Step 1: Login and get token
+            print("1. Testing login authentication...")
+            token, user_id, user = await tester.test_login_and_get_token(email, password)
+            
+            if not token or not user_id:
+                print(f"❌ Login failed for {email}, skipping this user")
+                continue
+            
+            user_results = {
+                'user_email': email,
+                'user_id': user_id,
+                'login_success': True
+            }
+            
+            # Step 2: Test My Listings endpoint
+            print("2. Testing My Listings endpoint...")
+            listings_result = await tester.test_my_listings_endpoint(token, user_id, email)
+            user_results['listings'] = listings_result
+            
+            # Step 3: Test Buyer Tenders endpoint
+            print("3. Testing Buyer Tenders endpoint...")
+            tenders_result = await tester.test_buyer_tenders_endpoint(token, user_id, email)
+            user_results['tenders'] = tenders_result
+            
+            # Step 4: Test data consistency between endpoints
+            print("4. Testing Profile stats data consistency...")
+            consistency_result = await tester.test_profile_stats_data_consistency(listings_result, tenders_result)
+            user_results['consistency'] = consistency_result
+            
+            all_results[email] = user_results
+            print()
+        
+        # Final Analysis
+        print("📊 PROFILE STATS SYNCHRONIZATION TEST ANALYSIS")
+        print("=" * 80)
+        
+        working_users = 0
+        total_users = len(test_users)
+        
+        for email, results in all_results.items():
+            listings_success = results.get('listings', {}).get('success', False)
+            tenders_success = results.get('tenders', {}).get('success', False)
+            consistency_success = results.get('consistency', {}).get('success', False)
+            
+            if listings_success and tenders_success and consistency_success:
+                working_users += 1
+                print(f"✅ {email}: All Profile stats endpoints working correctly")
+                
+                # Show stats summary
+                listings_count = results.get('listings', {}).get('listings_count', 0)
+                tenders_count = results.get('tenders', {}).get('tenders_count', 0)
+                active_listings = results.get('consistency', {}).get('active_listings', 0)
+                accepted_tenders = results.get('consistency', {}).get('accepted_tenders', 0)
+                
+                print(f"   📈 Stats: {listings_count} total listings ({active_listings} active), {tenders_count} total tenders ({accepted_tenders} accepted)")
+            else:
+                print(f"❌ {email}: Profile stats endpoints have issues")
+                if not listings_success:
+                    print(f"   - My Listings endpoint failed")
+                if not tenders_success:
+                    print(f"   - Buyer Tenders endpoint failed")
+                if not consistency_success:
+                    print(f"   - Data consistency issues")
+        
+        print()
+        print(f"🎯 FINAL RESULT: {working_users}/{total_users} users have working Profile stats endpoints")
+        
+        if working_users == total_users:
+            print("✅ PROFILE STATS SYNCHRONIZATION: ALL ENDPOINTS WORKING CORRECTLY")
+            print("   - My Listings endpoint returns proper data structure with status fields")
+            print("   - Buyer Tenders endpoint returns proper data structure with status fields")
+            print("   - Both endpoints provide consistent data for Profile stats calculation")
+            print("   - Profile stats synchronization improvements are fully supported by backend")
+        else:
+            print("⚠️ PROFILE STATS SYNCHRONIZATION: SOME ISSUES DETECTED")
+            print("   - Check individual endpoint failures above")
+            print("   - Profile stats synchronization may not work correctly for all users")
+        
+        print()
+        print("📋 DETAILED TEST RESULTS:")
+        for result in tester.test_results:
+            print(f"   {result['status']}: {result['test']}")
+            if not result['success']:
+                print(f"      Error: {result['details']}")
+        
+        return all_results
+
 async def main():
     """Main test execution"""
     print("🚀 Starting Partner Badge Future Date Testing...")
