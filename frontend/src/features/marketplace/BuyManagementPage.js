@@ -603,43 +603,57 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4 sm:mb-6">
           {!hideNavigation && (
             <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="-mb-px flex px-4 sm:px-6 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <nav className="-mb-px flex px-4 sm:px-6">
+              <button
+                onClick={() => setActiveTab('tenders')}
+                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
+                  activeTab === 'tenders'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                <BookOpen className="w-4 h-4 inline mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Tenders</span>
+                <span className="sm:hidden">Tenders</span>
+              </button>
+              
               <button
                 onClick={() => setActiveTab('bought-items')}
-                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
+                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
                   activeTab === 'bought-items'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
                 <Package className="w-4 h-4 inline mr-1 sm:mr-2" />
-                <span className="hidden xs:inline sm:hidden">Items</span>
-                <span className="xs:hidden sm:inline">Bought Items</span>
-                <span className="sm:hidden xs:hidden">Items</span>
+                <span className="hidden sm:inline">Bought Items</span>
+                <span className="sm:hidden">Items</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('baskets')}
-                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
+                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
                   activeTab === 'baskets'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
                 <Archive className="w-4 h-4 inline mr-1 sm:mr-2" />
-                Baskets
+                <span className="hidden sm:inline">Baskets</span>
+                <span className="sm:hidden">Baskets</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
+                className={`flex-1 py-3 sm:py-4 px-2 sm:px-3 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-center ${
                   activeTab === 'completed'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
                 <Check className="w-4 h-4 inline mr-1 sm:mr-2" />
-                Done
+                <span className="hidden sm:inline">Completed</span>
+                <span className="sm:hidden">Done</span>
               </button>
             </nav>
             </div>
