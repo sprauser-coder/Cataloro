@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://mobilefixed-market.preview.emergentagent.com/api"
+BACKEND_URL = "https://mobileui-sync.preview.emergentagent.com/api"
 
 # Admin credentials for testing
 ADMIN_EMAIL = "admin@cataloro.com"

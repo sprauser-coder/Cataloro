@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://mobilefixed-market.preview.emergentagent.com/api"
+BACKEND_URL = "https://mobileui-sync.preview.emergentagent.com/api"
 MOBILE_PERFORMANCE_TARGET_MS = 800  # Mobile should be faster than desktop
 MOBILE_TIMEOUT_MS = 5000  # Mobile timeout threshold
 
