@@ -797,7 +797,7 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                         {tender.listing.title}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Starting Price: €{tender.listing.price.toFixed(2)}
+                        Starting Price: {formatEuro(tender.listing.price)}
                       </p>
                       {/* Seller Information */}
                       {tender.seller && (
