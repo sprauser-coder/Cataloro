@@ -1630,7 +1630,10 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
               </span>
             </div>
           )}
+        </div>
 
+        {/* Partner Offer Badge - Bottom Left Position */}
+        <div className="absolute bottom-2 left-2 z-20">
           {/* Combined Partner Offer Badge with Countdown */}
           {item.is_partners_only && item.public_at && (() => {
             // Ensure consistent timezone handling
