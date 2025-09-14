@@ -260,6 +260,7 @@ function MyListingsPage() {
               key={listing.id}
               listing={listing}
               onDelete={handleDeleteListing}
+              onReactivate={handleReactivateListing}
             />
           ))}
         </div>
