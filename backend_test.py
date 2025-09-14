@@ -1,53 +1,41 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - PARTNER MANAGEMENT & VISIBILITY TESTING
-Testing the new partner management APIs and partner visibility functionality
+CATALORO MARKETPLACE - PARTNER BADGE FUNCTIONALITY TESTING
+Testing the Partner Badge fix by creating fresh partner-only listings and verifying badge data
 
-SPECIFIC TESTS REQUESTED:
-1. **New Partner Management APIs**:
-   - GET /api/user/partners/{user_id} - Get user's preferred partners
-   - POST /api/user/partners - Add a user as a preferred partner
-   - DELETE /api/user/partners/{partner_id} - Remove a user from preferred partners
-   - GET /api/users/search?q={query} - Search users by name or email for partner selection
+SPECIFIC TESTS REQUESTED (Review Request):
+1. **Create a NEW partner-only listing** with:
+   - Title: "Badge Test - $(current_timestamp)" (unique identifier)
+   - Basic listing details (description: "Testing badge fix", price: 50, category: "Testing", condition: "New")
+   - Set `show_partners_first: true`
+   - Set `partners_visibility_hours: 48` (48 hours so it definitely won't expire during testing)
 
-2. **Updated APIs**:
-   - POST /api/listings - Now handles partner visibility fields (show_partners_first, partners_visibility_hours, public_at, is_partners_only)
-   - GET /api/listings - Now filters listings based on partner visibility and current user authentication
+2. **Verify API response structure**:
+   - Confirm the new listing has `is_partners_only: true`
+   - Confirm `public_at` is set 48 hours in the future
+   - Confirm `show_partners_first: true`
 
-3. **Key Testing Scenarios**:
-   - Create a user partnership relationship
-   - Create a listing with "show_partners_first" enabled
-   - Verify that the listing is only visible to partners during the specified time period
-   - Verify that anonymous users can't see partner-only listings
-   - Verify that after the time period expires, the listing becomes public
-   - Test that admin is automatically added as a partner when adding other partners
+3. **Test authenticated browse endpoint**:
+   - Verify authenticated admin can see the partner-only listing
+   - Verify listing contains all required partner fields in API response
 
-4. **Other Fixes**:
-   - GET /api/user/my-deals/{user_id} - Should use optimized images instead of base64
-   - GET /api/tenders/seller/{seller_id}/accepted - Should use optimized images instead of base64  
-   - PUT /api/listings/{listing_id}/reactivate - Should work for expired listings
+4. **Test anonymous browse endpoint**:
+   - Verify anonymous users cannot see the partner-only listing
+   - This confirms partner filtering is working correctly
 
 CRITICAL ENDPOINTS BEING TESTED:
-- POST /api/auth/login (user authentication)
-- GET /api/user/partners/{user_id} (get user's preferred partners)
-- POST /api/user/partners (add a user as a preferred partner)
-- DELETE /api/user/partners/{partner_id} (remove a user from preferred partners)
-- GET /api/users/search (search users by name or email)
-- POST /api/listings (create listing with partner visibility)
-- GET /api/listings (browse listings with partner filtering)
-- GET /api/user/my-deals/{user_id} (get user deals with optimized images)
-- GET /api/tenders/seller/{seller_id}/accepted (get accepted tenders with optimized images)
-- PUT /api/listings/{listing_id}/reactivate (reactivate expired listings)
+- POST /api/auth/login (admin authentication)
+- POST /api/listings (create partner-only listing with badge data)
+- GET /api/listings/{listing_id} (verify individual listing partner data)
+- GET /api/marketplace/browse (authenticated - verify partner data in browse)
+- GET /api/marketplace/browse (anonymous - verify partner filtering)
 
 EXPECTED RESULTS:
-- ✅ Partner management APIs work correctly
-- ✅ Partner visibility functionality works as expected
-- ✅ Listings are properly filtered based on partner relationships
-- ✅ Anonymous users cannot see partner-only listings
-- ✅ Time-based visibility works correctly
-- ✅ Admin is automatically added as partner
-- ✅ Image optimization is working in all endpoints
-- ✅ Listing reactivation works for expired listings
+- ✅ New partner-only listing created successfully with proper partner data
+- ✅ Backend returns correct partner data structure (is_partners_only, public_at, show_partners_first)
+- ✅ Authenticated admin can see partner-only listing with all badge fields
+- ✅ Anonymous users cannot see partner-only listing (filtering works)
+- ✅ Frontend will receive correct data for badge display
 """
 
 import asyncio
