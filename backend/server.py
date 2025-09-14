@@ -4843,6 +4843,12 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
                 raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
         
         # Insert into database
+        logger.info(f"🔍 DB DEBUG: About to save listing to database")
+        logger.info(f"🔍 DB DEBUG: Title: {listing_data.get('title')}")
+        logger.info(f"🔍 DB DEBUG: is_partners_only: {listing_data.get('is_partners_only')}")
+        logger.info(f"🔍 DB DEBUG: show_partners_first: {listing_data.get('show_partners_first')}")
+        logger.info(f"🔍 DB DEBUG: public_at: {listing_data.get('public_at')}")
+        
         result = await db.listings.insert_one(listing_data)
         
         # Invalidate listings cache when new listing is created
