@@ -10039,11 +10039,11 @@ async def get_registration_date(user_id: str):
             if isinstance(registration_date, str):
                 try:
                     date_obj = datetime.fromisoformat(registration_date.replace('Z', '+00:00'))
-                    formatted_date = date_obj.strftime("%b %Y")
+                    formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
                 except:
-                    formatted_date = registration_date
+                    formatted_date = "Unknown"
             else:
-                formatted_date = registration_date
+                formatted_date = "Unknown"
         else:
             formatted_date = "Unknown"
         
