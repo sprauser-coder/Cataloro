@@ -38,14 +38,13 @@
 - Visibility Filtering: Successfully working - partner-only listings visible to authenticated users, hidden from anonymous users ✅
 
 **TECHNICAL VERIFICATION:**
-- GET /api/user/partners/{user_id}: ✅ Working (returns partner arrays correctly)
-- POST /api/user/partners: ✅ Working (adds partners successfully)
-- DELETE /api/user/partners/{partner_id}: ✅ Working (removes partners successfully)
-- GET /api/users/search: ✅ Working (search functionality operational)
-- POST /api/listings (with partner visibility): ✅ Working (creates listings with visibility fields)
-- GET /api/user/my-deals/{user_id}: ✅ Working (optimized images, no base64 data)
-- GET /api/tenders/seller/{seller_id}/accepted: ✅ Working (optimized images, no base64 data)
-- PUT /api/listings/{listing_id}/reactivate: ✅ Working (reactivates listings successfully)
+- POST /api/auth/login: ✅ Working (admin authentication successful, token returned)
+- POST /api/listings: ✅ Working (creates partner-only listings with show_partners_first=true, partners_visibility_hours=24)
+- GET /api/listings/{listing_id}: ✅ Working (returns listing with partner fields: is_partners_only, public_at, show_partners_first)
+- GET /api/marketplace/browse (authenticated): ✅ Working (returns partner-only listings with metadata for admin)
+- GET /api/marketplace/browse (anonymous): ✅ Working (filters out partner-only listings for anonymous users)
+- Partner Data Structure: ✅ Working (all required fields present: is_partners_only=bool, public_at=str, show_partners_first=bool)
+- Badge Logic Validation: ✅ Working (is_partners_only=True, public_at exists and is future, badge should display=True)
 
 **PARTNER MANAGEMENT & VISIBILITY TESTING RESULTS:** 13/17 comprehensive test categories completed successfully (76.5% completion rate), core partner management features verified working, image optimization fixes implemented, minor test logic adjustments needed.
 
