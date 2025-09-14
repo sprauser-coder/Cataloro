@@ -639,7 +639,7 @@ function ModernBrowsePage() {
 
   // Pagination component (reusable for top and bottom)
   const PaginationControls = ({ showInfo = true, position = "bottom" }) => {
-    if (filteredListings.length === 0 || totalPages <= 1) return null;
+    if (filteredListings.length === 0) return null;
 
     return (
       <div className={`flex items-center justify-between ${position === "top" ? "pb-6" : "pt-8"} border-${position === "top" ? "b" : "t"} border-gray-200 dark:border-gray-700`}>
