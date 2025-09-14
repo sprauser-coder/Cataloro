@@ -9345,6 +9345,164 @@ async def reactivate_listing(listing_id: str, current_user: dict = Depends(get_c
         logger.error(f"Error reactivating listing: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to reactivate listing: {str(e)}")
 
+# Partners Management Endpoints
+@app.get("/api/user/partners/{user_id}")
+async def get_user_partners(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Get user's preferred partners"""
+    try:
+        # Verify user can access this data (own data or admin)
+        if current_user.get("id") != user_id and not current_user.get("role", "").startswith("admin"):
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Get partner relationships where user is the main user
+        partnerships = await db.user_partners.find({
+            "user_id": user_id
+        }).to_list(length=None)
+        
+        # Get partner user details
+        partners = []
+        for partnership in partnerships:
+            partner = await db.users.find_one({"id": partnership.get("partner_id")})
+            if partner:
+                partners.append({
+                    "id": partner.get("id"),
+                    "username": partner.get("username"),
+                    "full_name": partner.get("full_name"),
+                    "email": partner.get("email"),
+                    "added_at": partnership.get("created_at")
+                })
+        
+        return partners
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching user partners: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch partners: {str(e)}")
+
+@app.post("/api/user/partners")
+async def add_user_partner(partner_data: dict, current_user: dict = Depends(get_current_user)):
+    """Add a user as a preferred partner"""
+    try:
+        user_id = current_user.get("id")
+        partner_id = partner_data.get("partner_id")
+        
+        if not partner_id:
+            raise HTTPException(status_code=400, detail="Partner ID is required")
+        
+        if user_id == partner_id:
+            raise HTTPException(status_code=400, detail="Cannot add yourself as a partner")
+        
+        # Check if partner exists
+        partner = await db.users.find_one({"id": partner_id})
+        if not partner:
+            raise HTTPException(status_code=404, detail="Partner user not found")
+        
+        # Check if partnership already exists
+        existing = await db.user_partners.find_one({
+            "user_id": user_id,
+            "partner_id": partner_id
+        })
+        
+        if existing:
+            raise HTTPException(status_code=400, detail="User is already your partner")
+        
+        # Create partnership
+        partnership = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "partner_id": partner_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "status": "active"
+        }
+        
+        await db.user_partners.insert_one(partnership)
+        
+        # Also add admin as partner if not already added and partner is not admin
+        admin_user = await db.users.find_one({"role": {"$regex": "^admin"}})
+        if admin_user and admin_user.get("id") != partner_id:
+            admin_partnership_exists = await db.user_partners.find_one({
+                "user_id": user_id,
+                "partner_id": admin_user.get("id")
+            })
+            
+            if not admin_partnership_exists:
+                admin_partnership = {
+                    "id": str(uuid.uuid4()),
+                    "user_id": user_id,
+                    "partner_id": admin_user.get("id"),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "status": "active",
+                    "is_admin_auto": True  # Hidden from seller
+                }
+                await db.user_partners.insert_one(admin_partnership)
+        
+        return {"message": "Partner added successfully", "partnership_id": partnership["id"]}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error adding partner: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to add partner: {str(e)}")
+
+@app.delete("/api/user/partners/{partner_id}")
+async def remove_user_partner(partner_id: str, current_user: dict = Depends(get_current_user)):
+    """Remove a user from preferred partners"""
+    try:
+        user_id = current_user.get("id")
+        
+        # Find and delete the partnership
+        result = await db.user_partners.delete_one({
+            "user_id": user_id,
+            "partner_id": partner_id
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Partnership not found")
+        
+        return {"message": "Partner removed successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error removing partner: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to remove partner: {str(e)}")
+
+@app.get("/api/users/search")
+async def search_users(q: str, current_user: dict = Depends(get_current_user)):
+    """Search users by name or email for partner selection"""
+    try:
+        if not q or len(q.strip()) < 2:
+            return []
+        
+        search_term = q.strip()
+        
+        # Search users by username, full_name, or email
+        users = await db.users.find({
+            "$or": [
+                {"username": {"$regex": search_term, "$options": "i"}},
+                {"full_name": {"$regex": search_term, "$options": "i"}},
+                {"email": {"$regex": search_term, "$options": "i"}}
+            ],
+            "is_active": True  # Only active users
+        }).limit(10).to_list(length=10)
+        
+        # Return limited user info for privacy
+        results = []
+        for user in users:
+            results.append({
+                "id": user.get("id"),
+                "username": user.get("username"),
+                "full_name": user.get("full_name"),
+                "email": user.get("email")  # Only show email in search results
+            })
+        
+        return results
+        
+    except Exception as e:
+        logger.error(f"Error searching users: {e}")
+        return []
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
