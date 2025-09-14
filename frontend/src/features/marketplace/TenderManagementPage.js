@@ -519,21 +519,21 @@ function SellTab({
             {tendersOverview.map((item) => (
               <div key={item.listing.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 {/* Listing Header */}
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex items-start space-x-4">
+                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
                     <img
                       src={item.listing.images?.[0] || '/api/placeholder/400/300'}
                       alt={item.listing.title}
-                      className="w-20 h-20 object-cover rounded-lg"
+                      className="w-full sm:w-20 sm:h-20 h-32 object-cover rounded-lg flex-shrink-0"
                     />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
                         {item.listing.title}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         Starting Price: €{item.listing.price.toFixed(2)}
                       </p>
-                      <div className="flex items-center space-x-4 mt-2">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                           <Users className="w-3 h-3 mr-1" />
                           {item.tender_count} tender{item.tender_count !== 1 ? 's' : ''}
@@ -548,10 +548,10 @@ function SellTab({
                     </div>
                     <button
                       onClick={() => setSelectedListing(selectedListing === item.listing.id ? null : item.listing.id)}
-                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors flex items-center space-x-2"
+                      className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors flex items-center justify-center space-x-2 text-sm font-medium"
                     >
                       <Eye className="w-4 h-4" />
-                      <span>{selectedListing === item.listing.id ? 'Hide' : 'View'} Tenders</span>
+                      <span className="sm:inline">{selectedListing === item.listing.id ? 'Hide' : 'View'} Tenders</span>
                     </button>
                   </div>
                 </div>
