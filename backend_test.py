@@ -129,12 +129,12 @@ class BackendTester:
             return None, None, None
 
     async def test_notifications_endpoint(self, token, user_id, user_email):
-        """Test GET /api/notifications endpoint for notification routing support"""
+        """Test GET /api/user/{user_id}/notifications endpoint for notification routing support"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/notifications"
+            url = f"{BACKEND_URL}/user/{user_id}/notifications"
             
             async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
