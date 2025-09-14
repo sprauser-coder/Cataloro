@@ -4784,10 +4784,10 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
         # Auto-populate seller_id from authenticated user
         listing_data["seller_id"] = current_user["id"]
         
-        logger.info(f"🔍 CREATE DEBUG: Received listing data")
-        logger.info(f"🔍 CREATE DEBUG: Title: {listing_data.get('title', 'Unknown')}")
-        logger.info(f"🔍 CREATE DEBUG: show_partners_first: {listing_data.get('show_partners_first')}")
-        logger.info(f"🔍 CREATE DEBUG: partners_visibility_hours: {listing_data.get('partners_visibility_hours')}")
+        logger.info(f"🔍 FORM DEBUG: Received form data")
+        logger.info(f"🔍 FORM DEBUG: show_partners_first: {listing_data.get('show_partners_first')} (type: {type(listing_data.get('show_partners_first'))})")
+        logger.info(f"🔍 FORM DEBUG: partners_visibility_hours: {listing_data.get('partners_visibility_hours')} (type: {type(listing_data.get('partners_visibility_hours'))})")
+        logger.info(f"🔍 FORM DEBUG: has_time_limit: {listing_data.get('has_time_limit')}")
         
         # Add metadata
         listing_data["id"] = str(uuid.uuid4())
