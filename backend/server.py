@@ -10038,9 +10038,15 @@ async def get_registration_date(user_id: str):
             # Format date nicely
             if isinstance(registration_date, str):
                 try:
-                    date_obj = datetime.fromisoformat(registration_date.replace('Z', '+00:00'))
+                    # Handle different date formats
+                    date_str = registration_date.replace('Z', '+00:00')
+                    # If no timezone info, assume UTC
+                    if '+' not in date_str and 'Z' not in registration_date:
+                        date_str = date_str + '+00:00'
+                    date_obj = datetime.fromisoformat(date_str)
                     formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
-                except:
+                except Exception as e:
+                    logger.error(f"Error formatting date {registration_date}: {str(e)}")
                     formatted_date = "Unknown"
             else:
                 formatted_date = "Unknown"
