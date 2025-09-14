@@ -10308,11 +10308,17 @@ async def get_public_profile(user_id: str):
         if date_joined:
             try:
                 if isinstance(date_joined, str):
-                    date_obj = datetime.fromisoformat(date_joined.replace('Z', '+00:00'))
+                    # Handle different date formats
+                    date_str = date_joined.replace('Z', '+00:00')
+                    # If no timezone info, assume UTC
+                    if '+' not in date_str and 'Z' not in date_joined:
+                        date_str = date_str + '+00:00'
+                    date_obj = datetime.fromisoformat(date_str)
                     formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
                 else:
                     formatted_date = "Unknown"
-            except:
+            except Exception as e:
+                logger.error(f"Error formatting public profile date {date_joined}: {str(e)}")
                 formatted_date = "Unknown"
         else:
             formatted_date = "Unknown"
