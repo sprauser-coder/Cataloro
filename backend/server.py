@@ -1476,6 +1476,50 @@ async def suspend_user(user_id: str):
         logger.error(f"User suspension error: {e}")
         raise HTTPException(status_code=500, detail=f"User suspension failed: {str(e)}")
 
+@app.put("/api/admin/users/{user_id}/verify")
+async def toggle_user_verification(user_id: str, verification_data: dict):
+    """Toggle user verification status"""
+    try:
+        verified = verification_data.get("verified", False)
+        
+        # Update user verification status - try UUID id field first, then ObjectId
+        result = await db.users.update_one(
+            {"id": user_id},
+            {
+                "$set": {
+                    "verified": verified,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        # If not found by UUID, try ObjectId
+        if result.matched_count == 0:
+            try:
+                result = await db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {
+                        "$set": {
+                            "verified": verified,
+                            "updated_at": datetime.now(timezone.utc).isoformat()
+                        }
+                    }
+                )
+            except:
+                pass
+        
+        if result.matched_count > 0:
+            logger.info(f"User {user_id} verification status updated to: {verified}")
+            return {"message": f"User {'verified' if verified else 'verification removed'} successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"User verification toggle error: {e}")
+        raise HTTPException(status_code=500, detail=f"User verification update failed: {str(e)}")
+
 @app.put("/api/auth/profile/{user_id}")
 async def update_profile(user_id: str, profile_data: dict):
     """Update user profile with persistent data"""
