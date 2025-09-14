@@ -10061,6 +10061,7 @@ async def get_registration_date(user_id: str):
                     
                     date_obj = datetime.fromisoformat(date_str)
                     formatted_date = date_obj.strftime("%b %Y")  # e.g., "Sep 2025"
+                    print(f"DEBUG: Successfully formatted date: {formatted_date}")
                     logger.info(f"Successfully formatted date: {formatted_date}")
                 except Exception as e:
                     logger.error(f"Error formatting date {registration_date}: {str(e)}")
