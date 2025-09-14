@@ -10502,8 +10502,8 @@ async def get_public_profile(user_id: str):
                 "account_status": "Active" if user.get("status") != "suspended" else "Suspended",
                 "profile_type": "Business" if user.get("is_business") else "Private"
             },
-            # Recent listings (first 6)
-            "recent_listings": listings[:6]
+            # Recent listings (first 6) - serialize to remove ObjectId issues
+            "recent_listings": [serialize_doc(listing) for listing in listings[:6]]
         }
         
         # Remove sensitive information
