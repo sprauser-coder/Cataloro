@@ -1134,63 +1134,42 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_buyer_tenders_endpoint(self, token, user_id, user_email):
-        """Test GET /api/tenders/buyer/{user_id} endpoint for Profile stats synchronization"""
+    async def test_mark_notification_as_read(self, token, notification_id):
+        """Test PUT /api/notifications/{notification_id}/read endpoint"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/tenders/buyer/{user_id}"
+            url = f"{BACKEND_URL}/notifications/{notification_id}/read"
             
-            async with self.session.get(url, headers=headers) as response:
+            async with self.session.put(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
                     data = await response.json()
                     
-                    # Check if response is an array of tenders
-                    if isinstance(data, list):
-                        tenders = data
-                        
-                        # Verify tenders structure for stats calculation
-                        status_counts = {}
-                        for tender in tenders:
-                            status = tender.get('status', 'unknown')
-                            status_counts[status] = status_counts.get(status, 0) + 1
-                        
-                        # Check for required fields in tenders
-                        sample_tender = tenders[0] if tenders else {}
-                        required_fields = ['id', 'status', 'offer_amount', 'listing', 'seller']
-                        missing_fields = [field for field in required_fields if field not in sample_tender] if tenders else []
-                        
+                    if data.get("message") and "successfully" in data.get("message", "").lower():
                         self.log_result(
-                            "Buyer Tenders Endpoint", 
+                            "Mark Notification as Read", 
                             True, 
-                            f"✅ BUYER TENDERS WORKING: Found {len(tenders)} tenders, Status breakdown: {status_counts}, Required fields present: {not missing_fields}",
+                            f"✅ MARK AS READ WORKING: {data.get('message')}",
                             response_time
                         )
-                        return {
-                            'success': True, 
-                            'tenders_count': len(tenders),
-                            'status_counts': status_counts,
-                            'tenders': tenders,
-                            'missing_fields': missing_fields,
-                            'user_email': user_email
-                        }
+                        return {'success': True, 'marked_read': True}
                     else:
                         self.log_result(
-                            "Buyer Tenders Endpoint", 
+                            "Mark Notification as Read", 
                             False, 
-                            f"❌ WRONG STRUCTURE: Expected array, got {type(data)}",
+                            f"❌ UNEXPECTED RESPONSE: {data}",
                             response_time
                         )
-                        return {'success': False, 'error': 'Wrong response structure'}
+                        return {'success': False, 'error': 'Unexpected response'}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Buyer Tenders Endpoint", 
+                        "Mark Notification as Read", 
                         False, 
-                        f"❌ TENDERS FAILED: Status {response.status}: {error_text}",
+                        f"❌ MARK AS READ FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'success': False, 'error': error_text}
@@ -1198,9 +1177,9 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Buyer Tenders Endpoint", 
+                "Mark Notification as Read", 
                 False, 
-                f"❌ TENDERS EXCEPTION: {str(e)}",
+                f"❌ MARK AS READ EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
