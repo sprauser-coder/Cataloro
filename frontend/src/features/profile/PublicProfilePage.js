@@ -630,7 +630,7 @@ function PublicProfilePage() {
                   <div>
                     <div className="text-sm text-gray-600 dark:text-gray-300">Account Status</div>
                     <div className="font-medium text-gray-900 dark:text-white">
-                      {profileUser.verified ? 'Verified Member' : 'Standard Member'}
+                      {userStats.account_status || (profileUser.is_verified ? 'Verified Member' : 'Standard Member')}
                     </div>
                   </div>
                 </div>
