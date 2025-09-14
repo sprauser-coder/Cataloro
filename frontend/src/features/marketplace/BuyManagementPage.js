@@ -565,23 +565,23 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
 
   return (
     <div className={hideNavigation ? "" : "min-h-screen bg-gray-50 dark:bg-gray-900"}>
-      <div className={hideNavigation ? "" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"}>
+      <div className={hideNavigation ? "p-4" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"}>
         
         {/* Header */}
         {!hideNavigation && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                  <ShoppingCart className="w-8 h-8 mr-3 text-blue-600" />
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <ShoppingCart className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-blue-600" />
                   Inventory
                 </h1>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-1 sm:mt-2 text-sm text-gray-600 dark:text-gray-400">
                   Manage your purchased items and organize them into baskets
                 </p>
               </div>
               
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <button
                   onClick={() => {
                     loadBoughtItems();
@@ -589,10 +589,10 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
                     loadCompletedTransactions();
                   }}
                   disabled={loading}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                  className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                  Refresh
+                  <RefreshCw className={`w-4 h-4 mr-1 sm:mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">Refresh</span>
                 </button>
               </div>
             </div>
@@ -600,50 +600,51 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
         )}
 
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-4 sm:mb-6">
           {!hideNavigation && (
             <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="-mb-px flex space-x-8 px-6">
+              <nav className="-mb-px flex space-x-4 sm:space-x-8 px-4 sm:px-6 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('bought-items')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   activeTab === 'bought-items'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <Package className="w-4 h-4 inline mr-2" />
-                Bought Items
+                <Package className="w-4 h-4 inline mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Bought Items</span>
+                <span className="sm:hidden">Items</span>
               </button>
               
               <button
                 onClick={() => setActiveTab('baskets')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   activeTab === 'baskets'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <Archive className="w-4 h-4 inline mr-2" />
+                <Archive className="w-4 h-4 inline mr-1 sm:mr-2" />
                 Baskets
               </button>
               
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-3 sm:py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                   activeTab === 'completed'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
-                <Check className="w-4 h-4 inline mr-2" />
+                <Check className="w-4 h-4 inline mr-1 sm:mr-2" />
                 Completed
               </button>
             </nav>
             </div>
           )}
           
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {activeTab === 'bought-items' && (
               <BoughtItemsTab 
                 items={filteredItems}
