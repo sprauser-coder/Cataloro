@@ -29,6 +29,7 @@ import usePermissions from '../../hooks/usePermissions';
 
 function PublicProfilePage() {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const { allProducts } = useMarketplace();
   const { getUserDisplay } = usePermissions();
