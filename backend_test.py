@@ -1041,62 +1041,59 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_create_new_partner_listing_with_future_date(self, token, admin_user_id):
-        """Create a NEW partner-only listing with LONG duration (168 hours = 1 week)"""
+    async def test_my_listings_endpoint(self, token, user_id, user_email):
+        """Test GET /api/marketplace/my-listings endpoint for Profile stats synchronization"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/listings"
+            url = f"{BACKEND_URL}/marketplace/my-listings"
             
-            # Create unique timestamp for this test
-            current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            
-            listing_data = {
-                "title": "BADGE TEST - Future Date",
-                "description": "Testing badge display",
-                "price": 25.0,
-                "category": "Electronics",
-                "condition": "New",
-                "seller_id": admin_user_id,
-                "show_partners_first": True,
-                "partners_visibility_hours": 168,  # 1 week = 168 hours
-                "images": [],
-                "tags": ["badge-test", "future-date"],
-                "features": []
-            }
-            
-            async with self.session.post(url, headers=headers, json=listing_data) as response:
+            async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
-                if response.status in [200, 201]:  # Accept both 200 and 201 for successful creation
+                if response.status == 200:
                     data = await response.json()
-                    listing_id = (data.get('listing', {}).get('id') or 
-                                 data.get('id') or 
-                                 data.get('listing_id'))
                     
-                    if listing_id:
+                    # Check if response has the expected structure
+                    if isinstance(data, dict) and 'listings' in data:
+                        listings = data['listings']
+                        total_count = data.get('total', 0)
+                        
+                        # Verify listings structure for stats calculation
+                        status_counts = {}
+                        for listing in listings:
+                            status = listing.get('status', 'unknown')
+                            status_counts[status] = status_counts.get(status, 0) + 1
+                        
                         self.log_result(
-                            "Create NEW Partner-Only Listing", 
+                            "My Listings Endpoint", 
                             True, 
-                            f"✅ LISTING CREATION CONFIRMED: POST /api/listings with show_partners_first=true and partners_visibility_hours=168 successful, Listing ID returned: {listing_id}",
+                            f"✅ MY LISTINGS WORKING: Found {len(listings)} listings (total: {total_count}), Status breakdown: {status_counts}",
                             response_time
                         )
-                        return {'success': True, 'listing_id': listing_id, 'listing': data}
+                        return {
+                            'success': True, 
+                            'listings_count': len(listings),
+                            'total_count': total_count,
+                            'status_counts': status_counts,
+                            'listings': listings,
+                            'user_email': user_email
+                        }
                     else:
                         self.log_result(
-                            "Create NEW Partner-Only Listing", 
+                            "My Listings Endpoint", 
                             False, 
-                            f"❌ NO LISTING ID: Response missing listing ID: {data}",
+                            f"❌ WRONG STRUCTURE: Expected dict with 'listings' key, got {type(data)}",
                             response_time
                         )
-                        return {'success': False, 'error': 'No listing ID in response'}
+                        return {'success': False, 'error': 'Wrong response structure'}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Create NEW Partner-Only Listing", 
+                        "My Listings Endpoint", 
                         False, 
-                        f"❌ CREATION FAILED: Status {response.status}: {error_text}",
+                        f"❌ LISTINGS FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'success': False, 'error': error_text}
@@ -1104,9 +1101,80 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Create NEW Partner-Only Listing", 
+                "My Listings Endpoint", 
                 False, 
-                f"❌ CREATION EXCEPTION: {str(e)}",
+                f"❌ LISTINGS EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_buyer_tenders_endpoint(self, token, user_id, user_email):
+        """Test GET /api/tenders/buyer/{user_id} endpoint for Profile stats synchronization"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/tenders/buyer/{user_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check if response is an array of tenders
+                    if isinstance(data, list):
+                        tenders = data
+                        
+                        # Verify tenders structure for stats calculation
+                        status_counts = {}
+                        for tender in tenders:
+                            status = tender.get('status', 'unknown')
+                            status_counts[status] = status_counts.get(status, 0) + 1
+                        
+                        # Check for required fields in tenders
+                        sample_tender = tenders[0] if tenders else {}
+                        required_fields = ['id', 'status', 'offer_amount', 'listing', 'seller']
+                        missing_fields = [field for field in required_fields if field not in sample_tender] if tenders else []
+                        
+                        self.log_result(
+                            "Buyer Tenders Endpoint", 
+                            True, 
+                            f"✅ BUYER TENDERS WORKING: Found {len(tenders)} tenders, Status breakdown: {status_counts}, Required fields present: {not missing_fields}",
+                            response_time
+                        )
+                        return {
+                            'success': True, 
+                            'tenders_count': len(tenders),
+                            'status_counts': status_counts,
+                            'tenders': tenders,
+                            'missing_fields': missing_fields,
+                            'user_email': user_email
+                        }
+                    else:
+                        self.log_result(
+                            "Buyer Tenders Endpoint", 
+                            False, 
+                            f"❌ WRONG STRUCTURE: Expected array, got {type(data)}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Wrong response structure'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Buyer Tenders Endpoint", 
+                        False, 
+                        f"❌ TENDERS FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Buyer Tenders Endpoint", 
+                False, 
+                f"❌ TENDERS EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
