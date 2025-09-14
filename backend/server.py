@@ -1614,6 +1614,10 @@ async def browse_listings(
                                     {"public_at": {"$lte": current_time.isoformat()}}
                                 ]
                             },
+                            # Own listings (sellers can always see their own listings)
+                            {
+                                "seller_id": current_user_id
+                            },
                             # Partner-only listings from sellers who have current user as partner
                             {
                                 "is_partners_only": True,
@@ -1624,6 +1628,8 @@ async def browse_listings(
                     }
                 ]
             }
+            
+            logger.info(f"🔍 BROWSE DEBUG: Query includes own listings for seller {current_user_id}")
         else:
             logger.info("🔍 BROWSE DEBUG: Anonymous user - only public listings")
             # Anonymous users only see public listings
