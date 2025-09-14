@@ -343,9 +343,9 @@ function ProfilePage() {
           seller_matches: p.seller === user.username,
           seller_name_matches: p.seller_name === user.full_name
         })),
-        UNIQUE_SELLERS: [...new Set(allProducts?.slice(0, 10).map(p => p.seller))],
-        UNIQUE_SELLER_IDS: [...new Set(allProducts?.slice(0, 10).map(p => p.seller_id))],
-        UNIQUE_SELLER_NAMES: [...new Set(allProducts?.slice(0, 10).map(p => p.seller_name))],
+        UNIQUE_SELLERS_LIST: JSON.stringify([...new Set(allProducts?.map(p => p.seller))]),
+        UNIQUE_SELLER_IDS_LIST: JSON.stringify([...new Set(allProducts?.map(p => p.seller_id))]),
+        UNIQUE_SELLER_NAMES_LIST: JSON.stringify([...new Set(allProducts?.map(p => p.seller_name))]),
         USER_TO_MATCH: {
           id: user.id,
           username: user.username,
