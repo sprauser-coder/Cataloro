@@ -708,28 +708,27 @@ function PublicProfilePage() {
                   <p className="text-gray-600 dark:text-gray-300">This user hasn't created any listings.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {userListings.map((listing, index) => (
                     <div key={index} className="group cursor-pointer">
                       <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-4 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50">
+                        {/* Picture */}
                         <div className="aspect-w-16 aspect-h-9 mb-4">
                           <img
-                            src={listing.images?.[0] || '/api/placeholder/300/200'}
+                            src={listing.images?.[0] || listing.listing_image || '/api/placeholder/300/200'}
                             alt={listing.title}
                             className="w-full h-32 object-cover rounded-lg"
                           />
                         </div>
                         
-                        <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {/* Name */}
+                        <h4 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 line-clamp-2">
                           {listing.title}
                         </h4>
                         
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">
-                          ${listing.price}
-                        </p>
-                        
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                          {listing.condition} • {listing.location}
+                        {/* Price */}
+                        <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                          {formatEuro(listing.price)}
                         </p>
                       </div>
                     </div>
