@@ -578,7 +578,7 @@ function SellTab({
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className="font-semibold text-gray-900 dark:text-white text-base sm:text-lg">
-                                  €{tender.offer_amount.toFixed(2)}
+                                  {formatEuro(tender.offer_amount)}
                                 </p>
                                 <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                                   by {tender.buyer.full_name || tender.buyer.username}
