@@ -10042,11 +10042,10 @@ async def get_registration_date(user_id: str):
                     date_str = registration_date
                     logger.info(f"Original date string: {date_str}")
                     
-                    # Try different parsing approaches
-                    if 'T' in date_str and '+' not in date_str and 'Z' not in date_str:
-                        # Add UTC timezone if missing
+                    # Simple approach: if it has T but no timezone, add UTC
+                    if 'T' in date_str and not ('+' in date_str or 'Z' in date_str):
                         date_str = date_str + '+00:00'
-                        logger.info(f"Added timezone: {date_str}")
+                        logger.info(f"Added UTC timezone: {date_str}")
                     elif 'Z' in date_str:
                         date_str = date_str.replace('Z', '+00:00')
                         logger.info(f"Replaced Z with +00:00: {date_str}")
@@ -10056,14 +10055,21 @@ async def get_registration_date(user_id: str):
                     logger.info(f"Successfully formatted date: {formatted_date}")
                 except Exception as e:
                     logger.error(f"Error formatting date {registration_date}: {str(e)}")
-                    # Try alternative parsing
+                    # Try simple string parsing as fallback
                     try:
-                        from dateutil import parser
-                        date_obj = parser.parse(registration_date)
-                        formatted_date = date_obj.strftime("%b %Y")
-                        logger.info(f"Alternative parsing successful: {formatted_date}")
+                        # Extract year and month from YYYY-MM-DD format
+                        if len(registration_date) >= 10:
+                            year = registration_date[:4]
+                            month_num = registration_date[5:7]
+                            month_names = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                            month_name = month_names[int(month_num)]
+                            formatted_date = f"{month_name} {year}"
+                            logger.info(f"Fallback parsing successful: {formatted_date}")
+                        else:
+                            formatted_date = "Unknown"
                     except Exception as e2:
-                        logger.error(f"Alternative parsing also failed: {str(e2)}")
+                        logger.error(f"Fallback parsing also failed: {str(e2)}")
                         formatted_date = "Unknown"
             else:
                 formatted_date = "Unknown"
