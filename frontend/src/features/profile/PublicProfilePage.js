@@ -699,7 +699,11 @@ function PublicProfilePage() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {userListings.map((listing, index) => (
-                    <div key={index} className="group cursor-pointer">
+                    <div 
+                      key={index} 
+                      className="group cursor-pointer"
+                      onClick={() => navigate(`/product/${listing.id}`)}
+                    >
                       <div className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-4 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50">
                         {/* Picture */}
                         <div className="aspect-w-16 aspect-h-9 mb-4">
