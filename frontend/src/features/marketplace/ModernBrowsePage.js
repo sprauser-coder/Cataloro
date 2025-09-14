@@ -1466,8 +1466,8 @@ function CountdownTimer({ timeInfo }) {
   );
 }
 
-// Partner Countdown Timer Component - Shows when partner-only listing becomes public
-function PartnerCountdownTimer({ item }) {
+// Partner Countdown Badge Component - Small badge that shows on the image
+function PartnerCountdownBadge({ item }) {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [isPublic, setIsPublic] = useState(false);
   
@@ -1497,14 +1497,14 @@ function PartnerCountdownTimer({ item }) {
   }, [item.is_partners_only, item.public_at]);
   
   const formatPartnerTime = (seconds) => {
-    if (seconds <= 0) return "NOW PUBLIC";
+    if (seconds <= 0) return "PUBLIC";
     
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     
     if (days > 0) {
-      return `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
+      return `${days}d ${hours.toString().padStart(2, '0')}h`;
     } else if (hours > 0) {
       return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
     } else {
@@ -1515,20 +1515,13 @@ function PartnerCountdownTimer({ item }) {
   if (!item.is_partners_only || !item.public_at) return null;
   
   return (
-    <div className="mt-2 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-      <div className="flex items-center space-x-2">
-        <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
-        <div className="text-xs font-medium text-purple-700 dark:text-purple-300 uppercase tracking-wide">
-          Partner-Only Until
-        </div>
-      </div>
-      <div className="text-sm font-bold text-purple-900 dark:text-purple-100 mt-1">
-        {isPublic ? 'NOW PUBLIC' : formatPartnerTime(timeRemaining)}
-      </div>
-      <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-        {isPublic ? 'Everyone can now see this listing' : 'Then becomes public to everyone'}
-      </div>
-    </div>
+    <span className={`inline-block text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg ${
+      isPublic 
+        ? 'bg-gradient-to-r from-green-600 to-emerald-600' 
+        : 'bg-gradient-to-r from-purple-600 to-pink-600 animate-pulse'
+    }`}>
+      {isPublic ? '🌍 PUBLIC' : `👥 ${formatPartnerTime(timeRemaining)}`}
+    </span>
   );
 }
 
