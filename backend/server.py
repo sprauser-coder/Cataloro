@@ -9062,6 +9062,12 @@ async def get_completed_transactions(user_id: str):
         for transaction in completed_transactions:
             processed_transaction = serialize_doc(transaction)
             
+            # Optimize listing image if present
+            if processed_transaction.get('listing_image'):
+                # Convert base64 image to optimized thumbnail URL
+                listing_id = processed_transaction.get('listing_id', '')
+                processed_transaction['listing_image'] = optimize_images_for_response([processed_transaction['listing_image']], listing_id)[0] if processed_transaction['listing_image'] else '/api/placeholder-image.jpg'
+            
             # Add user role context (buyer/seller from user's perspective)
             processed_transaction["user_role_in_transaction"] = "buyer" if transaction.get("buyer_id") == user_id else "seller"
             
