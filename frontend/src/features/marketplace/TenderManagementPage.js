@@ -707,51 +707,51 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
   return (
     <div className="space-y-8">
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex-shrink-0">
+              <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Tenders</h3>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{myTenders.length}</p>
+            <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+              <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Total Tenders</h3>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{myTenders.length}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
-            <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-              <Clock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+            <div className="p-2 sm:p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex-shrink-0">
+              <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600 dark:text-yellow-400" />
             </div>
-            <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Active</h3>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeTenders.length}</p>
+            <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+              <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Active</h3>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{activeTenders.length}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="p-2 sm:p-3 bg-green-100 dark:bg-green-900/30 rounded-lg flex-shrink-0">
+              <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
             </div>
-            <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Accepted</h3>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{acceptedTenders.length}</p>
+            <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+              <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Accepted</h3>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{acceptedTenders.length}</p>
             </div>
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="p-2 sm:p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex-shrink-0">
+              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <div className="ml-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Value</h3>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">€{totalTenderValue.toFixed(2)}</p>
+            <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+              <h3 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Total Value</h3>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">€{totalTenderValue.toFixed(2)}</p>
             </div>
           </div>
         </div>
