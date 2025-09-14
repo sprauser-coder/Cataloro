@@ -96,6 +96,8 @@ function MyListingsPage() {
         return listings.filter(l => l.status === 'draft' || l.is_draft);
       case 'closed':
         return listings.filter(l => l.status === 'sold' || l.status === 'closed');
+      case 'expired':
+        return listings.filter(l => l.status === 'expired');
       default:
         return listings;
     }
