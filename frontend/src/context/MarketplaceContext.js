@@ -436,7 +436,12 @@ export function MarketplaceProvider({ children }) {
           inStock: true,
           quantity: 1,
           tags: listing.tags || [],
-          features: listing.features || []
+          features: listing.features || [],
+          // CRITICAL: Preserve partner fields for badge display
+          is_partners_only: listing.is_partners_only || false,
+          public_at: listing.public_at,
+          show_partners_first: listing.show_partners_first || false,
+          partners_visibility_hours: listing.partners_visibility_hours
         };
         
         // Debug: Log transformed data for first listing
