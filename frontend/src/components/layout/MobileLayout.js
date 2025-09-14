@@ -182,11 +182,11 @@ function MobileLayout() {
             
             {/* User Avatar */}
             {user && (
-              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+              <Link to="/profile" className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center hover:scale-105 transition-transform touch-manipulation">
                 <span className="text-white font-medium text-xs">
                   {user.full_name?.charAt(0) || user.username?.charAt(0) || 'U'}
                 </span>
-              </div>
+              </Link>
             )}
           </div>
         </div>
