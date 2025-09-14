@@ -2604,13 +2604,24 @@ async def main():
     print("="*80)
     
     try:
-        # Run partner badge future date tests
-        success = await run_partner_badge_future_date_tests()
+        # Run profile stats synchronization tests
+        results = await run_profile_stats_synchronization_tests()
+        
+        # Determine overall success
+        success = True
+        for user_email, user_results in results.items():
+            listings_success = user_results.get('listings', {}).get('success', False)
+            tenders_success = user_results.get('tenders', {}).get('success', False)
+            consistency_success = user_results.get('consistency', {}).get('success', False)
+            
+            if not (listings_success and tenders_success and consistency_success):
+                success = False
+                break
         
         if success:
-            print("🎉 All Partner Badge Future Date tests passed!")
+            print("🎉 All Profile Stats Synchronization tests passed!")
         else:
-            print("⚠️ Some Partner Badge Future Date tests failed - check details above")
+            print("⚠️ Some Profile Stats Synchronization tests failed - check details above")
         
         return success
         
