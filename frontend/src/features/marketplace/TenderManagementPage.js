@@ -823,14 +823,71 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                     </span>
                   </div>
                   
-                  {/* Special message for accepted tenders */}
+                  {/* Redesigned accepted tender card with better organization */}
                   {tender.status === 'accepted' && (
-                    <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-green-800 dark:text-green-300 font-medium">
-                          Item has been moved to Bought Items
-                        </p>
+                    <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-700 rounded-xl p-4">
+                      {/* Header with status and item info */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center mb-2">
+                            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" />
+                            <h4 className="text-lg font-bold text-green-800 dark:text-green-300">
+                              Tender Accepted!
+                            </h4>
+                          </div>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                            <strong>Item ID:</strong> {tender.listing?.id || 'N/A'}
+                          </p>
+                          <p className="text-sm text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-800/30 px-3 py-1 rounded-full inline-block">
+                            ✓ Moved to Bought Items
+                          </p>
+                        </div>
+                        
+                        {/* Status badge */}
+                        <div className="mt-3 sm:mt-0">
+                          <span className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-md">
+                            Accepted
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Organized details grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-green-200 dark:border-green-700">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                            Starting Price
+                          </p>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white">
+                            {formatEuro(tender.listing?.price || 0)}
+                          </p>
+                        </div>
+                        
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                            Your Winning Bid
+                          </p>
+                          <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                            {formatEuro(tender.offer_amount)}
+                          </p>
+                        </div>
+                        
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                            Seller
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {tender.listing?.seller_name || 'Unknown Seller'}
+                          </p>
+                        </div>
+                        
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                            Date Accepted
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {new Date(tender.updated_at || tender.created_at).toLocaleDateString('de-DE')}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
