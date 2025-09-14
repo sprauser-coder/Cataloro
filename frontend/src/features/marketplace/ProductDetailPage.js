@@ -403,10 +403,14 @@ function ProductDetailPage() {
 
       {/* Two-Column Layout: Pictures Left, ALL Info Right */}
       <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 ${
-        // Partner listing border - same logic as browse page
-        product.is_partners_only && product.public_at && new Date(product.public_at) > new Date() 
-          ? 'border border-pink-600 shadow-lg shadow-pink-100 dark:shadow-pink-900/20' 
-          : 'border border-gray-200 dark:border-gray-700'
+        // Partner listing border - using timezone utility
+        (() => {
+          const { calculateTimeRemaining } = require('../../utils/timezone');
+          const { expired } = calculateTimeRemaining(product.public_at);
+          return product.is_partners_only && product.public_at && !expired
+            ? 'border border-pink-600 shadow-lg shadow-pink-100 dark:shadow-pink-900/20' 
+            : 'border border-gray-200 dark:border-gray-700';
+        })()
       }`}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
