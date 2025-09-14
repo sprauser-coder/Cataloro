@@ -1003,7 +1003,7 @@ function CreateListingPage() {
                       type="checkbox"
                       checked={useProfileAddress}
                       onChange={(e) => handleUseProfileAddressChange(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 bg-white border-gray-400 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                      className="w-4 h-4 text-blue-600 bg-gray-50 border-2 border-gray-400 rounded focus:ring-blue-500 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center">
                       <User className="w-3 h-3 mr-1" />
