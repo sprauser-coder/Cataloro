@@ -171,7 +171,7 @@ function MobileBottomNav() {
                   {item.badge && (
                     <div className={`absolute -top-2 -right-2 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-medium shadow-md ${
                       item.label === 'Messages' 
-                        ? 'bg-red-500 animate-pulse' // Red pulsing for messages
+                        ? 'bg-red-500' // Red steady for messages
                         : item.label === 'Cart'
                         ? 'bg-blue-500' // Blue for cart
                         : 'bg-green-500' // Green for others (like favorites)
