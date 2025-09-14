@@ -8130,7 +8130,7 @@ async def get_bought_items(user_id: str):
                 "price": tender.get("offer_amount", 0),
                 "seller_name": seller_name,
                 "seller_id": seller_id,
-                "image": listing.get("images", [""])[0] if listing and listing.get("images") else None,
+                "image": optimize_images_for_response(listing.get("images", []), listing.get("id", ""))[0] if listing and listing.get("images") else '/api/placeholder-image.jpg',
                 "purchased_at": tender.get("accepted_at", tender.get("created_at")),
                 "basket_id": None,  # Will be set based on assignment
                 # Cat database fields - prioritize preserved data from tender, fallback to listing
