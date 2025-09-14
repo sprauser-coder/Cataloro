@@ -36,10 +36,14 @@ function MobileBottomNav() {
           const user = JSON.parse(userData);
           setUser(user);
           
-          // Load real unread message count
+          // Load real unread message count (only messages from last 7 days)
           try {
             const messages = await liveService.getUserMessages(user.id);
-            const unreadCount = messages.filter(msg => !msg.is_read && msg.recipient_id === user.id).length;
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            const unreadCount = messages.filter(msg => {
+              const messageDate = new Date(msg.created_at);
+              return !msg.is_read && msg.recipient_id === user.id && messageDate >= sevenDaysAgo;
+            }).length;
             setUnreadMessages(unreadCount);
             localStorage.setItem('cataloro_unread_messages', unreadCount.toString());
           } catch (error) {
