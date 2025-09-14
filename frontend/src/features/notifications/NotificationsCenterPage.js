@@ -1020,13 +1020,23 @@ function NotificationsCenterPage() {
                         )}
                       </div>
 
-                      <button
-                        onClick={() => handleSingleDelete(notification.id, notification.type)}
-                        className="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors group-hover:shadow-md"
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Delete
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleNotificationClick(notification)}
+                          className="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 text-sm font-medium rounded-lg hover:bg-green-200 transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          Go to
+                        </button>
+                        
+                        <button
+                          onClick={() => handleSingleDelete(notification.id, notification.type)}
+                          className="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors group-hover:shadow-md"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
