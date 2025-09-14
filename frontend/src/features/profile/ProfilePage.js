@@ -394,9 +394,17 @@ function ProfilePage() {
       const activeListings = userListings.filter(p => p.inStock !== false);
       const userOrders = Array.isArray(orderHistory) ? orderHistory : [];
       
-      // Check for orders where user is buyer OR seller
-      const userBuyOrders = userOrders.filter(o => o && o.buyer_id === user?.id);
-      const userSellOrders = userOrders.filter(o => o && o.seller_id === user?.id);
+      // Check for orders where user is buyer OR seller (orders might use username/object too)
+      const userBuyOrders = userOrders.filter(o => o && (
+        o.buyer_id === user?.id || 
+        o.buyer?.username === user?.username ||
+        o.buyer === user?.username
+      ));
+      const userSellOrders = userOrders.filter(o => o && (
+        o.seller_id === user?.id || 
+        o.seller?.username === user?.username ||
+        o.seller === user?.username
+      ));
       const completedBuyOrders = userBuyOrders.filter(o => o.status === 'completed');
       const completedSellOrders = userSellOrders.filter(o => o.status === 'completed');
       
