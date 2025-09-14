@@ -387,7 +387,7 @@ function AdminPanel() {
       permission: 'canAccessDatDatabase' },
     { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings, 
       adminOnly: true },
-    { id: 'administration', label: 'Administration', shortLabel: 'Admin', icon: Shield, 
+    { id: 'administration', label: 'Sections', shortLabel: 'Sections', icon: Shield, 
       adminOnly: true }
   ];
 
