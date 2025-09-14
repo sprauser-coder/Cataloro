@@ -667,9 +667,9 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def run_date_parsing_tests(self):
-        """Run comprehensive date parsing fix tests"""
-        print("🚀 CATALORO DATE PARSING FIX BACKEND TESTING")
+    async def run_verification_status_tests(self):
+        """Run comprehensive verification status tests"""
+        print("🚀 CATALORO VERIFICATION STATUS BACKEND TESTING")
         print("=" * 80)
         print()
         
@@ -679,8 +679,12 @@ class BackendTester:
             ("admin@cataloro.com", "admin123", "Admin User")
         ]
         
+        # Also test specific users mentioned in the request
+        specific_users = ["admin_user_1", "sash_admin"]
+        
         all_results = {}
         
+        # Test authenticated users
         for email, password, user_type in test_users:
             print(f"🔐 Testing with {user_type} ({email})")
             print("-" * 50)
@@ -692,32 +696,45 @@ class BackendTester:
                 continue
             
             user_results = {}
+            username = user.get('username', 'unknown')
             
-            # Step 2: Test registration date endpoint
-            print(f"📅 Testing registration date endpoint for {user_type}...")
-            registration_date_result = await self.test_registration_date_endpoint(token, user_id, email)
-            user_results['registration_date'] = registration_date_result
+            # Step 2: Test public profile verification status
+            print(f"🔍 Testing public profile verification status for {user_type}...")
+            public_profile_result = await self.test_public_profile_verification_status(token, user_id, username, email)
+            user_results['public_profile_verification'] = public_profile_result
             
-            # Step 3: Test public profile endpoint
-            print(f"👤 Testing public profile endpoint for {user_type}...")
-            public_profile_result = await self.test_public_profile_endpoint(token, user_id, email)
-            user_results['public_profile'] = public_profile_result
+            # Step 3: Test user profile verification status
+            print(f"👤 Testing user profile verification status for {user_type}...")
+            user_profile_result = await self.test_user_profile_verification_status(token, user_id, username, email)
+            user_results['user_profile_verification'] = user_profile_result
             
             all_results[user_type] = user_results
             print()
         
+        # Test specific users without authentication
+        print("🎯 Testing specific users mentioned in request...")
+        print("-" * 50)
+        
+        for username in specific_users:
+            print(f"🔍 Testing verification status for {username}...")
+            specific_result = await self.test_specific_user_verification(username)
+            all_results[f"Specific User - {username}"] = {'public_profile_verification': specific_result}
+            print()
+        
         # Generate summary
-        self.generate_date_parsing_summary(all_results)
+        self.generate_verification_status_summary(all_results)
         
         return all_results
 
-    def generate_date_parsing_summary(self, all_results):
-        """Generate comprehensive summary of date parsing fix testing"""
-        print("📊 DATE PARSING FIX TESTING SUMMARY")
+    def generate_verification_status_summary(self, all_results):
+        """Generate comprehensive summary of verification status testing"""
+        print("📊 VERIFICATION STATUS TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = 0
         passed_tests = 0
+        verification_found_count = 0
+        verified_users_count = 0
         
         for user_type, results in all_results.items():
             print(f"\n🔍 {user_type} Results:")
@@ -728,103 +745,102 @@ class BackendTester:
                 if result.get('success'):
                     passed_tests += 1
                     status = "✅ PASS"
+                    
+                    # Check if verification status was found
+                    if result.get('is_verified') is not None:
+                        verification_found_count += 1
+                        if result.get('is_verified'):
+                            verified_users_count += 1
                 else:
                     status = "❌ FAIL"
                 
                 print(f"  {status}: {test_name.replace('_', ' ').title()}")
                 
-                # Add specific details for key tests
-                if test_name == 'registration_date':
-                    if result.get('success'):
-                        reg_date = result.get('registration_date', 'Unknown')
-                        created_at = result.get('created_at', 'Unknown')
-                        print(f"    📅 Registration Date: {reg_date}")
-                        print(f"    🕐 Created At: {created_at}")
-                        print(f"    ✅ Formatted Correctly: {result.get('formatted_correctly', False)}")
+                # Add specific details for verification tests
+                if result.get('success'):
+                    is_verified = result.get('is_verified')
+                    verification_location = result.get('verification_location', 'unknown')
+                    username = result.get('username', 'unknown')
+                    
+                    print(f"    🔍 Verification Status: {is_verified}")
+                    print(f"    📍 Found in: {verification_location}")
+                    print(f"    👤 Username: {username}")
+                    
+                    if is_verified:
+                        print(f"    ✅ User is VERIFIED")
                     else:
-                        error = result.get('error', 'Unknown error')
-                        reg_date = result.get('registration_date', 'Unknown')
-                        created_at = result.get('created_at', 'Unknown')
-                        print(f"    ❌ Error: {error}")
-                        print(f"    📅 Registration Date: {reg_date}")
-                        print(f"    🕐 Created At: {created_at}")
-                
-                elif test_name == 'public_profile':
-                    if result.get('success'):
-                        member_since = result.get('member_since', 'Unknown')
-                        profile = result.get('profile', {})
-                        print(f"    👤 Member Since: {member_since}")
-                        print(f"    📝 Profile Name: {profile.get('full_name', 'Unknown')}")
-                        print(f"    ✅ Formatted Correctly: {result.get('formatted_correctly', False)}")
-                    else:
-                        error = result.get('error', 'Unknown error')
-                        member_since = result.get('member_since', 'Unknown')
-                        print(f"    ❌ Error: {error}")
-                        print(f"    👤 Member Since: {member_since}")
+                        print(f"    ❌ User is NOT VERIFIED")
+                else:
+                    error = result.get('error', 'Unknown error')
+                    status_code = result.get('status_code', 'N/A')
+                    print(f"    ❌ Error: {error}")
+                    if status_code != 'N/A':
+                        print(f"    🔢 Status Code: {status_code}")
+                    
+                    # Show available fields if verification field is missing
+                    if 'response_keys' in result:
+                        print(f"    🔑 Available fields: {result['response_keys']}")
+                    elif 'available_fields' in result:
+                        print(f"    🔑 Available fields: {result['available_fields']}")
         
         # Overall summary
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
         print(f"\n🎯 OVERALL RESULTS:")
         print(f"   Tests Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
+        print(f"   Verification Field Found: {verification_found_count}/{total_tests}")
+        print(f"   Verified Users Found: {verified_users_count}/{verification_found_count if verification_found_count > 0 else 1}")
         
         # Key findings
         print(f"\n🔑 KEY FINDINGS:")
         
-        # Check if registration date endpoints are working
-        demo_results = all_results.get('Demo User', {})
-        admin_results = all_results.get('Admin User', {})
-        
-        demo_reg_date = demo_results.get('registration_date', {})
-        admin_reg_date = admin_results.get('registration_date', {})
-        
-        if demo_reg_date.get('success') or admin_reg_date.get('success'):
-            print("   ✅ Registration date endpoint is working")
-            # Show successful date formats
-            if demo_reg_date.get('success'):
-                print(f"   📅 Demo User Registration Date: {demo_reg_date.get('registration_date', 'Unknown')}")
-            if admin_reg_date.get('success'):
-                print(f"   📅 Admin User Registration Date: {admin_reg_date.get('registration_date', 'Unknown')}")
+        # Check if verification status is being returned
+        if verification_found_count > 0:
+            print(f"   ✅ Verification status field found in {verification_found_count} out of {total_tests} tests")
+            
+            if verified_users_count > 0:
+                print(f"   ✅ Found {verified_users_count} verified users")
+            else:
+                print(f"   ⚠️ No verified users found - all users have is_verified: false")
         else:
-            print("   ❌ Registration date endpoint is not working")
-            # Show what we got instead
-            if demo_reg_date.get('registration_date'):
-                print(f"   ❌ Demo User got: {demo_reg_date.get('registration_date', 'Unknown')}")
-            if admin_reg_date.get('registration_date'):
-                print(f"   ❌ Admin User got: {admin_reg_date.get('registration_date', 'Unknown')}")
+            print(f"   ❌ Verification status field NOT FOUND in any API responses")
+            print(f"   🔧 ISSUE: The is_verified field is missing from public profile endpoints")
         
-        # Check public profile endpoints
-        demo_profile = demo_results.get('public_profile', {})
-        admin_profile = admin_results.get('public_profile', {})
+        # Check specific users mentioned in request
+        admin_user_1_result = all_results.get('Specific User - admin_user_1', {}).get('public_profile_verification', {})
+        sash_admin_result = all_results.get('Specific User - sash_admin', {}).get('public_profile_verification', {})
         
-        if demo_profile.get('success') or admin_profile.get('success'):
-            print("   ✅ Public profile endpoint is working")
-            # Show successful date formats
-            if demo_profile.get('success'):
-                print(f"   👤 Demo User Member Since: {demo_profile.get('member_since', 'Unknown')}")
-            if admin_profile.get('success'):
-                print(f"   👤 Admin User Member Since: {admin_profile.get('member_since', 'Unknown')}")
+        print(f"\n🎯 SPECIFIC USERS REQUESTED:")
+        
+        if admin_user_1_result.get('success'):
+            is_verified = admin_user_1_result.get('is_verified')
+            print(f"   👤 admin_user_1: {'✅ VERIFIED' if is_verified else '❌ NOT VERIFIED'} (is_verified: {is_verified})")
         else:
-            print("   ❌ Public profile endpoint is not working")
-            # Show what we got instead
-            if demo_profile.get('member_since'):
-                print(f"   ❌ Demo User got: {demo_profile.get('member_since', 'Unknown')}")
-            if admin_profile.get('member_since'):
-                print(f"   ❌ Admin User got: {admin_profile.get('member_since', 'Unknown')}")
+            error = admin_user_1_result.get('error', 'Unknown error')
+            print(f"   👤 admin_user_1: ❌ FAILED - {error}")
         
-        # Check if date parsing fix is working
-        all_working = (
-            demo_reg_date.get('success', False) and 
-            admin_reg_date.get('success', False) and
-            demo_profile.get('success', False) and 
-            admin_profile.get('success', False)
-        )
-        
-        if all_working:
-            print("   🎉 Date parsing fix is working correctly for all endpoints!")
+        if sash_admin_result.get('success'):
+            is_verified = sash_admin_result.get('is_verified')
+            print(f"   👤 sash_admin: {'✅ VERIFIED' if is_verified else '❌ NOT VERIFIED'} (is_verified: {is_verified})")
         else:
-            print("   ⚠️ Date parsing fix needs attention - some endpoints still returning 'Unknown'")
+            error = sash_admin_result.get('error', 'Unknown error')
+            print(f"   👤 sash_admin: ❌ FAILED - {error}")
         
-        print(f"\n🎉 DATE PARSING FIX TESTING COMPLETED!")
+        # Root cause analysis
+        print(f"\n🔧 ROOT CAUSE ANALYSIS:")
+        
+        if verification_found_count == 0:
+            print("   ❌ CRITICAL ISSUE: is_verified field is completely missing from API responses")
+            print("   🔧 SOLUTION NEEDED: Backend needs to include is_verified field in public profile endpoint")
+            print("   📝 CHECK: Verify if users have 'verified' field in database and map it to 'is_verified' in API")
+        elif verified_users_count == 0:
+            print("   ⚠️ ISSUE: is_verified field exists but all users are marked as not verified")
+            print("   🔧 SOLUTION NEEDED: Check if admin users should have verified status in database")
+            print("   📝 CHECK: Verify admin users like 'admin_user_1' and 'sash_admin' have verified: true in database")
+        else:
+            print("   ✅ VERIFICATION SYSTEM WORKING: is_verified field found and some users are verified")
+            print("   🎉 FRONTEND ISSUE: The problem might be in frontend badge display logic")
+        
+        print(f"\n🎉 VERIFICATION STATUS TESTING COMPLETED!")
         print("=" * 80)
 
 async def main():
