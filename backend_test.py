@@ -497,9 +497,9 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def run_notification_system_tests(self):
-        """Run comprehensive notification system tests"""
-        print("🚀 CATALORO NOTIFICATION SYSTEM BACKEND TESTING")
+    async def run_date_parsing_tests(self):
+        """Run comprehensive date parsing fix tests"""
+        print("🚀 CATALORO DATE PARSING FIX BACKEND TESTING")
         print("=" * 80)
         print()
         
@@ -523,75 +523,27 @@ class BackendTester:
             
             user_results = {}
             
-            # Step 2: Test notifications endpoint
-            print(f"📬 Testing notifications endpoint for {user_type}...")
-            notifications_result = await self.test_notifications_endpoint(token, user_id, email)
-            user_results['notifications'] = notifications_result
+            # Step 2: Test registration date endpoint
+            print(f"📅 Testing registration date endpoint for {user_type}...")
+            registration_date_result = await self.test_registration_date_endpoint(token, user_id, email)
+            user_results['registration_date'] = registration_date_result
             
-            # Step 3: Test notification types support
-            print(f"🏷️ Testing notification types support for {user_type}...")
-            types_result = await self.test_notification_types_support(notifications_result)
-            user_results['types_support'] = types_result
-            
-            # Step 4: Test mark as read functionality (if we have notifications)
-            if notifications_result.get('success') and notifications_result.get('notifications'):
-                notifications = notifications_result.get('notifications', [])
-                if notifications:
-                    # Find an unread notification or use the first one
-                    test_notification = None
-                    for notif in notifications:
-                        if not notif.get('read', True):
-                            test_notification = notif
-                            break
-                    
-                    if not test_notification and notifications:
-                        test_notification = notifications[0]
-                    
-                    if test_notification:
-                        notification_id = test_notification.get('id')
-                        print(f"✅ Testing mark as read for {user_type} with notification {notification_id}...")
-                        mark_read_result = await self.test_mark_notification_as_read(token, user_id, notification_id)
-                        user_results['mark_as_read'] = mark_read_result
-                    else:
-                        print(f"⚠️ No notifications available for mark-as-read test for {user_type}")
-                        user_results['mark_as_read'] = {'success': False, 'error': 'No notifications available'}
-                else:
-                    print(f"⚠️ No notifications found for {user_type}")
-                    user_results['mark_as_read'] = {'success': False, 'error': 'No notifications found'}
-            else:
-                print(f"⚠️ Notifications endpoint failed for {user_type}, skipping mark-as-read test")
-                user_results['mark_as_read'] = {'success': False, 'error': 'Notifications endpoint failed'}
-            
-            # Step 5: Try to create test notifications for missing types (if admin)
-            if user_type == "Admin User" and types_result.get('success'):
-                missing_types = types_result.get('missing_routing_types', [])
-                if missing_types:
-                    print(f"🧪 Creating test notifications for missing types: {missing_types}")
-                    created_notifications = []
-                    for notif_type in missing_types[:3]:  # Limit to 3 test notifications
-                        create_result = await self.create_test_notification(token, user_id, notif_type)
-                        if create_result.get('success'):
-                            created_notifications.append(create_result)
-                    
-                    user_results['created_test_notifications'] = created_notifications
-                    
-                    # Re-test notifications endpoint to see if new types are now available
-                    if created_notifications:
-                        print(f"🔄 Re-testing notifications endpoint after creating test notifications...")
-                        updated_notifications_result = await self.test_notifications_endpoint(token, user_id, email)
-                        user_results['updated_notifications'] = updated_notifications_result
+            # Step 3: Test public profile endpoint
+            print(f"👤 Testing public profile endpoint for {user_type}...")
+            public_profile_result = await self.test_public_profile_endpoint(token, user_id, email)
+            user_results['public_profile'] = public_profile_result
             
             all_results[user_type] = user_results
             print()
         
         # Generate summary
-        self.generate_notification_system_summary(all_results)
+        self.generate_date_parsing_summary(all_results)
         
         return all_results
 
-    def generate_notification_system_summary(self, all_results):
-        """Generate comprehensive summary of notification system testing"""
-        print("📊 NOTIFICATION SYSTEM TESTING SUMMARY")
+    def generate_date_parsing_summary(self, all_results):
+        """Generate comprehensive summary of date parsing fix testing"""
+        print("📊 DATE PARSING FIX TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = 0
@@ -601,15 +553,7 @@ class BackendTester:
             print(f"\n🔍 {user_type} Results:")
             print("-" * 30)
             
-            # Handle case where results might be a list or dict
-            if isinstance(results, dict):
-                results_items = results.items()
-            else:
-                # Skip if results is not a dict
-                print(f"  ⚠️ Invalid results format for {user_type}")
-                continue
-            
-            for test_name, result in results_items:
+            for test_name, result in results.items():
                 total_tests += 1
                 if result.get('success'):
                     passed_tests += 1
@@ -620,24 +564,33 @@ class BackendTester:
                 print(f"  {status}: {test_name.replace('_', ' ').title()}")
                 
                 # Add specific details for key tests
-                if test_name == 'notifications' and result.get('success'):
-                    count = result.get('notifications_count', 0)
-                    types = result.get('notification_types', [])
-                    routing_types = result.get('routing_types_found', [])
-                    print(f"    📊 Found {count} notifications")
-                    print(f"    🏷️ Types: {types}")
-                    print(f"    🔀 Routing types: {routing_types}")
+                if test_name == 'registration_date':
+                    if result.get('success'):
+                        reg_date = result.get('registration_date', 'Unknown')
+                        created_at = result.get('created_at', 'Unknown')
+                        print(f"    📅 Registration Date: {reg_date}")
+                        print(f"    🕐 Created At: {created_at}")
+                        print(f"    ✅ Formatted Correctly: {result.get('formatted_correctly', False)}")
+                    else:
+                        error = result.get('error', 'Unknown error')
+                        reg_date = result.get('registration_date', 'Unknown')
+                        created_at = result.get('created_at', 'Unknown')
+                        print(f"    ❌ Error: {error}")
+                        print(f"    📅 Registration Date: {reg_date}")
+                        print(f"    🕐 Created At: {created_at}")
                 
-                elif test_name == 'types_support' and result.get('success'):
-                    supported = result.get('supported_routing_types', [])
-                    missing = result.get('missing_routing_types', [])
-                    print(f"    ✅ Supported: {supported}")
-                    if missing:
-                        print(f"    ⚠️ Missing: {missing}")
-                
-                elif not result.get('success'):
-                    error = result.get('error', 'Unknown error')
-                    print(f"    ❌ Error: {error}")
+                elif test_name == 'public_profile':
+                    if result.get('success'):
+                        member_since = result.get('member_since', 'Unknown')
+                        profile = result.get('profile', {})
+                        print(f"    👤 Member Since: {member_since}")
+                        print(f"    📝 Profile Name: {profile.get('full_name', 'Unknown')}")
+                        print(f"    ✅ Formatted Correctly: {result.get('formatted_correctly', False)}")
+                    else:
+                        error = result.get('error', 'Unknown error')
+                        member_since = result.get('member_since', 'Unknown')
+                        print(f"    ❌ Error: {error}")
+                        print(f"    👤 Member Since: {member_since}")
         
         # Overall summary
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
@@ -647,60 +600,61 @@ class BackendTester:
         # Key findings
         print(f"\n🔑 KEY FINDINGS:")
         
-        # Check if notification endpoints are working
-        demo_notifications = all_results.get('Demo User', {})
-        admin_notifications = all_results.get('Admin User', {})
+        # Check if registration date endpoints are working
+        demo_results = all_results.get('Demo User', {})
+        admin_results = all_results.get('Admin User', {})
         
-        # Handle case where results might contain lists
-        if isinstance(demo_notifications, dict):
-            demo_notifications_result = demo_notifications.get('notifications', {})
+        demo_reg_date = demo_results.get('registration_date', {})
+        admin_reg_date = admin_results.get('registration_date', {})
+        
+        if demo_reg_date.get('success') or admin_reg_date.get('success'):
+            print("   ✅ Registration date endpoint is working")
+            # Show successful date formats
+            if demo_reg_date.get('success'):
+                print(f"   📅 Demo User Registration Date: {demo_reg_date.get('registration_date', 'Unknown')}")
+            if admin_reg_date.get('success'):
+                print(f"   📅 Admin User Registration Date: {admin_reg_date.get('registration_date', 'Unknown')}")
         else:
-            demo_notifications_result = {}
-            
-        if isinstance(admin_notifications, dict):
-            admin_notifications_result = admin_notifications.get('notifications', {})
+            print("   ❌ Registration date endpoint is not working")
+            # Show what we got instead
+            if demo_reg_date.get('registration_date'):
+                print(f"   ❌ Demo User got: {demo_reg_date.get('registration_date', 'Unknown')}")
+            if admin_reg_date.get('registration_date'):
+                print(f"   ❌ Admin User got: {admin_reg_date.get('registration_date', 'Unknown')}")
+        
+        # Check public profile endpoints
+        demo_profile = demo_results.get('public_profile', {})
+        admin_profile = admin_results.get('public_profile', {})
+        
+        if demo_profile.get('success') or admin_profile.get('success'):
+            print("   ✅ Public profile endpoint is working")
+            # Show successful date formats
+            if demo_profile.get('success'):
+                print(f"   👤 Demo User Member Since: {demo_profile.get('member_since', 'Unknown')}")
+            if admin_profile.get('success'):
+                print(f"   👤 Admin User Member Since: {admin_profile.get('member_since', 'Unknown')}")
         else:
-            admin_notifications_result = {}
+            print("   ❌ Public profile endpoint is not working")
+            # Show what we got instead
+            if demo_profile.get('member_since'):
+                print(f"   ❌ Demo User got: {demo_profile.get('member_since', 'Unknown')}")
+            if admin_profile.get('member_since'):
+                print(f"   ❌ Admin User got: {admin_profile.get('member_since', 'Unknown')}")
         
-        if demo_notifications_result.get('success') or admin_notifications_result.get('success'):
-            print("   ✅ Notification endpoints are working")
+        # Check if date parsing fix is working
+        all_working = (
+            demo_reg_date.get('success', False) and 
+            admin_reg_date.get('success', False) and
+            demo_profile.get('success', False) and 
+            admin_profile.get('success', False)
+        )
+        
+        if all_working:
+            print("   🎉 Date parsing fix is working correctly for all endpoints!")
         else:
-            print("   ❌ Notification endpoints are not working")
+            print("   ⚠️ Date parsing fix needs attention - some endpoints still returning 'Unknown'")
         
-        # Check routing types support
-        demo_types = demo_notifications.get('types_support', {}) if isinstance(demo_notifications, dict) else {}
-        admin_types = admin_notifications.get('types_support', {}) if isinstance(admin_notifications, dict) else {}
-        
-        all_supported_types = set()
-        if demo_types.get('success'):
-            all_supported_types.update(demo_types.get('supported_routing_types', []))
-        if admin_types.get('success'):
-            all_supported_types.update(admin_types.get('supported_routing_types', []))
-        
-        required_types = {
-            'tender_accepted', 'transaction_completed', 'transaction_marked_completed',
-            'transaction_fully_completed', 'new_tender_offer', 'tender_offer',
-            'new_user_registration'
-        }
-        
-        if all_supported_types:
-            print(f"   ✅ Routing types supported: {list(all_supported_types)}")
-            missing_types = required_types - all_supported_types
-            if missing_types:
-                print(f"   ⚠️ Missing routing types: {list(missing_types)}")
-        else:
-            print("   ❌ No routing types supported")
-        
-        # Check mark as read functionality
-        demo_mark_read = demo_notifications.get('mark_as_read', {}) if isinstance(demo_notifications, dict) else {}
-        admin_mark_read = admin_notifications.get('mark_as_read', {}) if isinstance(admin_notifications, dict) else {}
-        
-        if demo_mark_read.get('success') or admin_mark_read.get('success'):
-            print("   ✅ Mark-as-read functionality is working")
-        else:
-            print("   ❌ Mark-as-read functionality needs attention")
-        
-        print(f"\n🎉 NOTIFICATION SYSTEM TESTING COMPLETED!")
+        print(f"\n🎉 DATE PARSING FIX TESTING COMPLETED!")
         print("=" * 80)
 
 async def main():
