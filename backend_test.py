@@ -1,40 +1,28 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - BACKEND DATE PARSING FIX TESTING
-Testing the backend date parsing fix for registration date formatting
+CATALORO MARKETPLACE - BACKEND VERIFICATION STATUS TESTING
+Testing if the backend is correctly returning the is_verified status for users in the public profile endpoint
 
 SPECIFIC TESTS REQUESTED (Review Request):
-Test the backend date parsing fix I just made for the registration date formatting issue.
+I need to test if the backend is correctly returning the is_verified status for users in the public profile endpoint.
 
-**CONTEXT**: Fixed the date parsing logic in both endpoints:
-- `/api/user/{user_id}/registration-date` 
-- `/api/user/{user_id}/public-profile`
-
-**CHANGES MADE**:
-- Added microsecond removal from date strings (2025-09-09T10:20:41.643000 -> 2025-09-09T10:20:41)
-- Enhanced timezone handling for ISO date strings
-- Added comprehensive logging for debugging
-- Added fallback date parsing logic
+**CONTEXT**: I'm trying to fix the verified badge display on public profiles. The frontend testing showed that verified users are not showing the verified badge at the top.
 
 **TEST REQUIREMENTS**:
-1. **Test Registration Date Endpoint**: 
-   - Call `/api/user/demo_user/registration-date` or `/api/user/{actual_user_id}/registration-date`
-   - Expected: Should return formatted date like {"registration_date": "Sep 2025"} instead of "Unknown"
+1. **Test Public Profile Endpoint**: Call `/api/user/admin_user_1/public-profile` or `/api/user/sash_admin/public-profile`
+2. **Check is_verified Field**: Verify if the response includes `"is_verified": true` for verified users
+3. **Check User Database**: Query the users collection directly to see what verification status is stored
 
-2. **Test Public Profile Endpoint**:
-   - Call `/api/user/demo_user/public-profile` or `/api/user/{actual_user_id}/public-profile`
-   - Expected: Should include formatted date in stats.member_since field
+**EXPECTED RESULTS**:
+- Public profile endpoint should return `"is_verified": true` for verified users
+- Users with verification status should show this in the API response
+- The is_verified field should be properly mapped from database to API response
 
-3. **Verify Date Parsing Logic**:
-   - Check backend logs for date parsing steps
-   - Ensure microsecond removal is working
-   - Verify timezone addition and date object creation
+**LOGIN CREDENTIALS**: Use admin@cataloro.com / admin123 or demo_user@cataloro.com / demo123
 
-**LOGIN CREDENTIALS**: Use demo_user@cataloro.com / demo123 or admin@cataloro.com / admin123
+**FOCUS**: Specifically check if users like admin_user_1 or sash_admin have is_verified status in database and if it's properly returned by the API.
 
-**FOCUS**: Specifically test that the date string "2025-09-09T10:20:41.643000" gets properly parsed and formatted to "Sep 2025" format.
-
-GOAL: Verify the date parsing fix is working correctly for both registration date and public profile endpoints.
+GOAL: Verify the verification status handling in the backend.
 """
 
 import asyncio
