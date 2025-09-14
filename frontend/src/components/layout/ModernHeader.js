@@ -1150,7 +1150,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 </div>
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {user?.full_name || user?.username || 'User'}
+                    {user?.username || user?.full_name || 'User'}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-white/70 font-medium uppercase tracking-wide">
                     {user?.role}
