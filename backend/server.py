@@ -5935,6 +5935,67 @@ async def mark_notification_read(user_id: str, notification_id: str):
         logger.error(f"Error marking notification as read: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
 
+@app.post("/api/user/upload-avatar")
+async def upload_avatar(request: Request):
+    """Upload user avatar image"""
+    try:
+        form = await request.form()
+        user_id = form.get("user_id")
+        upload_type = form.get("upload_type", "avatar")
+        file = form.get("file")
+        
+        if not user_id or not file:
+            raise HTTPException(status_code=400, detail="User ID and file are required")
+        
+        # Check if user exists
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Check file type
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Check file size (5MB limit)
+        file_content = await file.read()
+        if len(file_content) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size must be less than 5MB")
+        
+        # Generate unique filename
+        import base64
+        import hashlib
+        file_hash = hashlib.md5(file_content).hexdigest()
+        file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+        filename = f"avatar_{user_id}_{file_hash}.{file_extension}"
+        
+        # For MVP: Store as base64 data URL in database
+        # In production, you would upload to cloud storage (S3, etc.)
+        import base64
+        file_data_url = f"data:{file.content_type};base64,{base64.b64encode(file_content).decode()}"
+        
+        # Update user's avatar_url in database
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "avatar_url": file_data_url,
+                "updated_at": datetime.utcnow().isoformat()
+            }}
+        )
+        
+        logger.info(f"📸 Avatar uploaded for user: {user_id}")
+        
+        return {
+            "avatar_url": file_data_url,
+            "message": "Avatar uploaded successfully",
+            "filename": filename
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading avatar: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to upload avatar")
+
 @app.post("/api/admin/migrate-notification-fields")
 async def migrate_notification_fields():
     """Migrate existing notifications from 'read' to 'is_read' field"""
