@@ -183,13 +183,13 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_public_profile_verification_status(self, token, user_id, username, user_email):
-        """Test GET /api/user/{user_id}/public-profile endpoint for is_verified field"""
+    async def test_admin_completed_transactions_endpoint(self, token, user_role):
+        """Test GET /api/admin/completed-transactions endpoint for admin access"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/user/{user_id}/public-profile"
+            url = f"{BACKEND_URL}/admin/completed-transactions"
             
             async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -198,86 +198,78 @@ class BackendTester:
                     data = await response.json()
                     
                     # Check if response has the expected structure
-                    profile_data = data.get('profile', {})
-                    stats = data.get('stats', {})
-                    is_verified = data.get('is_verified')
-                    verified = data.get('verified')
+                    transactions = data.get('transactions', [])
+                    total_count = data.get('total_count', 0)
                     
-                    # Check for verification status in different possible locations
-                    verification_found = False
-                    verification_status = None
-                    verification_location = None
-                    
-                    if is_verified is not None:
-                        verification_found = True
-                        verification_status = is_verified
-                        verification_location = "root.is_verified"
-                    elif verified is not None:
-                        verification_found = True
-                        verification_status = verified
-                        verification_location = "root.verified"
-                    elif profile_data.get('is_verified') is not None:
-                        verification_found = True
-                        verification_status = profile_data.get('is_verified')
-                        verification_location = "profile.is_verified"
-                    elif profile_data.get('verified') is not None:
-                        verification_found = True
-                        verification_status = profile_data.get('verified')
-                        verification_location = "profile.verified"
-                    
-                    if verification_found:
-                        self.log_result(
-                            f"Public Profile Verification - {username}", 
-                            True, 
-                            f"✅ VERIFICATION STATUS FOUND: {verification_location} = {verification_status} for user {username} ({user_email})",
-                            response_time
-                        )
-                        return {
-                            'success': True, 
-                            'is_verified': verification_status,
-                            'verification_location': verification_location,
-                            'profile': profile_data,
-                            'stats': stats,
-                            'user_email': user_email,
-                            'username': username,
-                            'full_response': data
-                        }
-                    else:
-                        self.log_result(
-                            f"Public Profile Verification - {username}", 
-                            False, 
-                            f"❌ VERIFICATION STATUS MISSING: No is_verified or verified field found in response for user {username} ({user_email}). Response keys: {list(data.keys())}",
-                            response_time
-                        )
-                        return {
-                            'success': False, 
-                            'is_verified': None,
-                            'verification_location': None,
-                            'profile': profile_data,
-                            'stats': stats,
-                            'error': 'Verification status field not found',
-                            'response_keys': list(data.keys()),
-                            'full_response': data
-                        }
+                    self.log_result(
+                        "Admin Completed Transactions Endpoint", 
+                        True, 
+                        f"✅ ENDPOINT ACCESSIBLE: Successfully accessed admin completed transactions endpoint. Found {len(transactions)} transactions (total: {total_count})",
+                        response_time
+                    )
+                    return {
+                        'success': True, 
+                        'transactions_count': len(transactions),
+                        'total_count': total_count,
+                        'endpoint_accessible': True,
+                        'user_role': user_role,
+                        'response_structure': list(data.keys())
+                    }
+                elif response.status == 403:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Admin Completed Transactions Endpoint", 
+                        False, 
+                        f"❌ ACCESS DENIED: Status 403 - User with role '{user_role}' does not have permission to access admin completed transactions endpoint: {error_text}",
+                        response_time
+                    )
+                    return {
+                        'success': False, 
+                        'error': 'Access denied - insufficient permissions',
+                        'status_code': 403,
+                        'user_role': user_role,
+                        'endpoint_accessible': False
+                    }
+                elif response.status == 401:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Admin Completed Transactions Endpoint", 
+                        False, 
+                        f"❌ AUTHENTICATION FAILED: Status 401 - Token may be invalid or expired: {error_text}",
+                        response_time
+                    )
+                    return {
+                        'success': False, 
+                        'error': 'Authentication failed',
+                        'status_code': 401,
+                        'user_role': user_role,
+                        'endpoint_accessible': False
+                    }
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        f"Public Profile Verification - {username}", 
+                        "Admin Completed Transactions Endpoint", 
                         False, 
-                        f"❌ PUBLIC PROFILE ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
-                    return {'success': False, 'error': error_text, 'status_code': response.status}
+                    return {
+                        'success': False, 
+                        'error': error_text,
+                        'status_code': response.status,
+                        'user_role': user_role,
+                        'endpoint_accessible': False
+                    }
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                f"Public Profile Verification - {username}", 
+                "Admin Completed Transactions Endpoint", 
                 False, 
-                f"❌ PUBLIC PROFILE EXCEPTION: {str(e)}",
+                f"❌ ENDPOINT EXCEPTION: {str(e)}",
                 response_time
             )
-            return {'success': False, 'error': str(e)}
+            return {'success': False, 'error': str(e), 'user_role': user_role}
 
     async def test_user_profile_verification_status(self, token, user_id, username, user_email):
         """Test GET /api/auth/profile/{user_id} endpoint for verification status in user profile"""
