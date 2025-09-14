@@ -13,7 +13,7 @@ export const API_CONFIG = {
   // Development URLs (Emergent environment)  
   development: {
     BACKEND_URL: process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001',
-    FRONTEND_URL: process.env.REACT_APP_BACKEND_URL || 'https://marketplace-perf-1.preview.emergentagent.com'
+    FRONTEND_URL: process.env.REACT_APP_BACKEND_URL || 'https://cataloro-partners.preview.emergentagent.com'
   },
   // Production URLs (Your server)
   production: {

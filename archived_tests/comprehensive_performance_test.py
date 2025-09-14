@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://marketplace-perf-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-partners.preview.emergentagent.com/api"
 
 # Success Criteria from Review Request
 BROWSE_RESPONSE_SIZE_TARGET_KB = 15  # <15KB response

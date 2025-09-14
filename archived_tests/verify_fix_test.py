@@ -8,7 +8,7 @@ import asyncio
 import aiohttp
 from datetime import datetime
 
-BACKEND_URL = "https://marketplace-perf-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-partners.preview.emergentagent.com/api"
 
 async def quick_verification_test():
     """Quick test to verify the fix"""

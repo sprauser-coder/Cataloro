@@ -8,7 +8,7 @@ import aiohttp
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://marketplace-perf-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-partners.preview.emergentagent.com/api"
 
 async def test_auth_requirements():
     """Test if messages endpoint requires authentication"""
