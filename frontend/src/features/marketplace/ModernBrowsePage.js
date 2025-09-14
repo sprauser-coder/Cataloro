@@ -1626,11 +1626,29 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
             </div>
           )}
 
-          {/* Partner Offer Badge - Show for active partner-only listings with countdown */}
-          {item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() && (() => {
-            const publicDate = new Date(item.public_at);
+          {/* Combined Partner Offer Badge with Countdown */}
+          {item.is_partners_only && item.public_at && (() => {
+            // Ensure consistent timezone handling
+            let publicDate;
+            try {
+              // Handle different date formats from backend
+              if (item.public_at.includes('Z') || item.public_at.includes('+')) {
+                // Already has timezone info
+                publicDate = new Date(item.public_at);
+              } else {
+                // Assume UTC if no timezone specified
+                publicDate = new Date(item.public_at + 'Z');
+              }
+            } catch (e) {
+              // Fallback parsing
+              publicDate = new Date(item.public_at);
+            }
+            
             const now = new Date();
             const timeRemaining = publicDate - now;
+            
+            // Only show if time remaining is positive
+            if (timeRemaining <= 0) return null;
             
             // Calculate hours and minutes remaining
             const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
@@ -1652,16 +1670,8 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
                   <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                   </svg>
-                  Partner Offer
+                  Partner • {timeText}
                 </span>
-                <div className="mt-1">
-                  <span className="inline-flex items-center text-white text-xs px-2 py-0.5 rounded-full font-medium bg-gradient-to-r from-orange-500 to-red-500 shadow-sm">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    {timeText}
-                  </span>
-                </div>
               </div>
             );
           })()}
