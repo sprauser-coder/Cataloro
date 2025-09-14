@@ -1466,64 +1466,7 @@ function CountdownTimer({ timeInfo }) {
   );
 }
 
-// Partner Countdown Badge Component - Small badge that shows on the image
-function PartnerCountdownBadge({ item }) {
-  const [timeRemaining, setTimeRemaining] = useState(null);
-  const [isPublic, setIsPublic] = useState(false);
-  
-  useEffect(() => {
-    if (!item.is_partners_only || !item.public_at) {
-      return;
-    }
-    
-    const publicTime = new Date(item.public_at);
-    const currentTime = new Date();
-    let initialSeconds = Math.floor((publicTime - currentTime) / 1000);
-    
-    setTimeRemaining(initialSeconds);
-    setIsPublic(initialSeconds <= 0);
-    
-    const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          setIsPublic(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, [item.is_partners_only, item.public_at]);
-  
-  const formatPartnerTime = (seconds) => {
-    if (seconds <= 0) return "PUBLIC";
-    
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    
-    if (days > 0) {
-      return `${days}d ${hours.toString().padStart(2, '0')}h`;
-    } else if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
-    } else {
-      return `${minutes}m`;
-    }
-  };
-  
-  if (!item.is_partners_only || !item.public_at) return null;
-  
-  return (
-    <span className={`inline-block text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg ${
-      isPublic 
-        ? 'bg-gradient-to-r from-green-600 to-emerald-600' 
-        : 'bg-gradient-to-r from-purple-600 to-pink-600 animate-pulse'
-    }`}>
-      {isPublic ? '🌍 PUBLIC' : `👥 ${formatPartnerTime(timeRemaining)}`}
-    </span>
-  );
-}
+// Simple helper functions
 
 // Enhanced Product Card Component (used in JSX below)
 function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessageSeller, isInFavorites, isSubmittingTender, tenderConfirmation, priceRangeSettings, userActiveBids, user, permissions }) {
