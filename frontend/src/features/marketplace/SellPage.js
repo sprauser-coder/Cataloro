@@ -443,65 +443,67 @@ function AcceptedTendersTab({ user, onRefresh, onCompleteOrder, onSwitchToComple
           {acceptedTenders.map((tender) => (
             <div
               key={tender.id}
-              className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 p-6"
+              className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 p-4 sm:p-6"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0">
+                <div className="flex-1 min-w-0">
                   {/* Listing Info */}
-                  <div className="flex items-start space-x-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
                     {tender.listing_image && (
                       <img
                         src={tender.listing_image}
                         alt={tender.listing_title}
-                        className="w-16 h-16 rounded-lg object-cover"
+                        className="w-full sm:w-16 sm:h-16 h-32 rounded-lg object-cover flex-shrink-0"
                       />
                     )}
-                    <div className="flex-1">
-                      <h4 className="text-lg font-medium text-gray-900 dark:text-white">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white line-clamp-2">
                         {tender.listing_title}
                       </h4>
-                      <div className="mt-2 space-y-1">
+                      <div className="mt-2 space-y-2">
                         <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                          <DollarSign className="w-4 h-4 mr-1" />
-                          Accepted Amount: €{tender.offer_amount?.toFixed(2)}
+                          <DollarSign className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">Accepted Amount: €{tender.offer_amount?.toFixed(2)}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                          <User className="w-4 h-4 mr-1" />
-                          Buyer: {tender.buyer_name || 'Unknown'}
+                          <User className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">Buyer: {tender.buyer_name || 'Unknown'}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                          <RefreshCw className="w-4 h-4 mr-1" />
-                          Accepted: {new Date(tender.created_at).toLocaleDateString()}
+                          <RefreshCw className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">Accepted: {new Date(tender.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
+                      
+                      {/* Tender Accepted Badge */}
+                      <div className="mt-3">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-600 text-white">
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          Tender Accepted
+                        </span>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Tender Accepted Badge */}
-                  <div className="mt-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-600 text-white">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Tender Accepted
-                    </span>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col space-y-2 ml-4">
+                <div className="flex flex-col sm:flex-col space-y-2 w-full sm:w-auto sm:ml-4 flex-shrink-0">
                   <button
                     onClick={() => completeOrder(tender.id, tender.listing_id)}
-                    className="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    className="inline-flex items-center justify-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 w-full sm:w-auto"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Complete Order
+                    <span className="hidden sm:inline">Complete Order</span>
+                    <span className="sm:hidden">Complete</span>
                   </button>
                   
                   <button
                     onClick={() => setBackOnline(tender.listing_id, tender.listing_title)}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    className="inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 w-full sm:w-auto"
                   >
                     <Package className="w-4 h-4 mr-2" />
-                    Set Back Online
+                    <span className="hidden sm:inline">Set Back Online</span>
+                    <span className="sm:hidden">Set Online</span>
                   </button>
                 </div>
               </div>
