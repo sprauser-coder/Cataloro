@@ -1636,41 +1636,12 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
         <div className="absolute bottom-2 left-2 z-20">
           {/* Combined Partner Offer Badge with Countdown */}
           {item.is_partners_only && item.public_at && (() => {
-            // Ensure consistent timezone handling
-            let publicDate;
-            try {
-              // Handle different date formats from backend
-              if (item.public_at.includes('Z') || item.public_at.includes('+')) {
-                // Already has timezone info
-                publicDate = new Date(item.public_at);
-              } else {
-                // Assume UTC if no timezone specified
-                publicDate = new Date(item.public_at + 'Z');
-              }
-            } catch (e) {
-              // Fallback parsing
-              publicDate = new Date(item.public_at);
-            }
-            
-            const now = new Date();
-            const timeRemaining = publicDate - now;
+            // Import timezone utility functions
+            const { formatPartnerTimeRemaining } = require('../../utils/timezone');
+            const timeText = formatPartnerTimeRemaining(item.public_at);
             
             // Only show if time remaining is positive
-            if (timeRemaining <= 0) return null;
-            
-            // Calculate hours and minutes remaining
-            const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
-            const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-            
-            // Format time display
-            let timeText = '';
-            if (hoursRemaining > 0) {
-              timeText = `${hoursRemaining}h ${minutesRemaining}m left`;
-            } else if (minutesRemaining > 0) {
-              timeText = `${minutesRemaining}m left`;
-            } else {
-              timeText = 'Ending soon';
-            }
+            if (!timeText) return null;
             
             return (
               <div>
