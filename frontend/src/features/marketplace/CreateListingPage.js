@@ -59,7 +59,10 @@ function CreateListingPage() {
     features: [],
     // Time limit functionality
     has_time_limit: false,
-    time_limit_hours: 24
+    time_limit_hours: 24,
+    // Partners functionality
+    show_partners_first: false,
+    partners_visibility_hours: 24
   });
 
   // Address from profile settings
