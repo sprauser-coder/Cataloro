@@ -1507,7 +1507,7 @@ async def update_profile(user_id: str, profile_data: dict):
                     update_data[f"settings.{field}"] = settings_info[field]
         
         # Handle direct user fields
-        user_fields = ["username", "email"]
+        user_fields = ["username", "email", "full_name", "phone", "street", "post_code", "city", "country", "bio", "timezone", "is_business", "company_name", "business_country", "vat_number"]
         for field in user_fields:
             if field in profile_data:
                 # Check if email/username already exists for other users
