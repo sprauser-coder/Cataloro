@@ -797,7 +797,7 @@ class BackendTester:
 async def main():
     """Main test execution function"""
     async with BackendTester() as tester:
-        results = await tester.run_verification_status_tests()
+        results = await tester.run_admin_panel_completed_transactions_tests()
         return results
 
 if __name__ == "__main__":
