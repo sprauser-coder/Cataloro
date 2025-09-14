@@ -1546,8 +1546,13 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
 
   return (
     <div 
-      className={`product-card group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${
-        isGridView ? 'hover:-translate-y-1' : 'flex space-x-4 p-4'
+      className={`product-card group bg-white dark:bg-gray-800 rounded-xl transition-all duration-300 overflow-hidden cursor-pointer ${
+        // Partner listing border
+        item.is_partners_only && item.public_at && new Date(item.public_at) > new Date() 
+          ? 'border-2 border-purple-500 shadow-lg shadow-purple-100 dark:shadow-purple-900/20' 
+          : 'border border-gray-200 dark:border-gray-700'
+      } ${
+        isGridView ? 'hover:-translate-y-1 hover:shadow-xl' : 'flex space-x-4 p-4'
       }`}
       // Removed unused hover handlers
       onClick={handleCardClick}
