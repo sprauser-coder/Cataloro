@@ -534,7 +534,7 @@ function SellTab({
                         {item.listing.title}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Starting Price: €{item.listing.price.toFixed(2)}
+                        Starting Price: {formatEuro(item.listing.price)}
                       </p>
                       <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
