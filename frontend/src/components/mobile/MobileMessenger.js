@@ -127,6 +127,9 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         
         if (!msg.is_read && msg.sender_id !== user.id) {
           conversation.unreadCount++;
+          console.log(`🔍 Found unread message from ${msg.sender_id} to ${msg.recipient_id}, is_read=${msg.is_read}, conversation unreadCount now: ${conversation.unreadCount}`);
+        } else {
+          console.log(`🔍 Message from ${msg.sender_id} to ${msg.recipient_id}, is_read=${msg.is_read}, sender is current user: ${msg.sender_id === user.id}`);
         }
       });
       
