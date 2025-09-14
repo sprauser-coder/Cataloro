@@ -558,7 +558,7 @@ function SellTab({
 
                 {/* Tenders List */}
                 {selectedListing === item.listing.id && (
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6">
                     {item.tenders.length === 0 ? (
                       <p className="text-gray-600 dark:text-gray-400 text-center py-4">
                         No active tenders for this listing.
@@ -566,32 +566,34 @@ function SellTab({
                     ) : (
                       <div className="space-y-4">
                         {item.tenders.map((tender, index) => (
-                          <div key={tender.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div className="flex items-center space-x-4">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                          <div key={tender.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg space-y-4 sm:space-y-0">
+                            <div className="flex items-start sm:items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${
                                 index === 0 ? 'bg-yellow-500' : 'bg-gray-400'
                               }`}>
                                 #{index + 1}
                               </div>
-                              <div>
-                                <p className="font-semibold text-gray-900 dark:text-white">
+                              <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-gray-900 dark:text-white text-base sm:text-lg">
                                   €{tender.offer_amount.toFixed(2)}
                                 </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                                   by {tender.buyer.full_name || tender.buyer.username}
                                 </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-500">
-                                  <Clock className="w-3 h-3 inline mr-1" />
-                                  {new Date(tender.created_at).toLocaleDateString()} at {new Date(tender.created_at).toLocaleTimeString()}
+                                <p className="text-xs text-gray-500 dark:text-gray-500 flex items-center mt-1">
+                                  <Clock className="w-3 h-3 mr-1 flex-shrink-0" />
+                                  <span className="truncate">
+                                    {new Date(tender.created_at).toLocaleDateString()} at {new Date(tender.created_at).toLocaleTimeString()}
+                                  </span>
                                 </p>
                               </div>
                             </div>
                             
-                            <div className="flex items-center space-x-2">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                               <button
                                 onClick={() => handleAcceptTender(tender.id, item.listing.title, tender.offer_amount)}
                                 disabled={acceptingTender === tender.id}
-                                className="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+                                className="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 text-sm"
                               >
                                 {acceptingTender === tender.id ? (
                                   <>
@@ -609,7 +611,7 @@ function SellTab({
                               <button
                                 onClick={() => handleRejectTender(tender.id, item.listing.title, tender.offer_amount)}
                                 disabled={rejectingTender === tender.id}
-                                className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+                                className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 text-sm"
                               >
                                 {rejectingTender === tender.id ? (
                                   <>
