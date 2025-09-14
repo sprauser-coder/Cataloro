@@ -612,62 +612,58 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def run_verification_status_tests(self):
-        """Run comprehensive verification status tests"""
-        print("🚀 CATALORO VERIFICATION STATUS BACKEND TESTING")
+    async def run_admin_panel_completed_transactions_tests(self):
+        """Run comprehensive admin panel completed transactions tab tests"""
+        print("🚀 CATALORO ADMIN PANEL COMPLETED TRANSACTIONS TAB TESTING")
         print("=" * 80)
         print()
         
-        # Test with both demo user and admin
-        test_users = [
-            ("demo_user@cataloro.com", "demo123", "Demo User"),
-            ("admin@cataloro.com", "admin123", "Admin User")
+        # Test with admin credentials
+        test_credentials = [
+            ("admin@cataloro.com", "admin123", "Admin User"),
+            ("admin@cataloro.com", "password123", "Admin User (Alt Password)"),
         ]
-        
-        # Also test specific users mentioned in the request
-        specific_users = ["admin_user_1", "sash_admin"]
         
         all_results = {}
         
-        # Test authenticated users
-        for email, password, user_type in test_users:
+        # Test with admin credentials
+        for email, password, user_type in test_credentials:
             print(f"🔐 Testing with {user_type} ({email})")
             print("-" * 50)
             
             # Step 1: Login
             token, user_id, user = await self.test_login_and_get_token(email, password)
             if not token:
-                print(f"❌ Login failed for {user_type}, skipping tests")
+                print(f"❌ Login failed for {user_type}, trying next credentials")
                 continue
             
             user_results = {}
+            user_role = user.get('user_role', 'Unknown')
             username = user.get('username', 'unknown')
             
-            # Step 2: Test public profile verification status
-            print(f"🔍 Testing public profile verification status for {user_type}...")
-            public_profile_result = await self.test_public_profile_verification_status(token, user_id, username, email)
-            user_results['public_profile_verification'] = public_profile_result
+            # Step 2: Test admin permissions
+            print(f"🔍 Testing admin permissions for {user_type}...")
+            permissions_result = await self.test_admin_permissions(token, user_id, user)
+            user_results['admin_permissions'] = permissions_result
             
-            # Step 3: Test user profile verification status
-            print(f"👤 Testing user profile verification status for {user_type}...")
-            user_profile_result = await self.test_user_profile_verification_status(token, user_id, username, email)
-            user_results['user_profile_verification'] = user_profile_result
+            # Step 3: Test admin completed transactions endpoint
+            print(f"🔗 Testing admin completed transactions endpoint for {user_type}...")
+            endpoint_result = await self.test_admin_completed_transactions_endpoint(token, user_role)
+            user_results['completed_transactions_endpoint'] = endpoint_result
+            
+            # Step 4: Test tab visibility logic
+            print(f"👁️ Testing admin panel tab visibility logic for {user_type}...")
+            tab_visibility_result = await self.test_admin_panel_tab_visibility(user_role, permissions_result)
+            user_results['tab_visibility'] = tab_visibility_result
             
             all_results[user_type] = user_results
             print()
-        
-        # Test specific users without authentication
-        print("🎯 Testing specific users mentioned in request...")
-        print("-" * 50)
-        
-        for username in specific_users:
-            print(f"🔍 Testing verification status for {username}...")
-            specific_result = await self.test_specific_user_verification(username)
-            all_results[f"Specific User - {username}"] = {'public_profile_verification': specific_result}
-            print()
+            
+            # If login was successful, we can break (no need to test alternative password)
+            break
         
         # Generate summary
-        self.generate_verification_status_summary(all_results)
+        self.generate_admin_panel_summary(all_results)
         
         return all_results
 
