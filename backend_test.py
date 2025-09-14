@@ -696,62 +696,109 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_buyer_completion(self, listing_id, buyer_token):
-        """Test POST /api/user/complete-transaction from buyer perspective"""
+    async def test_image_optimization_fixes(self, token, user_id):
+        """Test image optimization fixes in various endpoints"""
+        try:
+            results = {}
+            
+            # Test 1: GET /api/user/my-deals/{user_id}
+            print("      Test 1: Testing my-deals image optimization...")
+            my_deals_result = await self.test_my_deals_optimization(token, user_id)
+            results['my_deals'] = my_deals_result
+            
+            # Test 2: GET /api/tenders/seller/{seller_id}/accepted
+            print("      Test 2: Testing accepted tenders image optimization...")
+            accepted_tenders_result = await self.test_accepted_tenders_optimization(token, user_id)
+            results['accepted_tenders'] = accepted_tenders_result
+            
+            # Analyze results
+            working_endpoints = sum(1 for result in results.values() if result.get('success'))
+            total_endpoints = len(results)
+            
+            if working_endpoints == total_endpoints:
+                self.log_result(
+                    "Image Optimization Fixes", 
+                    True, 
+                    f"✅ IMAGE OPTIMIZATION WORKING: All {total_endpoints} endpoints using optimized images"
+                )
+                return {'success': True, 'optimized_endpoints': working_endpoints}
+            else:
+                failing_endpoints = [name for name, result in results.items() if not result.get('success')]
+                self.log_result(
+                    "Image Optimization Fixes", 
+                    False, 
+                    f"❌ OPTIMIZATION ISSUES: {working_endpoints}/{total_endpoints} working. Failing: {failing_endpoints}"
+                )
+                return {'success': False, 'error': f'Optimization issues in {failing_endpoints}'}
+            
+        except Exception as e:
+            self.log_result(
+                "Image Optimization Fixes", 
+                False, 
+                f"❌ OPTIMIZATION EXCEPTION: {str(e)}"
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_my_deals_optimization(self, token, user_id):
+        """Test GET /api/user/my-deals/{user_id} for image optimization"""
         start_time = datetime.now()
         
         try:
-            headers = {"Authorization": f"Bearer {buyer_token}"}
-            url = f"{BACKEND_URL}/user/complete-transaction"
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/user/my-deals/{user_id}"
             
-            transaction_data = {
-                "listing_id": listing_id,
-                "notes": "Buyer completion test",
-                "method": "meeting"
-            }
-            
-            async with self.session.post(url, headers=headers, json=transaction_data) as response:
+            async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
                     data = await response.json()
                     
-                    completion = data.get('completion', {})
-                    is_fully_completed = data.get('is_fully_completed', False)
-                    
-                    # Verify buyer completion fields
-                    seller_confirmed_at = completion.get('seller_confirmed_at')
-                    buyer_confirmed_at = completion.get('buyer_confirmed_at')
-                    
-                    # Should now have both confirmations and be fully completed
-                    if seller_confirmed_at and buyer_confirmed_at and is_fully_completed:
-                        self.log_result(
-                            "Buyer Completion Logic", 
-                            True, 
-                            f"✅ BUYER COMPLETION WORKING: Both confirmations present, is_fully_completed=true",
-                            response_time
-                        )
-                        return {
-                            'success': True,
-                            'completion': completion,
-                            'is_fully_completed': is_fully_completed,
-                            'seller_confirmed_at': seller_confirmed_at,
-                            'buyer_confirmed_at': buyer_confirmed_at
-                        }
+                    if isinstance(data, list):
+                        deals_count = len(data)
+                        
+                        # Check for image optimization
+                        base64_images = 0
+                        optimized_images = 0
+                        
+                        for deal in data:
+                            listing = deal.get('listing', {})
+                            image = listing.get('image', '')
+                            
+                            if image.startswith('data:'):
+                                base64_images += 1
+                            elif image.startswith('/api/') or image.startswith('/uploads/'):
+                                optimized_images += 1
+                        
+                        if base64_images == 0:
+                            self.log_result(
+                                "My Deals Image Optimization", 
+                                True, 
+                                f"✅ MY DEALS OPTIMIZED: {deals_count} deals, {optimized_images} optimized images, 0 base64 images",
+                                response_time
+                            )
+                            return {'success': True, 'deals_count': deals_count, 'optimized': True}
+                        else:
+                            self.log_result(
+                                "My Deals Image Optimization", 
+                                False, 
+                                f"❌ MY DEALS NOT OPTIMIZED: {base64_images} base64 images found",
+                                response_time
+                            )
+                            return {'success': False, 'error': f'{base64_images} base64 images found'}
                     else:
                         self.log_result(
-                            "Buyer Completion Logic", 
+                            "My Deals Image Optimization", 
                             False, 
-                            f"❌ BUYER COMPLETION LOGIC FAILED: seller_confirmed_at={seller_confirmed_at}, buyer_confirmed_at={buyer_confirmed_at}, is_fully_completed={is_fully_completed}",
+                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
                             response_time
                         )
-                        return {'success': False, 'error': 'Buyer completion logic incorrect', 'data': data}
+                        return {'success': False, 'error': 'Wrong response format'}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Buyer Completion Logic", 
+                        "My Deals Image Optimization", 
                         False, 
-                        f"❌ BUYER COMPLETION FAILED: Status {response.status}: {error_text}",
+                        f"❌ MY DEALS FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'success': False, 'error': error_text}
@@ -759,9 +806,261 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Buyer Completion Logic", 
+                "My Deals Image Optimization", 
                 False, 
-                f"❌ BUYER COMPLETION EXCEPTION: {str(e)}",
+                f"❌ MY DEALS EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_accepted_tenders_optimization(self, token, seller_id):
+        """Test GET /api/tenders/seller/{seller_id}/accepted for image optimization"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/tenders/seller/{seller_id}/accepted"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if isinstance(data, list):
+                        tenders_count = len(data)
+                        
+                        # Check for image optimization
+                        base64_images = 0
+                        optimized_images = 0
+                        
+                        for tender in data:
+                            image = tender.get('listing_image', '')
+                            
+                            if image.startswith('data:'):
+                                base64_images += 1
+                            elif image.startswith('/api/') or image.startswith('/uploads/'):
+                                optimized_images += 1
+                        
+                        if base64_images == 0:
+                            self.log_result(
+                                "Accepted Tenders Image Optimization", 
+                                True, 
+                                f"✅ ACCEPTED TENDERS OPTIMIZED: {tenders_count} tenders, {optimized_images} optimized images, 0 base64 images",
+                                response_time
+                            )
+                            return {'success': True, 'tenders_count': tenders_count, 'optimized': True}
+                        else:
+                            self.log_result(
+                                "Accepted Tenders Image Optimization", 
+                                False, 
+                                f"❌ ACCEPTED TENDERS NOT OPTIMIZED: {base64_images} base64 images found",
+                                response_time
+                            )
+                            return {'success': False, 'error': f'{base64_images} base64 images found'}
+                    else:
+                        self.log_result(
+                            "Accepted Tenders Image Optimization", 
+                            False, 
+                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Wrong response format'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Accepted Tenders Image Optimization", 
+                        False, 
+                        f"❌ ACCEPTED TENDERS FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Accepted Tenders Image Optimization", 
+                False, 
+                f"❌ ACCEPTED TENDERS EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_listing_reactivation(self, token, user_id):
+        """Test PUT /api/listings/{listing_id}/reactivate for expired listings"""
+        try:
+            # First, try to find an existing listing to test reactivation
+            print("      Finding listing for reactivation test...")
+            listing_result = await self.find_or_create_test_listing(token, user_id)
+            
+            if not listing_result.get('success'):
+                return listing_result
+            
+            listing_id = listing_result.get('listing_id')
+            
+            # Test reactivation
+            print(f"      Testing reactivation of listing {listing_id}...")
+            reactivation_result = await self.test_reactivate_listing(token, listing_id)
+            
+            return reactivation_result
+            
+        except Exception as e:
+            self.log_result(
+                "Listing Reactivation", 
+                False, 
+                f"❌ REACTIVATION EXCEPTION: {str(e)}"
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def find_or_create_test_listing(self, token, user_id):
+        """Find an existing listing or create one for reactivation testing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # First try to find existing listings
+            url = f"{BACKEND_URL}/listings?status=all"
+            async with self.session.get(url, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    listings = data.get('listings', []) if isinstance(data, dict) else data
+                    
+                    # Find a listing owned by the user
+                    user_listings = [l for l in listings if l.get('seller_id') == user_id]
+                    
+                    if user_listings:
+                        listing_id = user_listings[0].get('id')
+                        self.log_result(
+                            "Find Test Listing", 
+                            True, 
+                            f"✅ FOUND EXISTING LISTING: Using listing {listing_id} for reactivation test",
+                            (datetime.now() - start_time).total_seconds() * 1000
+                        )
+                        return {'success': True, 'listing_id': listing_id}
+            
+            # If no existing listings, create one
+            print("      Creating new listing for reactivation test...")
+            create_result = await self.create_test_listing_for_reactivation(token, user_id)
+            return create_result
+            
+        except Exception as e:
+            self.log_result(
+                "Find Test Listing", 
+                False, 
+                f"❌ FIND LISTING EXCEPTION: {str(e)}"
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def create_test_listing_for_reactivation(self, token, seller_id):
+        """Create a test listing for reactivation testing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/listings"
+            
+            listing_data = {
+                "title": "Reactivation Test Listing",
+                "description": "This listing is for testing reactivation functionality",
+                "price": 50.0,
+                "category": "Electronics",
+                "condition": "Used",
+                "seller_id": seller_id,
+                "images": [],
+                "tags": ["test", "reactivation"],
+                "features": []
+            }
+            
+            async with self.session.post(url, headers=headers, json=listing_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 201:
+                    data = await response.json()
+                    listing_id = data.get('listing', {}).get('id') or data.get('id')
+                    
+                    if listing_id:
+                        self.log_result(
+                            "Create Test Listing for Reactivation", 
+                            True, 
+                            f"✅ TEST LISTING CREATED: Created listing {listing_id} for reactivation test",
+                            response_time
+                        )
+                        return {'success': True, 'listing_id': listing_id}
+                    else:
+                        self.log_result(
+                            "Create Test Listing for Reactivation", 
+                            False, 
+                            f"❌ NO LISTING ID: Response missing listing ID: {data}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'No listing ID in response'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test Listing for Reactivation", 
+                        False, 
+                        f"❌ CREATION FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test Listing for Reactivation", 
+                False, 
+                f"❌ CREATION EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_reactivate_listing(self, token, listing_id):
+        """Test PUT /api/listings/{listing_id}/reactivate"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/listings/{listing_id}/reactivate"
+            
+            async with self.session.put(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if data.get("message") and "successfully" in data.get("message", "").lower():
+                        self.log_result(
+                            "Listing Reactivation", 
+                            True, 
+                            f"✅ REACTIVATION WORKING: {data.get('message')}",
+                            response_time
+                        )
+                        return {'success': True, 'reactivated': True}
+                    else:
+                        self.log_result(
+                            "Listing Reactivation", 
+                            False, 
+                            f"❌ UNEXPECTED RESPONSE: {data}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Unexpected response'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Listing Reactivation", 
+                        False, 
+                        f"❌ REACTIVATION FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Listing Reactivation", 
+                False, 
+                f"❌ REACTIVATION EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
