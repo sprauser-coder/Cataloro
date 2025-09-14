@@ -9543,6 +9543,141 @@ function CompletedTransactionsTab({ showToast, permissions }) {
           </div>
         )}
       </div>
+      
+      {/* Transaction Details Modal */}
+      {selectedTransaction && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Transaction Details
+                </h3>
+                <button
+                  onClick={() => setSelectedTransaction(null)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Transaction ID
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white font-mono">
+                      {selectedTransaction.id}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Amount
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white font-semibold">
+                      €{selectedTransaction.tender_amount?.toFixed(2) || selectedTransaction.listing_price?.toFixed(2) || '0.00'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Listing
+                  </label>
+                  <p className="text-sm text-gray-900 dark:text-white">
+                    {selectedTransaction.listing_title}
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Buyer
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {selectedTransaction.buyer_info?.name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {selectedTransaction.buyer_info?.email}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Seller
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {selectedTransaction.seller_info?.name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {selectedTransaction.seller_info?.email}
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Completion Method
+                  </label>
+                  <p className="text-sm text-gray-900 dark:text-white">
+                    {selectedTransaction.completion_method || 'Not specified'}
+                  </p>
+                </div>
+                
+                {selectedTransaction.completion_notes && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Completion Notes
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white italic bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                      "{selectedTransaction.completion_notes}"
+                    </p>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Buyer Confirmed
+                    </label>
+                    <p className="text-sm">
+                      {selectedTransaction.buyer_confirmed_at ? (
+                        <span className="text-green-600 flex items-center">
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          {new Date(selectedTransaction.buyer_confirmed_at).toLocaleString('de-DE')}
+                        </span>
+                      ) : (
+                        <span className="text-red-500 flex items-center">
+                          <X className="w-4 h-4 mr-1" />
+                          Not confirmed
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Seller Confirmed
+                    </label>
+                    <p className="text-sm">
+                      {selectedTransaction.seller_confirmed_at ? (
+                        <span className="text-green-600 flex items-center">
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          {new Date(selectedTransaction.seller_confirmed_at).toLocaleString('de-DE')}
+                        </span>
+                      ) : (
+                        <span className="text-red-500 flex items-center">
+                          <X className="w-4 h-4 mr-1" />
+                          Not confirmed
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
