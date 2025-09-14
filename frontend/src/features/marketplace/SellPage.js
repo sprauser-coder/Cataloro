@@ -28,7 +28,7 @@ import MyListingsPage from './MyListingsPage';
 import { CompletedTransactionCard } from './BuyManagementPage';
 
 function SellPage() {
-  const [activeTab, setActiveTab] = useState('tenders');
+  const [activeTab, setActiveTab] = useState('listings');
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   const { showToast } = useNotifications();
