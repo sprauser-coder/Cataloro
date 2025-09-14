@@ -145,13 +145,18 @@ function ProfilePage() {
     activeListings: 0,
     totalDeals: 0,
     completedDeals: 0,
-    totalRevenue: 0,
     avgRating: 0,
     totalFavorites: 0,
     profileViews: 0,
     joinDate: '',
     lastActive: ''
   });
+
+  // State for listings and tenders data (like working tiles)
+  const [myListings, setMyListings] = useState([]);
+  const [myTenders, setMyTenders] = useState([]);
+  const [listingsLoading, setListingsLoading] = useState(false);
+  const [tendersLoading, setTendersLoading] = useState(false);
 
   // Popular European cities for suggestions
   const popularCities = [
