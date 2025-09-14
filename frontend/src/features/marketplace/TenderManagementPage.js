@@ -28,6 +28,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useAuth } from '../../context/AuthContext';
+import { formatEuro } from '../../utils/currency';
 import { useNotifications } from '../../context/NotificationContext';
 
 function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false }) {
