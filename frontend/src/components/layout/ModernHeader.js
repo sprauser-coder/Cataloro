@@ -1015,7 +1015,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                                 </div>
                                 <div className="flex items-center space-x-1 flex-shrink-0">
                                   {!notification.is_read && (
-                                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
+                                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
                                   )}
                                   {/* Compact Delete Button */}
                                   <button
