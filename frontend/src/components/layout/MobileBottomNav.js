@@ -42,7 +42,15 @@ function MobileBottomNav() {
             const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
             const unreadCount = messages.filter(msg => {
               const messageDate = new Date(msg.created_at);
-              const isUnread = !msg.is_read && msg.recipient_id === user.id && messageDate >= sevenDaysAgo;
+              // Only count messages that are:
+              // 1. Explicitly not read (is_read === false, not undefined)
+              // 2. Sent TO the current user (not FROM the current user)
+              // 3. Not self-messages (sender !== recipient)
+              // 4. Within last 7 days
+              const isUnread = msg.is_read === false && 
+                               msg.recipient_id === user.id && 
+                               msg.sender_id !== user.id && 
+                               messageDate >= sevenDaysAgo;
               if (isUnread) {
                 console.log(`🔍 BottomNav found unread message: from ${msg.sender_id} to ${msg.recipient_id}, is_read=${msg.is_read}, date=${messageDate.toISOString()}`);
               }
