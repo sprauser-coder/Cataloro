@@ -495,16 +495,6 @@ function PublicProfilePage() {
                   </button>
                 )}
                 
-                {profileUser.showEmail && (
-                  <a
-                    href={`mailto:${profileUser.email}`}
-                    className="cataloro-button-secondary flex items-center justify-center"
-                  >
-                    <Mail className="w-5 h-5 mr-2" />
-                    Send Email
-                  </a>
-                )}
-                
                 {profileUser.showPhone && (
                   <a
                     href={`tel:${profileUser.phone}`}
