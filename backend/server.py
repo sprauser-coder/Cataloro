@@ -8984,7 +8984,7 @@ async def mark_transaction_complete(current_user: dict = Depends(get_current_use
                 # Store listing details
                 "listing_title": listing.get("title", ""),
                 "listing_price": listing.get("price", 0),
-                "listing_image": listing.get("images", [None])[0],
+                "listing_image": optimize_images_for_response(listing.get("images", []), listing.get("id", ""))[0] if listing.get("images") else '/api/placeholder-image.jpg',
                 "tender_id": tender.get("id"),
                 "tender_amount": tender.get("offer_amount", 0)
             }
