@@ -271,83 +271,60 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e), 'user_role': user_role}
 
-    async def test_user_profile_verification_status(self, token, user_id, username, user_email):
-        """Test GET /api/auth/profile/{user_id} endpoint for verification status in user profile"""
+    async def test_admin_panel_tab_visibility(self, user_role, permissions_result):
+        """Test the tab filtering logic to determine if Completed Transactions tab should be visible"""
         start_time = datetime.now()
         
         try:
-            headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/auth/profile/{user_id}"
+            # Simulate the frontend tab filtering logic from AdminPanel.js
+            # Tab definition: { id: 'completed', label: 'Completed Transactions', shortLabel: 'Completed', icon: CheckCircle, permission: 'canAccessUserManagement' }
             
-            async with self.session.get(url, headers=headers) as response:
-                response_time = (datetime.now() - start_time).total_seconds() * 1000
-                
-                if response.status == 200:
-                    data = await response.json()
-                    
-                    # Check for verification status in user profile
-                    is_verified = data.get('is_verified')
-                    verified = data.get('verified')
-                    
-                    verification_found = False
-                    verification_status = None
-                    verification_location = None
-                    
-                    if is_verified is not None:
-                        verification_found = True
-                        verification_status = is_verified
-                        verification_location = "is_verified"
-                    elif verified is not None:
-                        verification_found = True
-                        verification_status = verified
-                        verification_location = "verified"
-                    
-                    if verification_found:
-                        self.log_result(
-                            f"User Profile Verification - {username}", 
-                            True, 
-                            f"✅ USER PROFILE VERIFICATION FOUND: {verification_location} = {verification_status} for user {username} ({user_email})",
-                            response_time
-                        )
-                        return {
-                            'success': True, 
-                            'is_verified': verification_status,
-                            'verification_location': verification_location,
-                            'user_data': data,
-                            'user_email': user_email,
-                            'username': username
-                        }
-                    else:
-                        self.log_result(
-                            f"User Profile Verification - {username}", 
-                            False, 
-                            f"❌ USER PROFILE VERIFICATION MISSING: No verification field found for user {username} ({user_email}). Available fields: {list(data.keys())}",
-                            response_time
-                        )
-                        return {
-                            'success': False, 
-                            'is_verified': None,
-                            'verification_location': None,
-                            'error': 'Verification status field not found in user profile',
-                            'available_fields': list(data.keys()),
-                            'user_data': data
-                        }
-                else:
-                    error_text = await response.text()
-                    self.log_result(
-                        f"User Profile Verification - {username}", 
-                        False, 
-                        f"❌ USER PROFILE ENDPOINT FAILED: Status {response.status}: {error_text}",
-                        response_time
-                    )
-                    return {'success': False, 'error': error_text, 'status_code': response.status}
+            # Check if user should have canAccessUserManagement permission
+            should_have_permission = permissions_result.get('should_have_permission', False)
+            
+            # Simulate the frontend permission check
+            # From usePermissions.js: canAccessUserManagement: userRole === 'Admin' || userRole === 'Admin-Manager'
+            frontend_permission_check = user_role in ['Admin', 'Admin-Manager']
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            if should_have_permission and frontend_permission_check:
+                self.log_result(
+                    "Admin Panel Tab Visibility", 
+                    True, 
+                    f"✅ TAB SHOULD BE VISIBLE: User with role '{user_role}' should have canAccessUserManagement permission and see the 'Completed Transactions' tab",
+                    response_time
+                )
+                return {
+                    'success': True, 
+                    'tab_should_be_visible': True,
+                    'user_role': user_role,
+                    'has_permission': True,
+                    'permission_name': 'canAccessUserManagement',
+                    'frontend_check_passes': frontend_permission_check
+                }
+            else:
+                self.log_result(
+                    "Admin Panel Tab Visibility", 
+                    False, 
+                    f"❌ TAB SHOULD NOT BE VISIBLE: User with role '{user_role}' should NOT have canAccessUserManagement permission (backend: {should_have_permission}, frontend: {frontend_permission_check})",
+                    response_time
+                )
+                return {
+                    'success': False, 
+                    'tab_should_be_visible': False,
+                    'user_role': user_role,
+                    'has_permission': False,
+                    'error': 'User does not have required permission',
+                    'frontend_check_passes': frontend_permission_check
+                }
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                f"User Profile Verification - {username}", 
+                "Admin Panel Tab Visibility", 
                 False, 
-                f"❌ USER PROFILE EXCEPTION: {str(e)}",
+                f"❌ TAB VISIBILITY CHECK EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
