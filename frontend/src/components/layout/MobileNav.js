@@ -103,6 +103,7 @@ function MobileNav({ isOpen, onClose }) {
       title: 'Settings',
       items: [
         { label: 'Profile', path: '/profile', icon: User, key: 'profile' },
+        { label: 'View Public Profile', path: `/profile/${user?.username || user?.id}`, icon: Globe, key: 'view_public_profile' },
         { label: 'Notifications', path: '/notifications', icon: Bell, key: 'notifications' },
         { label: 'Logout', action: 'logout', icon: LogOut, isButton: true, key: 'logout' }
       ]
