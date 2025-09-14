@@ -364,15 +364,22 @@ function ProfilePage() {
         userIdToMatch: user.id
       });
       
-      // Use seller_id to match listings instead of username/full_name for consistency
+      // Try multiple matching strategies for listings
       const userListings = allProducts.filter(p => {
-        const matches = p.seller_id === user?.id;
+        const sellerIdMatch = p.seller_id === user?.id;
+        const sellerMatch = p.seller === user?.username;
+        const sellerNameMatch = p.seller_name === user?.full_name || p.seller_name === user?.username;
+        const matches = sellerIdMatch || sellerMatch || sellerNameMatch;
+        
         if (matches) {
           console.log('🔍 Found user listing:', {
             id: p.id,
             title: p.title,
             seller_id: p.seller_id,
-            inStock: p.inStock
+            seller: p.seller,
+            seller_name: p.seller_name,
+            inStock: p.inStock,
+            matchedBy: sellerIdMatch ? 'seller_id' : sellerMatch ? 'seller' : 'seller_name'
           });
         }
         return matches;
