@@ -334,11 +334,20 @@ function ProfilePage() {
           seller_id: p.seller_id,
           seller: p.seller,
           seller_name: p.seller_name,
+          seller_username: p.seller_username,
+          seller_email: p.seller_email,
           inStock: p.inStock,
-          price: p.price
+          price: p.price,
+          seller_id_matches: p.seller_id === user.id,
+          seller_matches: p.seller === user.username,
+          seller_name_matches: p.seller_name === user.full_name || p.seller_name === user.username
         })),
         allSellerIds: [...new Set(allProducts?.map(p => p.seller_id))],
-        userIdToMatch: user.id
+        allSellers: [...new Set(allProducts?.map(p => p.seller))],
+        allSellerNames: [...new Set(allProducts?.map(p => p.seller_name))],
+        userIdToMatch: user.id,
+        userUsernameToMatch: user.username,
+        userFullNameToMatch: user.full_name
       });
       
       console.log('🔍 Debugging orderHistory structure:', {
