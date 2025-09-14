@@ -1143,7 +1143,13 @@ function CreateListingPage() {
                   name="has_time_limit"
                   checked={formData.has_time_limit}
                   onChange={(e) => setFormData({...formData, has_time_limit: e.target.checked})}
-                  className="w-5 h-5 text-blue-600 bg-gray-50 border-2 border-gray-400 rounded focus:ring-blue-500 focus:ring-2 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  className="appearance-none w-5 h-5 bg-gray-100 border-2 border-gray-500 rounded checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-blue-600 dark:checked:border-blue-600"
+                  style={{
+                    backgroundImage: formData.has_time_limit ? `url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e")` : 'none',
+                    backgroundSize: '14px 14px',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
                 />
                 <label htmlFor="has_time_limit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Set a time limit for this listing
