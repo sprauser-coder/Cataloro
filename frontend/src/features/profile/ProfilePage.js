@@ -345,6 +345,9 @@ function ProfilePage() {
         allSellerIds: [...new Set(allProducts?.map(p => p.seller_id))],
         allSellers: [...new Set(allProducts?.map(p => p.seller))],
         allSellerNames: [...new Set(allProducts?.map(p => p.seller_name))],
+        ACTUAL_SELLER_IDS: [...new Set(allProducts?.map(p => p.seller_id))].join(', '),
+        ACTUAL_SELLERS: [...new Set(allProducts?.map(p => p.seller))].slice(0, 5).join(', '),
+        ACTUAL_SELLER_NAMES: [...new Set(allProducts?.map(p => p.seller_name))].join(', '),
         userIdToMatch: user.id,
         userUsernameToMatch: user.username,
         userFullNameToMatch: user.full_name
