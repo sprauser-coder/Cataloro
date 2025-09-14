@@ -1042,6 +1042,315 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
+    async def test_create_new_partner_listing_with_future_date(self, token, admin_user_id):
+        """Create a NEW partner-only listing with LONG duration (168 hours = 1 week)"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/listings"
+            
+            # Create unique timestamp for this test
+            current_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            listing_data = {
+                "title": "BADGE TEST - Future Date",
+                "description": "Testing badge display",
+                "price": 25.0,
+                "category": "Electronics",
+                "condition": "New",
+                "seller_id": admin_user_id,
+                "show_partners_first": True,
+                "partners_visibility_hours": 168,  # 1 week = 168 hours
+                "images": [],
+                "tags": ["badge-test", "future-date"],
+                "features": []
+            }
+            
+            async with self.session.post(url, headers=headers, json=listing_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 201:
+                    data = await response.json()
+                    listing_id = data.get('listing', {}).get('id') or data.get('id')
+                    
+                    if listing_id:
+                        self.log_result(
+                            "Create NEW Partner-Only Listing", 
+                            True, 
+                            f"✅ LISTING CREATION CONFIRMED: POST /api/listings with show_partners_first=true and partners_visibility_hours=168 successful, Listing ID returned: {listing_id}",
+                            response_time
+                        )
+                        return {'success': True, 'listing_id': listing_id, 'listing': data}
+                    else:
+                        self.log_result(
+                            "Create NEW Partner-Only Listing", 
+                            False, 
+                            f"❌ NO LISTING ID: Response missing listing ID: {data}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'No listing ID in response'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create NEW Partner-Only Listing", 
+                        False, 
+                        f"❌ CREATION FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create NEW Partner-Only Listing", 
+                False, 
+                f"❌ CREATION EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_verify_api_response_structure(self, token, listing_id):
+        """Verify the NEW listing has future public_at date and correct partner fields"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/listings/{listing_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check required partner fields
+                    is_partners_only = data.get('is_partners_only')
+                    public_at = data.get('public_at')
+                    show_partners_first = data.get('show_partners_first')
+                    
+                    # Verify current time is BEFORE public_at
+                    current_time = datetime.now(timezone.utc)
+                    
+                    if public_at:
+                        try:
+                            # Parse public_at datetime
+                            if public_at.endswith('Z'):
+                                public_at_dt = datetime.fromisoformat(public_at.replace('Z', '+00:00'))
+                            elif '+' in public_at or public_at.endswith('00:00'):
+                                public_at_dt = datetime.fromisoformat(public_at)
+                            else:
+                                public_at_dt = datetime.fromisoformat(public_at).replace(tzinfo=timezone.utc)
+                            
+                            time_diff = (public_at_dt - current_time).total_seconds()
+                            hours_diff = time_diff / 3600
+                            
+                            # Check if all conditions are met
+                            if (is_partners_only is True and 
+                                public_at and 
+                                show_partners_first is True and 
+                                time_diff > 0 and 
+                                150 <= hours_diff <= 170):  # Allow some tolerance around 168 hours
+                                
+                                self.log_result(
+                                    "Verify API Response Structure", 
+                                    True, 
+                                    f"✅ STRUCTURE CONFIRMED: is_partners_only=True, public_at={public_at} ({hours_diff:.1f}h future), show_partners_first=True, current time is BEFORE public_at",
+                                    response_time
+                                )
+                                return {
+                                    'success': True, 
+                                    'is_partners_only': is_partners_only,
+                                    'public_at': public_at,
+                                    'show_partners_first': show_partners_first,
+                                    'hours_in_future': hours_diff,
+                                    'badge_condition_met': True
+                                }
+                            else:
+                                self.log_result(
+                                    "Verify API Response Structure", 
+                                    False, 
+                                    f"❌ STRUCTURE INVALID: is_partners_only={is_partners_only}, public_at={public_at}, show_partners_first={show_partners_first}, hours_diff={hours_diff:.1f}",
+                                    response_time
+                                )
+                                return {'success': False, 'error': 'Invalid partner structure'}
+                        except Exception as date_error:
+                            self.log_result(
+                                "Verify API Response Structure", 
+                                False, 
+                                f"❌ DATE PARSING ERROR: {str(date_error)}, public_at={public_at}",
+                                response_time
+                            )
+                            return {'success': False, 'error': f'Date parsing error: {str(date_error)}'}
+                    else:
+                        self.log_result(
+                            "Verify API Response Structure", 
+                            False, 
+                            f"❌ MISSING public_at: is_partners_only={is_partners_only}, show_partners_first={show_partners_first}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Missing public_at field'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify API Response Structure", 
+                        False, 
+                        f"❌ FETCH FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify API Response Structure", 
+                False, 
+                f"❌ VERIFICATION EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_authenticated_browse_endpoint(self, token, listing_id):
+        """Test authenticated browse endpoint shows the new listing with correct partner data"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/marketplace/browse"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listings = data.get('listings', []) if isinstance(data, dict) else data
+                    
+                    # Find our test listing
+                    test_listing = None
+                    for listing in listings:
+                        if listing.get('id') == listing_id:
+                            test_listing = listing
+                            break
+                    
+                    if test_listing:
+                        # Verify partner fields are present
+                        is_partners_only = test_listing.get('is_partners_only')
+                        public_at = test_listing.get('public_at')
+                        show_partners_first = test_listing.get('show_partners_first')
+                        
+                        if (is_partners_only is True and 
+                            public_at and 
+                            show_partners_first is True):
+                            
+                            self.log_result(
+                                "Authenticated Browse Endpoint", 
+                                True, 
+                                f"✅ AUTHENTICATED BROWSE CONFIRMED: Admin can see partner-only listing with all partner fields (is_partners_only, public_at, show_partners_first)",
+                                response_time
+                            )
+                            return {
+                                'success': True, 
+                                'listing_found': True,
+                                'partner_fields_present': True,
+                                'test_listing': test_listing
+                            }
+                        else:
+                            self.log_result(
+                                "Authenticated Browse Endpoint", 
+                                False, 
+                                f"❌ MISSING PARTNER FIELDS: is_partners_only={is_partners_only}, public_at={public_at}, show_partners_first={show_partners_first}",
+                                response_time
+                            )
+                            return {'success': False, 'error': 'Missing partner fields in browse response'}
+                    else:
+                        self.log_result(
+                            "Authenticated Browse Endpoint", 
+                            False, 
+                            f"❌ LISTING NOT FOUND: Test listing {listing_id} not found in browse results",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Test listing not found in browse results'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Authenticated Browse Endpoint", 
+                        False, 
+                        f"❌ BROWSE FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Authenticated Browse Endpoint", 
+                False, 
+                f"❌ BROWSE EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_anonymous_browse_endpoint(self, listing_id):
+        """Test anonymous browse endpoint does NOT show the partner-only listing"""
+        start_time = datetime.now()
+        
+        try:
+            # No authorization header for anonymous request
+            url = f"{BACKEND_URL}/marketplace/browse"
+            
+            async with self.session.get(url) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listings = data.get('listings', []) if isinstance(data, dict) else data
+                    
+                    # Check if our test listing is NOT visible
+                    test_listing_found = any(
+                        listing.get('id') == listing_id for listing in listings
+                    )
+                    
+                    if not test_listing_found:
+                        public_listings_count = len(listings)
+                        self.log_result(
+                            "Anonymous Browse Endpoint", 
+                            True, 
+                            f"✅ ANONYMOUS FILTERING CONFIRMED: Anonymous users cannot see partner-only listing, {public_listings_count} public listings visible",
+                            response_time
+                        )
+                        return {
+                            'success': True, 
+                            'listing_hidden': True,
+                            'public_listings_count': public_listings_count
+                        }
+                    else:
+                        self.log_result(
+                            "Anonymous Browse Endpoint", 
+                            False, 
+                            f"❌ FILTERING FAILED: Anonymous user can see partner-only listing",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Anonymous can see partner-only listing'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Anonymous Browse Endpoint", 
+                        False, 
+                        f"❌ ANONYMOUS BROWSE FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Anonymous Browse Endpoint", 
+                False, 
+                f"❌ ANONYMOUS BROWSE EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
     async def analyze_partner_management_results(self, results):
         """Analyze the effectiveness of the partner management testing"""
         print("      Final analysis of partner management and visibility testing:")
