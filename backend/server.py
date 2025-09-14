@@ -1615,6 +1615,11 @@ async def browse_listings(
                 ]
             }
             logger.info("🔍 EXPIRY DEBUG: Added time-based expiration filtering")
+            
+            # DEBUG: Count how many listings are filtered by expiration
+            total_before_expiry = await db.listings.count_documents({"status": "active"})
+            total_after_expiry = await db.listings.count_documents(base_query)
+            logger.info(f"🔍 EXPIRY DEBUG: Before expiry filter: {total_before_expiry}, After: {total_after_expiry}, Filtered out: {total_before_expiry - total_after_expiry}")
         
         # Add partner visibility filtering
         if current_user:
