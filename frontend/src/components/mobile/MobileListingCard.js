@@ -204,7 +204,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
         
         setBidSuccess(true);
         setBidAmount('');
-        showToast(`Bid of ${formatPrice(bidValue)} submitted successfully!`, 'success');
+        showToast(`Bid of ${formatEuro(bidValue)} submitted successfully!`, 'success');
         
         // Hide success indicator after 3 seconds
         setTimeout(() => {
