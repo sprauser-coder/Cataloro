@@ -834,21 +834,27 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                     </div>
                   )}
                   
-                  <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                  {/* Mobile-optimized offer details */}
+                  <div className="mt-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
+                    <div className="grid grid-cols-2 gap-4 sm:flex sm:items-center sm:justify-between sm:space-x-6">
                       <div className="text-center sm:text-left">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Your Offer</p>
-                        <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400">
+                        <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Your Offer</p>
+                        <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
                           €{tender.offer_amount.toFixed(2)}
                         </p>
                       </div>
                       
                       <div className="text-center sm:text-left">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Submitted</p>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Submitted</p>
+                        <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
                           {new Date(tender.created_at).toLocaleDateString()}
                         </p>
                       </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                     </div>
                     
                     {tender.status === 'accepted' && (
