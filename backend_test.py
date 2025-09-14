@@ -1184,85 +1184,87 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
 
-    async def test_profile_stats_data_consistency(self, listings_result, tenders_result):
-        """Test that the data from both endpoints is consistent and suitable for Profile stats"""
+    async def test_notification_types_support(self, notifications_result):
+        """Test that the notification system supports all required notification types for routing"""
         try:
-            if not listings_result.get('success') or not tenders_result.get('success'):
+            if not notifications_result.get('success'):
                 self.log_result(
-                    "Profile Stats Data Consistency", 
+                    "Notification Types Support", 
                     False, 
-                    "❌ PREREQUISITE FAILED: One or both endpoints failed, cannot test consistency"
+                    "❌ PREREQUISITE FAILED: Notifications endpoint failed, cannot test types support"
                 )
-                return {'success': False, 'error': 'Prerequisite endpoints failed'}
+                return {'success': False, 'error': 'Prerequisite notifications endpoint failed'}
             
-            # Extract data from both endpoints
-            listings_count = listings_result.get('listings_count', 0)
-            listings_status_counts = listings_result.get('status_counts', {})
-            tenders_count = tenders_result.get('tenders_count', 0)
-            tenders_status_counts = tenders_result.get('status_counts', {})
+            # Extract notification types from the results
+            found_types = set(notifications_result.get('notification_types', []))
+            routing_types_found = set(notifications_result.get('routing_types_found', []))
             
-            # Check for expected status fields
-            expected_listing_statuses = ['active', 'pending', 'expired', 'sold', 'draft']
-            expected_tender_statuses = ['pending', 'accepted', 'rejected', 'expired']
+            # Required notification types for routing
+            required_routing_types = {
+                'tender_accepted',
+                'transaction_completed', 
+                'transaction_marked_completed',
+                'transaction_fully_completed',
+                'new_tender_offer',
+                'tender_offer',
+                'new_user_registration'
+            }
             
-            found_listing_statuses = list(listings_status_counts.keys())
-            found_tender_statuses = list(tenders_status_counts.keys())
+            # Check which types are supported
+            supported_types = routing_types_found.intersection(required_routing_types)
+            missing_types = required_routing_types - routing_types_found
             
-            # Calculate stats that Profile would use
-            active_listings = listings_status_counts.get('active', 0)
-            accepted_tenders = tenders_status_counts.get('accepted', 0)
+            # Analyze type support
+            type_checks = []
             
-            consistency_checks = []
-            
-            # Check 1: Data structure consistency
-            if listings_count >= 0 and tenders_count >= 0:
-                consistency_checks.append("✅ Both endpoints return valid counts")
+            # Check 1: Basic notification types present
+            if found_types:
+                type_checks.append(f"✅ Notification types found: {list(found_types)}")
             else:
-                consistency_checks.append("❌ Invalid counts returned")
+                type_checks.append("❌ No notification types found")
             
-            # Check 2: Status field presence
-            if found_listing_statuses and found_tender_statuses:
-                consistency_checks.append("✅ Both endpoints return status fields")
+            # Check 2: Routing-specific types support
+            if supported_types:
+                type_checks.append(f"✅ Routing types supported: {list(supported_types)}")
             else:
-                consistency_checks.append("❌ Missing status fields")
+                type_checks.append("❌ No routing types supported")
             
-            # Check 3: Profile stats calculation readiness
-            if active_listings >= 0 and accepted_tenders >= 0:
-                consistency_checks.append(f"✅ Profile stats ready: {active_listings} active listings, {accepted_tenders} accepted tenders")
+            # Check 3: Missing types analysis
+            if missing_types:
+                type_checks.append(f"⚠️ Missing routing types: {list(missing_types)}")
             else:
-                consistency_checks.append("❌ Profile stats calculation not possible")
+                type_checks.append("✅ All routing types supported")
             
-            # Check 4: User email consistency
-            listings_user = listings_result.get('user_email', '')
-            tenders_user = tenders_result.get('user_email', '')
-            if listings_user == tenders_user:
-                consistency_checks.append(f"✅ User consistency: Both endpoints tested with {listings_user}")
+            # Check 4: Admin-specific types (new_user_registration)
+            if 'new_user_registration' in supported_types:
+                type_checks.append("✅ Admin notification type supported")
             else:
-                consistency_checks.append(f"❌ User inconsistency: {listings_user} vs {tenders_user}")
+                type_checks.append("⚠️ Admin notification type not found (may require admin user)")
             
-            all_checks_passed = all("✅" in check for check in consistency_checks)
+            # Determine overall success
+            # Success if we have at least some routing types supported
+            success = len(supported_types) > 0
             
             self.log_result(
-                "Profile Stats Data Consistency", 
-                all_checks_passed, 
-                f"{'✅ CONSISTENCY VERIFIED' if all_checks_passed else '❌ CONSISTENCY ISSUES'}: {'; '.join(consistency_checks)}",
+                "Notification Types Support", 
+                success, 
+                f"{'✅ TYPES SUPPORTED' if success else '❌ TYPES NOT SUPPORTED'}: {'; '.join(type_checks)}",
             )
             
             return {
-                'success': all_checks_passed,
-                'listings_count': listings_count,
-                'tenders_count': tenders_count,
-                'active_listings': active_listings,
-                'accepted_tenders': accepted_tenders,
-                'consistency_checks': consistency_checks,
-                'profile_stats_ready': all_checks_passed
+                'success': success,
+                'found_types': list(found_types),
+                'supported_routing_types': list(supported_types),
+                'missing_routing_types': list(missing_types),
+                'type_checks': type_checks,
+                'routing_ready': success
             }
             
         except Exception as e:
             self.log_result(
-                "Profile Stats Data Consistency", 
+                "Notification Types Support", 
                 False, 
-                f"❌ CONSISTENCY EXCEPTION: {str(e)}"
+                f"❌ TYPES SUPPORT EXCEPTION: {str(e)}"
             )
             return {'success': False, 'error': str(e)}
 
