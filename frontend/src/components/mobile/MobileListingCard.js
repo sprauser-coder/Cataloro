@@ -440,7 +440,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
                         setBidAmount(e.target.value);
                         setBidError('');
                       }}
-                      placeholder={`Min: €${getMinimumBid()}`}
+                      placeholder={`Min: ${formatEuro(getMinimumBid())}`}
                       className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       disabled={!canUserBid() && user}
                       onClick={(e) => e.stopPropagation()}
