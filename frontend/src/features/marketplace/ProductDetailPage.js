@@ -406,7 +406,6 @@ function ProductDetailPage() {
       <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 ${
         // Partner listing border - using timezone utility
         (() => {
-          const { calculateTimeRemaining } = require('../../utils/timezone');
           const { expired } = calculateTimeRemaining(product.public_at);
           return product.is_partners_only && product.public_at && !expired
             ? 'border border-pink-600 shadow-lg shadow-pink-100 dark:shadow-pink-900/20' 
