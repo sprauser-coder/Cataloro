@@ -1,33 +1,47 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - ADMIN PANEL COMPLETED TRANSACTIONS TAB TESTING
-Testing the "Completed Transactions" tab accessibility issue in the Admin Panel
+CATALORO MARKETPLACE - ADMIN MENU SETTINGS API TESTING
+Testing the admin menu settings API to verify "Buy" and "Sell" menu items are returned correctly
 
 SPECIFIC TESTS REQUESTED (Review Request):
-I need to investigate why the "Completed Transactions" tab is not accessible in the Admin Panel.
+I need to test the admin menu settings API to verify that the "Buy" and "Sell" menu items 
+I added to the backend are being returned correctly.
 
-**CONTEXT**: The testing agent couldn't locate the "Completed Transactions" tab in the Admin Panel. 
-According to the permissions system, both Admin and Admin-Manager roles should have this permission.
+**ISSUE CONTEXT**:
+- Updated the backend menu settings in `/app/backend/server.py` to include new "buy" and "sell" menu items
+- Admin reports these items are not showing up in Admin Panel > Menu Settings interface
+- Need to verify the API is returning the updated menu configuration
 
-**TEST REQUIREMENTS**:
-1. **Test Admin Login**: Login with admin credentials and verify admin panel access
-2. **Test Admin Permissions**: Verify that admin users have the correct permissions (specifically `canAccessUserManagement`)
-3. **Test Backend API**: Check if the backend API endpoint `/api/admin/completed-transactions` exists and works
-4. **Test Tab Filtering Logic**: Verify the tab filtering logic in AdminPanel.js to see why the "Completed" tab might not be visible
+**SPECIFIC TESTING REQUIRED**:
 
-**ADMIN CREDENTIALS TO USE**:
-- admin@cataloro.com / password123 or admin@cataloro.com / admin123
-- sash_admin / standard admin password
+**1. Test Admin Menu Settings API**
+- Login as admin (admin@cataloro.com / password123)
+- Call GET `/api/admin/menu-settings` endpoint
+- Verify the response includes the new "buy" and "sell" menu items I added
+- Check that both desktop_menu and mobile_menu contain these items
 
-**EXPECTED RESULTS**:
-- Admin login should work and return proper admin role
-- Admin users should have `canAccessUserManagement` permission
-- Backend API endpoint `/api/admin/completed-transactions` should be accessible to admin users
-- The "Completed Transactions" tab should be visible in the Admin Panel
+**2. Expected Items in Response**
+The response should include these items I added:
+```
+"buy": {"enabled": True, "label": "Buy", "roles": ["admin", "manager", "buyer"]}
+"sell": {"enabled": True, "label": "Sell", "roles": ["admin", "manager", "seller"]}
+"buy_management": {"enabled": False, "label": "Inventory", "roles": ["admin", "manager", "buyer"]}
+```
 
-**FOCUS**: This is critical as it's preventing one of the 5 implemented fixes from being verified as working.
+**3. Compare Default vs Database Settings**
+- Check if there are any database menu_settings that might be overriding the defaults
+- Verify the merge logic is working correctly
+- Check if the frontend is receiving the complete menu structure
 
-GOAL: Identify why the "Completed Transactions" tab is not accessible and provide detailed diagnostics.
+**4. Debug Data Structure**
+- Examine the exact JSON structure returned by the API
+- Verify all menu items have proper labels and role assignments
+- Check if the "buy" and "sell" items have the correct enabled status
+
+**LOGIN CREDENTIALS:** admin@cataloro.com / password123
+
+**GOAL:** Verify that the backend menu settings API is returning the "Buy" and "Sell" menu items 
+I added, so I can troubleshoot why they're not appearing in the frontend Menu Settings interface.
 """
 
 import asyncio
