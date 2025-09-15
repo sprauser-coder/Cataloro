@@ -1,47 +1,50 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - ADMIN MENU SETTINGS API TESTING
-Testing the admin menu settings API to verify "Buy" and "Sell" menu items are returned correctly
+CATALORO MARKETPLACE - DATABASE MENU SETTINGS RESET TESTING
+Testing and fixing database menu settings override issues
 
-SPECIFIC TESTS REQUESTED (Review Request):
-I need to test the admin menu settings API to verify that the "Buy" and "Sell" menu items 
-I added to the backend are being returned correctly.
+SPECIFIC ISSUE IDENTIFIED (Review Request):
+Backend testing confirmed that the database `menu_settings` collection has stored overrides 
+from previous admin panel changes that are overriding the updated backend defaults.
 
-**ISSUE CONTEXT**:
-- Updated the backend menu settings in `/app/backend/server.py` to include new "buy" and "sell" menu items
-- Admin reports these items are not showing up in Admin Panel > Menu Settings interface
-- Need to verify the API is returning the updated menu configuration
+**ROOT CAUSE IDENTIFIED**:
+- Backend default settings in server.py are CORRECT
+- Database `menu_settings` collection has stored overrides that take precedence
+- API merge logic is working correctly but database settings override defaults
+- Previous admin panel menu settings changes were saved to database
 
-**SPECIFIC TESTING REQUIRED**:
+**SPECIFIC ISSUES FOUND**:
+- "sell" item has extra "buyer" role: ["admin", "manager", "seller", "buyer"] 
+  (should only have ["admin", "manager", "seller"])
+- "buy_management" (Inventory) is enabled=true (should be enabled=false)
 
-**1. Test Admin Menu Settings API**
-- Login as admin (admin@cataloro.com / password123)
-- Call GET `/api/admin/menu-settings` endpoint
-- Verify the response includes the new "buy" and "sell" menu items I added
-- Check that both desktop_menu and mobile_menu contain these items
+**REQUIRED ACTIONS**:
 
-**2. Expected Items in Response**
-The response should include these items I added:
+**1. Clear Database Menu Settings**
+- Connect to MongoDB and find the `menu_settings` collection
+- Remove or reset the document with `type: "menu_config"`
+- This will allow the backend defaults to take effect
+
+**2. Alternative: Update Database Settings**
+- Update the database document directly to match intended configuration
+- Fix "sell" item roles to remove "buyer" 
+- Set "buy_management" enabled=false
+
+**3. Verify After Changes**
+- Test GET `/api/admin/menu-settings` again to confirm correct configuration
+- Verify "Buy" and "Sell" items appear with correct settings
+
+**EXPECTED RESULT AFTER FIX**:
 ```
-"buy": {"enabled": True, "label": "Buy", "roles": ["admin", "manager", "buyer"]}
-"sell": {"enabled": True, "label": "Sell", "roles": ["admin", "manager", "seller"]}
-"buy_management": {"enabled": False, "label": "Inventory", "roles": ["admin", "manager", "buyer"]}
+"buy": {"enabled": true, "label": "Buy", "roles": ["admin", "manager", "buyer"]}
+"sell": {"enabled": true, "label": "Sell", "roles": ["admin", "manager", "seller"]}
+"buy_management": {"enabled": false, "label": "Inventory", "roles": ["admin", "manager", "buyer"]}
 ```
-
-**3. Compare Default vs Database Settings**
-- Check if there are any database menu_settings that might be overriding the defaults
-- Verify the merge logic is working correctly
-- Check if the frontend is receiving the complete menu structure
-
-**4. Debug Data Structure**
-- Examine the exact JSON structure returned by the API
-- Verify all menu items have proper labels and role assignments
-- Check if the "buy" and "sell" items have the correct enabled status
 
 **LOGIN CREDENTIALS:** admin@cataloro.com / password123
 
-**GOAL:** Verify that the backend menu settings API is returning the "Buy" and "Sell" menu items 
-I added, so I can troubleshoot why they're not appearing in the frontend Menu Settings interface.
+**GOAL:** Clear/update the database menu_settings to allow the new Buy/Sell menu items 
+to be properly configured and visible in Admin Panel Menu Settings interface.
 """
 
 import asyncio
