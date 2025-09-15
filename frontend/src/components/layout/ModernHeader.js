@@ -1140,8 +1140,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 }}
               >
                 <div className="w-10 h-10 rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
-                  background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                  boxShadow: '0 6px 20px rgba(79, 172, 254, 0.4)'
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  boxShadow: '0 6px 20px rgba(103, 126, 234, 0.4)'
                 }}>
                   <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <span className="text-white font-bold text-sm relative z-10">
