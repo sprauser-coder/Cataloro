@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 
 # Test Configuration
-BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://nginx-config-fix.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@cataloro.com"
 
 class AdminUserMenuTester:

@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_search():
-    base_url = "https://vps-sync.preview.emergentagent.com"
+    base_url = "https://nginx-config-fix.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

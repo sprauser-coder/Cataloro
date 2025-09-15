@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://nginx-config-fix.preview.emergentagent.com/api"
 
 class TendersAPITester:
     def __init__(self):

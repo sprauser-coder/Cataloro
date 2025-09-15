@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://vps-sync.preview.emergentagent.com/api"
+BASE_URL = "https://nginx-config-fix.preview.emergentagent.com/api"
 
 class BuyManagementInvestigator:
     def __init__(self):

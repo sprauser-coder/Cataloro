@@ -8,7 +8,7 @@ import aiohttp
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
+BACKEND_URL = "https://nginx-config-fix.preview.emergentagent.com/api"
 
 async def debug_messages():
     """Debug message data structure"""
