@@ -1736,7 +1736,8 @@ class BackendTester:
 async def main():
     """Main test execution function"""
     async with BackendTester() as tester:
-        results = await tester.run_database_menu_settings_fix()
+        # Run the urgent Buy/Sell menu items investigation
+        results = await tester.investigate_buy_sell_menu_items_missing()
         return results
 
 if __name__ == "__main__":
