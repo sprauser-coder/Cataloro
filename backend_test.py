@@ -1069,7 +1069,7 @@ class BackendTester:
 async def main():
     """Main test execution function"""
     async with BackendTester() as tester:
-        results = await tester.run_admin_menu_settings_tests()
+        results = await tester.run_database_menu_settings_fix()
         return results
 
 if __name__ == "__main__":
