@@ -48,6 +48,7 @@ function Layout() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Deployment test comment - version 1.0.1 */}
+      <div id="deployment-test" style={{display: 'none'}}>v1.0.1</div>
       {/* Fixed Header */}
       <Header />
       
