@@ -317,7 +317,7 @@ const MenuSettings = () => {
                             onClick={() => toggleRoleAccess(menuType, key, role)}
                             className={`px-2 py-1 text-xs rounded ${
                               (item.roles || []).includes(role)
-                                ? 'bg-blue-100 text-blue-800'
+                                ? 'bg-gray-300 text-gray-700'
                                 : 'bg-gray-200 text-gray-600'
                             }`}
                             title={`Toggle ${role} access`}
