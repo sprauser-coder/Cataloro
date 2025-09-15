@@ -439,16 +439,16 @@ class BackendTester:
 
 
 
-    async def run_admin_panel_completed_transactions_tests(self):
-        """Run comprehensive admin panel completed transactions tab tests"""
-        print("🚀 CATALORO ADMIN PANEL COMPLETED TRANSACTIONS TAB TESTING")
+    async def run_admin_menu_settings_tests(self):
+        """Run comprehensive admin menu settings API tests"""
+        print("🚀 CATALORO ADMIN MENU SETTINGS API TESTING")
         print("=" * 80)
         print()
         
         # Test with admin credentials
         test_credentials = [
-            ("admin@cataloro.com", "admin123", "Admin User"),
-            ("admin@cataloro.com", "password123", "Admin User (Alt Password)"),
+            ("admin@cataloro.com", "password123", "Admin User"),
+            ("admin@cataloro.com", "admin123", "Admin User (Alt Password)"),
         ]
         
         all_results = {}
@@ -468,20 +468,21 @@ class BackendTester:
             user_role = user.get('user_role', 'Unknown')
             username = user.get('username', 'unknown')
             
-            # Step 2: Test admin permissions
-            print(f"🔍 Testing admin permissions for {user_type}...")
-            permissions_result = await self.test_admin_permissions(token, user_id, user)
-            user_results['admin_permissions'] = permissions_result
+            # Step 2: Test admin menu settings API
+            print(f"🔍 Testing admin menu settings API for {user_type}...")
+            menu_api_result = await self.test_admin_menu_settings_api(token)
+            user_results['menu_settings_api'] = menu_api_result
             
-            # Step 3: Test admin completed transactions endpoint
-            print(f"🔗 Testing admin completed transactions endpoint for {user_type}...")
-            endpoint_result = await self.test_admin_completed_transactions_endpoint(token, user_role)
-            user_results['completed_transactions_endpoint'] = endpoint_result
+            # Step 3: Detailed analysis of menu items if API call was successful
+            if menu_api_result.get('success') and menu_api_result.get('raw_response'):
+                print(f"🔬 Performing detailed analysis of menu items...")
+                analysis_result = await self.test_menu_items_detailed_analysis(menu_api_result['raw_response'])
+                user_results['menu_items_analysis'] = analysis_result
             
-            # Step 4: Test tab visibility logic
-            print(f"👁️ Testing admin panel tab visibility logic for {user_type}...")
-            tab_visibility_result = await self.test_admin_panel_tab_visibility(user_role, permissions_result)
-            user_results['tab_visibility'] = tab_visibility_result
+            # Step 4: Check database settings (informational)
+            print(f"🗄️ Checking database menu settings implications...")
+            db_check_result = await self.test_database_menu_settings_check(token)
+            user_results['database_check'] = db_check_result
             
             all_results[user_type] = user_results
             print()
@@ -490,13 +491,13 @@ class BackendTester:
             break
         
         # Generate summary
-        self.generate_admin_panel_summary(all_results)
+        self.generate_menu_settings_summary(all_results)
         
         return all_results
 
-    def generate_admin_panel_summary(self, all_results):
-        """Generate comprehensive summary of admin panel completed transactions tab testing"""
-        print("📊 ADMIN PANEL COMPLETED TRANSACTIONS TAB TESTING SUMMARY")
+    def generate_menu_settings_summary(self, all_results):
+        """Generate comprehensive summary of admin menu settings API testing"""
+        print("📊 ADMIN MENU SETTINGS API TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = 0
@@ -519,34 +520,61 @@ class BackendTester:
                 print(f"  {status}: {test_name.replace('_', ' ').title()}")
                 
                 # Add specific details for each test
-                if test_name == 'admin_permissions':
-                    user_role = result.get('user_role', 'Unknown')
-                    should_have_permission = result.get('should_have_permission', False)
-                    print(f"    👤 User Role: {user_role}")
-                    print(f"    🔑 Should Have Permission: {should_have_permission}")
+                if test_name == 'menu_settings_api':
                     if result.get('success'):
-                        print(f"    ✅ Permission Check: PASSED")
-                    else:
-                        print(f"    ❌ Permission Check: FAILED - {result.get('error', 'Unknown error')}")
+                        desktop_count = result.get('desktop_menu_count', 0)
+                        mobile_count = result.get('mobile_menu_count', 0)
+                        all_expected_found = result.get('all_expected_found', False)
+                        print(f"    📊 Desktop Menu Items: {desktop_count}")
+                        print(f"    📱 Mobile Menu Items: {mobile_count}")
+                        print(f"    ✅ Expected Items Found: {all_expected_found}")
                         
-                elif test_name == 'completed_transactions_endpoint':
-                    endpoint_accessible = result.get('endpoint_accessible', False)
-                    status_code = result.get('status_code', 'N/A')
-                    transactions_count = result.get('transactions_count', 0)
-                    print(f"    🔗 Endpoint Accessible: {endpoint_accessible}")
-                    print(f"    📊 Status Code: {status_code}")
+                        # Show specific items found
+                        desktop_items = result.get('desktop_menu_items', [])
+                        if 'buy' in desktop_items and 'sell' in desktop_items:
+                            print(f"    🎯 Buy/Sell Items: ✅ FOUND in desktop menu")
+                        else:
+                            print(f"    🎯 Buy/Sell Items: ❌ MISSING from desktop menu")
+                            
+                        expected_check = result.get('expected_items_check', {})
+                        for item_name, item_result in expected_check.items():
+                            if item_result.get('found'):
+                                enabled_status = "✅ ENABLED" if item_result.get('enabled') else "❌ DISABLED"
+                                print(f"      • {item_name}: {enabled_status} - {item_result.get('label', 'No Label')}")
+                            else:
+                                print(f"      • {item_name}: ❌ NOT FOUND")
+                    else:
+                        status_code = result.get('status_code', 'Unknown')
+                        error = result.get('error', 'Unknown error')
+                        print(f"    ❌ Status Code: {status_code}")
+                        print(f"    ❌ Error: {error}")
+                        
+                elif test_name == 'menu_items_analysis':
                     if result.get('success'):
-                        print(f"    📈 Transactions Found: {transactions_count}")
-                    else:
-                        print(f"    ❌ Error: {result.get('error', 'Unknown error')}")
+                        buy_sell_ok = result.get('buy_sell_properly_configured', False)
+                        inventory_ok = result.get('inventory_properly_configured', False)
+                        print(f"    🛒 Buy/Sell Configuration: {'✅ CORRECT' if buy_sell_ok else '❌ INCORRECT'}")
+                        print(f"    📦 Inventory Configuration: {'✅ CORRECT' if inventory_ok else '❌ INCORRECT'}")
                         
-                elif test_name == 'tab_visibility':
-                    tab_should_be_visible = result.get('tab_should_be_visible', False)
-                    frontend_check_passes = result.get('frontend_check_passes', False)
-                    print(f"    👁️ Tab Should Be Visible: {tab_should_be_visible}")
-                    print(f"    🎨 Frontend Check Passes: {frontend_check_passes}")
-                    if not result.get('success'):
-                        print(f"    ❌ Issue: {result.get('error', 'Unknown error')}")
+                        desktop_analysis = result.get('desktop_analysis', {})
+                        buy_sell_items = desktop_analysis.get('buy_sell_items', {})
+                        
+                        for item_name, item_config in buy_sell_items.items():
+                            enabled = item_config.get('enabled', False)
+                            label = item_config.get('label', 'No Label')
+                            roles = item_config.get('roles', [])
+                            print(f"      • {item_name}: {label} - {'Enabled' if enabled else 'Disabled'} - Roles: {', '.join(roles)}")
+                    else:
+                        print(f"    ❌ Analysis Error: {result.get('error', 'Unknown error')}")
+                        
+                elif test_name == 'database_check':
+                    if result.get('success'):
+                        note = result.get('note', '')
+                        recommendation = result.get('recommendation', '')
+                        print(f"    ℹ️ Note: {note}")
+                        print(f"    💡 Recommendation: {recommendation}")
+                    else:
+                        print(f"    ❌ Database Check Error: {result.get('error', 'Unknown error')}")
         
         # Overall summary
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
@@ -560,65 +588,91 @@ class BackendTester:
         admin_results = all_results.get('Admin User', {}) or all_results.get('Admin User (Alt Password)', {})
         
         if admin_results:
-            permissions_result = admin_results.get('admin_permissions', {})
-            endpoint_result = admin_results.get('completed_transactions_endpoint', {})
-            tab_result = admin_results.get('tab_visibility', {})
+            menu_api_result = admin_results.get('menu_settings_api', {})
+            analysis_result = admin_results.get('menu_items_analysis', {})
             
-            # Check login success
-            if permissions_result.get('success'):
-                print(f"   ✅ Admin login successful with proper role: {permissions_result.get('user_role')}")
-            else:
-                print(f"   ❌ Admin login or permissions issue")
+            # Check API access
+            if menu_api_result.get('success'):
+                print(f"   ✅ Admin menu settings API is accessible")
                 
-            # Check permissions
-            if permissions_result.get('should_have_permission'):
-                print(f"   ✅ Admin user should have canAccessUserManagement permission")
-            else:
-                print(f"   ❌ Admin user does not have required permissions")
+                # Check if expected items are found
+                all_expected_found = menu_api_result.get('all_expected_found', False)
+                if all_expected_found:
+                    print(f"   ✅ All expected Buy/Sell/Inventory items found with correct configuration")
+                else:
+                    print(f"   ⚠️ Some expected items missing or incorrectly configured")
+                    
+                    # Show specific issues
+                    expected_check = menu_api_result.get('expected_items_check', {})
+                    for item_name, item_result in expected_check.items():
+                        if not item_result.get('matches_expected', False):
+                            if not item_result.get('found'):
+                                print(f"     ❌ {item_name}: NOT FOUND in menu")
+                            else:
+                                print(f"     ⚠️ {item_name}: Found but configuration doesn't match expected")
+                                print(f"        Expected: enabled={item_name != 'buy_management'}, label={'Buy' if item_name == 'buy' else 'Sell' if item_name == 'sell' else 'Inventory'}")
+                                print(f"        Actual: enabled={item_result.get('enabled')}, label={item_result.get('label')}")
                 
-            # Check endpoint access
-            if endpoint_result.get('success'):
-                print(f"   ✅ Admin completed transactions endpoint is accessible")
-                print(f"   📊 Found {endpoint_result.get('transactions_count', 0)} transactions")
+                # Check detailed analysis
+                if analysis_result.get('success'):
+                    buy_sell_ok = analysis_result.get('buy_sell_properly_configured', False)
+                    inventory_ok = analysis_result.get('inventory_properly_configured', False)
+                    
+                    if buy_sell_ok and inventory_ok:
+                        print(f"   ✅ Detailed analysis confirms Buy/Sell/Inventory items are correctly configured")
+                    else:
+                        print(f"   ❌ Detailed analysis found configuration issues:")
+                        if not buy_sell_ok:
+                            print(f"     • Buy/Sell items are not properly configured")
+                        if not inventory_ok:
+                            print(f"     • Inventory item is not properly configured")
+                            
             else:
-                print(f"   ❌ Admin completed transactions endpoint is NOT accessible")
-                print(f"   🔍 Status Code: {endpoint_result.get('status_code', 'Unknown')}")
-                print(f"   💬 Error: {endpoint_result.get('error', 'Unknown error')}")
-                
-            # Check tab visibility
-            if tab_result.get('success'):
-                print(f"   ✅ Completed Transactions tab should be visible in Admin Panel")
-            else:
-                print(f"   ❌ Completed Transactions tab should NOT be visible")
-                print(f"   🔍 Frontend permission check: {tab_result.get('frontend_check_passes', False)}")
+                status_code = menu_api_result.get('status_code', 'Unknown')
+                error = menu_api_result.get('error', 'Unknown')
+                print(f"   ❌ Admin menu settings API is NOT accessible")
+                print(f"   🔍 Status Code: {status_code}")
+                print(f"   💬 Error: {error}")
         
-        # Root cause analysis
-        print(f"\n🔧 ROOT CAUSE ANALYSIS:")
+        # Root cause analysis and recommendations
+        print(f"\n🔧 ROOT CAUSE ANALYSIS & RECOMMENDATIONS:")
         
         if not admin_results:
             print("   ❌ CRITICAL: Could not login with admin credentials")
-            print("   🔧 SOLUTION: Check admin credentials and authentication system")
-        elif not permissions_result.get('success'):
-            print("   ❌ CRITICAL: Admin user does not have proper role or permissions")
-            print("   🔧 SOLUTION: Verify admin user has 'Admin' or 'Admin-Manager' role")
-        elif not endpoint_result.get('success'):
-            if endpoint_result.get('status_code') == 403:
-                print("   ❌ CRITICAL: Admin user cannot access completed transactions endpoint (403 Forbidden)")
+            print("   🔧 SOLUTION: Check admin credentials (admin@cataloro.com / password123)")
+        elif not menu_api_result.get('success'):
+            status_code = menu_api_result.get('status_code', 'Unknown')
+            if status_code == 403:
+                print("   ❌ CRITICAL: Admin user cannot access menu settings endpoint (403 Forbidden)")
                 print("   🔧 SOLUTION: Check backend require_admin_role function and user role verification")
-            elif endpoint_result.get('status_code') == 401:
+            elif status_code == 401:
                 print("   ❌ CRITICAL: Authentication token is invalid or expired (401 Unauthorized)")
                 print("   🔧 SOLUTION: Check JWT token generation and validation")
             else:
-                print("   ❌ CRITICAL: Backend endpoint /api/admin/completed-transactions is not working")
+                print("   ❌ CRITICAL: Backend endpoint /api/admin/menu-settings is not working")
                 print("   🔧 SOLUTION: Check backend server logs and endpoint implementation")
-        elif not tab_result.get('success'):
-            print("   ❌ ISSUE: Frontend permission logic may be incorrect")
-            print("   🔧 SOLUTION: Check usePermissions.js and AdminPanel.js tab filtering logic")
         else:
-            print("   ✅ ALL SYSTEMS WORKING: The Completed Transactions tab should be accessible")
-            print("   🎉 RECOMMENDATION: The issue may be resolved or was a temporary problem")
+            # API is working, check configuration
+            all_expected_found = menu_api_result.get('all_expected_found', False)
+            if all_expected_found:
+                print("   ✅ BACKEND API WORKING CORRECTLY: All Buy/Sell/Inventory items found with correct configuration")
+                print("   🎉 CONCLUSION: The backend menu settings API is returning the expected items")
+                print("   💡 FRONTEND ISSUE: If items are not showing in Admin Panel, check frontend Menu Settings component")
+                print("   🔍 NEXT STEPS: Verify frontend is correctly parsing and displaying the menu settings response")
+            else:
+                print("   ⚠️ CONFIGURATION ISSUE: Backend API accessible but some items missing/incorrect")
+                print("   🔧 SOLUTION: Check backend default menu settings in server.py around line 4306-4333")
+                print("   🔍 VERIFY: Ensure database menu_settings collection doesn't have overrides")
+                
+                # Specific recommendations based on what's missing
+                expected_check = menu_api_result.get('expected_items_check', {})
+                for item_name, item_result in expected_check.items():
+                    if not item_result.get('found'):
+                        print(f"   🔧 MISSING ITEM: Add '{item_name}' to default_settings in backend menu settings endpoint")
+                    elif not item_result.get('matches_expected'):
+                        print(f"   🔧 INCORRECT CONFIG: Fix '{item_name}' configuration in backend default settings")
         
-        print(f"\n🎉 ADMIN PANEL COMPLETED TRANSACTIONS TAB TESTING COMPLETED!")
+        print(f"\n🎉 ADMIN MENU SETTINGS API TESTING COMPLETED!")
         print("=" * 80)
 
 async def main():
