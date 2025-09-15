@@ -42,6 +42,7 @@ services:
       dockerfile: Dockerfile
       args:
         - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+        - BUILD_DATE=$(date +%Y%m%d_%H%M%S)
     container_name: cataloro_frontend
     restart: unless-stopped
     depends_on:
