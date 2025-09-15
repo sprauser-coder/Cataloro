@@ -40,7 +40,7 @@ function SimpleLoginPage() {
   useEffect(() => {
     const fetchLogo = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://marketplace-fix-9.preview.emergentagent.com/api'}/admin/logo`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://self-hosted-shop.preview.emergentagent.com/api'}/admin/logo`);
         if (response.ok) {
           const data = await response.json();
           if (data.logo_url) {
@@ -154,7 +154,7 @@ function SimpleLoginPage() {
     
     try {
       // Call the actual backend API
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://marketplace-fix-9.preview.emergentagent.com/api';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://self-hosted-shop.preview.emergentagent.com/api';
       // Remove /api if backendUrl already includes it to avoid duplication
       const cleanBackendUrl = backendUrl.endsWith('/api') ? backendUrl.slice(0, -4) : backendUrl;
       const loginUrl = `${cleanBackendUrl}/api/auth/login`;
@@ -217,7 +217,7 @@ function SimpleLoginPage() {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://marketplace-fix-9.preview.emergentagent.com/api'}/api/auth/register`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://self-hosted-shop.preview.emergentagent.com/api'}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

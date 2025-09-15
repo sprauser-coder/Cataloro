@@ -52,7 +52,7 @@ from datetime import datetime, timezone
 import pytz
 
 # Configuration - Use production URL from frontend/.env
-BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
+BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):

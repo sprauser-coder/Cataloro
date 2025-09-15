@@ -7,7 +7,7 @@ import asyncio
 import aiohttp
 import json
 
-BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
+BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
 
 async def debug_menu_api():
     async with aiohttp.ClientSession() as session:
