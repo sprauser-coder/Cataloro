@@ -5,7 +5,7 @@ set -e
 pull_changes() {
     echo "📦 Force pulling latest changes from GitHub..."
     git fetch origin main > /dev/null 2>&1
-    git reset --hard origin/main > /dev/null 2>&1
+    git pull origin main > /dev/null 2>&1
     echo "✅ Git force pull completed (local changes overridden)"
 }
 
