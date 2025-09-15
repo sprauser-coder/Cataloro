@@ -2,6 +2,10 @@ FROM node:16-alpine as build
 
 WORKDIR /app
 
+# Force cache bust with timestamp
+ARG BUILD_DATE
+RUN echo "Build date: $BUILD_DATE"
+
 # Copy package files
 COPY package.json package-lock.json* ./
 
