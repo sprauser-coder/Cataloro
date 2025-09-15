@@ -109,11 +109,6 @@ function MyListingsPage() {
     setActiveFilter(filter);
   };
 
-  // Handle create new listing
-  const handleCreateListing = () => {
-    navigate('/create-listing');
-  };
-
   // Filter listings based on active filter
   const getFilteredListings = () => {
     switch (activeFilter) {
