@@ -47,6 +47,7 @@ function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Deployment test comment - version 1.0.1 */}
       {/* Fixed Header */}
       <Header />
       
