@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# Function to pull latest changes from git
+pull_changes() {
+    echo "📦 Pulling latest changes from GitHub..."
+    git pull origin main > /dev/null 2>&1 || {
+        echo "⚠️  Git pull failed or no changes to pull"
+    }
+    echo "✅ Git pull completed"
+}
+
 case "$1" in
     "start")
         echo "🚀 Starting..."
