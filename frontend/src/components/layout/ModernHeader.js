@@ -1,5 +1,5 @@
 /**
- * CATALORO - Ultra-Modern Header Navigation
+ * CATALORO - Ultra-Modern Header Navigation - TEST SASCHA
  * Sleek header with comprehensive navigation and enhanced notifications
  */
 
@@ -620,7 +620,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   <img 
                     src={darkMode ? (siteBranding.logo_dark_url || siteBranding.logo_url) : (siteBranding.logo_light_url || siteBranding.logo_url)}
                     alt={siteBranding.site_name || 'Cataloro'}
-                    className="h-12 max-w-[200px] object-contain group-hover:opacity-90 transition-opacity duration-300"
+                    className="h-8 sm:h-12 max-w-[120px] sm:max-w-[200px] object-contain group-hover:opacity-90 transition-opacity duration-300"
                     onError={(e) => {
                       // Fallback to default icon + text if image fails
                       e.target.style.display = 'none';
@@ -633,12 +633,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 <>
                   {/* Icon Container */}
                   <div className="relative">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
+                    <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       boxShadow: '0 8px 25px rgba(103, 126, 234, 0.4)'
                     }}>
                       <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <Store className="w-7 h-7 text-white relative z-10" />
+                      <Store className="w-5 h-5 sm:w-7 sm:h-7 text-white relative z-10" />
                     </div>
                     <div className="absolute inset-0 rounded-2xl" style={{
                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -649,15 +649,15 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   </div>
                   
                   {/* Brand Text */}
-                  <div className="hidden sm:block">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-white/90 transition-colors header-title" style={{
+                  <div className="block">
+  <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-white/90 transition-colors header-title" style={{
                       background: 'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent'
                     }}>
                       {siteBranding.site_name || 'Cataloro'}
                     </h1>
-                    <p className="text-xs text-gray-600 dark:text-white/70 font-medium tracking-wide">
+                    <p className="hidden sm:block text-xs text-gray-600 dark:text-white/70 font-medium tracking-wide">
                       {siteBranding.site_description || 'ULTRA-MODERN MARKETPLACE'}
                     </p>
                   </div>
@@ -677,7 +677,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 </div>
                 <div className="hidden sm:block">
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {siteBranding.site_name || 'Cataloro'}
+                    {siteBranding.site_name || 'Catal'}
                   </h1>
                   <p className="text-xs text-gray-600 dark:text-white/70 font-medium tracking-wide">
                     {siteBranding.site_description || 'ULTRA-MODERN MARKETPLACE'}
