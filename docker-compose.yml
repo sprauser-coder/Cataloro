@@ -74,6 +74,7 @@ services:
 volumes:
   mongodb_data:
   backend_uploads:
+  frontend_build:
 
 networks:
   cataloro_network:
