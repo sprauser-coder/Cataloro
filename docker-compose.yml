@@ -46,6 +46,8 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    volumes:
+      - frontend_build:/usr/share/nginx/html
     ports:
       - "3000:80"
     networks:
