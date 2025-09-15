@@ -1,12 +1,28 @@
 #!/bin/bash
 set -e
 
+# Repository configuration
+REPO_URL="https://github.com/sprauser-coder/Cataloro.git"
+BRANCH="main"
+
 # Function to force pull latest changes from git
 pull_changes() {
     echo "📦 Force pulling latest changes from GitHub..."
-    git fetch origin main > /dev/null 2>&1
-    git pull origin main > /dev/null 2>&1
-    echo "✅ Git pull completed"
+    
+    # Check if .git directory exists
+    if [ ! -d ".git" ]; then
+        echo "🔄 No git repository found. Cloning from $REPO_URL..."
+        git clone $REPO_URL .
+        echo "✅ Repository cloned"
+    else
+        # Ensure origin is set to correct repo
+        git remote set-url origin $REPO_URL 2>/dev/null || git remote add origin $REPO_URL
+        
+        # Force pull from specified repo and branch
+        git fetch origin $BRANCH > /dev/null 2>&1
+        git reset --hard origin/$BRANCH > /dev/null 2>&1
+        echo "✅ Git force pull completed (local changes overridden)"
+    fi
 }
 
 case "$1" in
