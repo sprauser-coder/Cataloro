@@ -593,6 +593,677 @@ class BackendTester:
 
 
 
+    async def investigate_buy_sell_menu_items_missing(self):
+        """URGENT: Comprehensive investigation of why Buy/Sell menu items are not appearing"""
+        print("🚨 URGENT: BUY/SELL MENU ITEMS MISSING INVESTIGATION")
+        print("=" * 80)
+        print("ISSUE: Buy and Sell menu items not appearing in Admin Panel Menu Settings")
+        print("USER REPORT: Only shows Browse, Messages, Notifications, Create, Tenders, Listings, Profile, View Public Profile, Admin")
+        print()
+        
+        # Test with admin credentials
+        test_credentials = [
+            ("admin@cataloro.com", "password123", "Admin User"),
+            ("admin@cataloro.com", "admin123", "Admin User (Alt Password)"),
+        ]
+        
+        investigation_results = {}
+        
+        # Test with admin credentials
+        for email, password, user_type in test_credentials:
+            print(f"🔐 Investigating with {user_type} ({email})")
+            print("-" * 50)
+            
+            # Step 1: Login
+            token, user_id, user = await self.test_login_and_get_token(email, password)
+            if not token:
+                print(f"❌ Login failed for {user_type}, trying next credentials")
+                continue
+            
+            user_results = {}
+            user_role = user.get('user_role', 'Unknown')
+            username = user.get('username', 'unknown')
+            
+            print(f"✅ Successfully logged in as: {user.get('full_name', 'Unknown')} (Role: {user_role})")
+            
+            # Step 2: CRITICAL - Get exact API response structure
+            print(f"🔍 STEP 1: Getting exact Menu Settings API response...")
+            menu_api_result = await self.test_admin_menu_settings_api_detailed(token)
+            user_results['detailed_api_response'] = menu_api_result
+            
+            # Step 3: Check current database state
+            print(f"🗄️ STEP 2: Checking current database state...")
+            db_state_result = await self.check_current_database_state(token)
+            user_results['database_state'] = db_state_result
+            
+            # Step 4: Compare desktop vs mobile menu structure
+            if menu_api_result.get('success'):
+                print(f"📱 STEP 3: Analyzing desktop vs mobile menu differences...")
+                menu_comparison = await self.compare_desktop_mobile_menus(menu_api_result.get('raw_response', {}))
+                user_results['menu_comparison'] = menu_comparison
+            
+            # Step 5: Check for any filtering or permission issues
+            print(f"🔒 STEP 4: Checking for permission or filtering issues...")
+            permission_check = await self.check_menu_permission_filtering(token, user)
+            user_results['permission_check'] = permission_check
+            
+            # Step 6: Verify backend endpoint implementation
+            print(f"🔧 STEP 5: Verifying backend endpoint implementation...")
+            backend_check = await self.verify_backend_menu_endpoint(token)
+            user_results['backend_verification'] = backend_check
+            
+            investigation_results[user_type] = user_results
+            print()
+            
+            # If login was successful, we can break (no need to test alternative password)
+            break
+        
+        # Generate comprehensive investigation report
+        self.generate_buy_sell_investigation_report(investigation_results)
+        
+        return investigation_results
+
+    async def test_admin_menu_settings_api_detailed(self, token):
+        """Get detailed API response with exact structure analysis"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/admin/menu-settings"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Get exact structure
+                    desktop_menu = data.get('desktop_menu', {})
+                    mobile_menu = data.get('mobile_menu', {})
+                    
+                    # Check specifically for Buy/Sell items
+                    buy_in_desktop = 'buy' in desktop_menu
+                    sell_in_desktop = 'sell' in desktop_menu
+                    buy_in_mobile = 'buy' in mobile_menu
+                    sell_in_mobile = 'sell' in mobile_menu
+                    
+                    # Get all menu item keys for comparison
+                    desktop_keys = list(desktop_menu.keys())
+                    mobile_keys = list(mobile_menu.keys())
+                    
+                    # Detailed analysis of Buy/Sell items if present
+                    buy_details = desktop_menu.get('buy', {}) if buy_in_desktop else None
+                    sell_details = desktop_menu.get('sell', {}) if sell_in_desktop else None
+                    inventory_details = desktop_menu.get('buy_management', {}) if 'buy_management' in desktop_menu else None
+                    
+                    success_message = f"✅ API RESPONSE RECEIVED: Desktop has {len(desktop_keys)} items, Mobile has {len(mobile_keys)} items"
+                    
+                    if buy_in_desktop and sell_in_desktop:
+                        success_message += f" ✅ BUY/SELL FOUND: Both items present in desktop menu"
+                    elif buy_in_desktop or sell_in_desktop:
+                        success_message += f" ⚠️ PARTIAL BUY/SELL: Only {'Buy' if buy_in_desktop else 'Sell'} found in desktop menu"
+                    else:
+                        success_message += f" ❌ BUY/SELL MISSING: Neither Buy nor Sell found in desktop menu"
+                    
+                    if buy_in_mobile and sell_in_mobile:
+                        success_message += f" ✅ MOBILE BUY/SELL: Both items present in mobile menu"
+                    elif buy_in_mobile or sell_in_mobile:
+                        success_message += f" ⚠️ PARTIAL MOBILE: Only {'Buy' if buy_in_mobile else 'Sell'} found in mobile menu"
+                    else:
+                        success_message += f" ❌ MOBILE MISSING: Neither Buy nor Sell found in mobile menu"
+                    
+                    self.log_result(
+                        "Detailed Menu Settings API", 
+                        True, 
+                        success_message,
+                        response_time
+                    )
+                    
+                    return {
+                        'success': True,
+                        'desktop_menu_count': len(desktop_keys),
+                        'mobile_menu_count': len(mobile_keys),
+                        'desktop_menu_keys': desktop_keys,
+                        'mobile_menu_keys': mobile_keys,
+                        'buy_in_desktop': buy_in_desktop,
+                        'sell_in_desktop': sell_in_desktop,
+                        'buy_in_mobile': buy_in_mobile,
+                        'sell_in_mobile': sell_in_mobile,
+                        'buy_details': buy_details,
+                        'sell_details': sell_details,
+                        'inventory_details': inventory_details,
+                        'raw_response': data
+                    }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Detailed Menu Settings API", 
+                        False, 
+                        f"❌ API FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {
+                        'success': False, 
+                        'error': error_text,
+                        'status_code': response.status
+                    }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Detailed Menu Settings API", 
+                False, 
+                f"❌ API EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def check_current_database_state(self, token):
+        """Check current state of menu_settings collection"""
+        start_time = datetime.now()
+        
+        try:
+            import motor.motor_asyncio
+            import os
+            
+            # Get MongoDB URL from environment
+            mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+            client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
+            db = client.cataloro_marketplace
+            
+            # Check menu_settings collection
+            menu_settings_docs = await db.menu_settings.find({}).to_list(length=None)
+            doc_count = len(menu_settings_docs)
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            # Analyze documents
+            doc_analysis = []
+            for doc in menu_settings_docs:
+                doc_info = {
+                    'id': str(doc.get('_id', 'unknown')),
+                    'type': doc.get('type', 'unknown'),
+                    'has_desktop_menu': 'desktop_menu' in doc,
+                    'has_mobile_menu': 'mobile_menu' in doc,
+                    'created_at': doc.get('created_at', 'unknown'),
+                    'updated_at': doc.get('updated_at', 'unknown')
+                }
+                
+                # Check for Buy/Sell items in this document
+                if 'desktop_menu' in doc:
+                    desktop_menu = doc['desktop_menu']
+                    doc_info['desktop_has_buy'] = 'buy' in desktop_menu
+                    doc_info['desktop_has_sell'] = 'sell' in desktop_menu
+                    doc_info['desktop_keys'] = list(desktop_menu.keys())
+                
+                if 'mobile_menu' in doc:
+                    mobile_menu = doc['mobile_menu']
+                    doc_info['mobile_has_buy'] = 'buy' in mobile_menu
+                    doc_info['mobile_has_sell'] = 'sell' in mobile_menu
+                    doc_info['mobile_keys'] = list(mobile_menu.keys())
+                
+                doc_analysis.append(doc_info)
+            
+            if doc_count > 0:
+                self.log_result(
+                    "Database State Check", 
+                    True, 
+                    f"⚠️ DATABASE OVERRIDES PRESENT: Found {doc_count} menu_settings documents that may be affecting API response",
+                    response_time
+                )
+            else:
+                self.log_result(
+                    "Database State Check", 
+                    True, 
+                    f"✅ NO DATABASE OVERRIDES: menu_settings collection is empty, backend defaults should be used",
+                    response_time
+                )
+            
+            return {
+                'success': True,
+                'document_count': doc_count,
+                'has_overrides': doc_count > 0,
+                'documents': doc_analysis,
+                'raw_documents': menu_settings_docs
+            }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Database State Check", 
+                False, 
+                f"❌ DATABASE CHECK EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def compare_desktop_mobile_menus(self, api_response):
+        """Compare desktop vs mobile menu structures"""
+        start_time = datetime.now()
+        
+        try:
+            desktop_menu = api_response.get('desktop_menu', {})
+            mobile_menu = api_response.get('mobile_menu', {})
+            
+            # Get all unique keys
+            all_keys = set(desktop_menu.keys()) | set(mobile_menu.keys())
+            
+            comparison = {
+                'desktop_only': [],
+                'mobile_only': [],
+                'both_menus': [],
+                'buy_sell_analysis': {}
+            }
+            
+            for key in all_keys:
+                in_desktop = key in desktop_menu
+                in_mobile = key in mobile_menu
+                
+                if in_desktop and in_mobile:
+                    comparison['both_menus'].append(key)
+                elif in_desktop:
+                    comparison['desktop_only'].append(key)
+                elif in_mobile:
+                    comparison['mobile_only'].append(key)
+            
+            # Specific Buy/Sell analysis
+            for item in ['buy', 'sell', 'buy_management']:
+                desktop_item = desktop_menu.get(item, {})
+                mobile_item = mobile_menu.get(item, {})
+                
+                comparison['buy_sell_analysis'][item] = {
+                    'in_desktop': item in desktop_menu,
+                    'in_mobile': item in mobile_menu,
+                    'desktop_enabled': desktop_item.get('enabled', False) if desktop_item else False,
+                    'mobile_enabled': mobile_item.get('enabled', False) if mobile_item else False,
+                    'desktop_label': desktop_item.get('label', '') if desktop_item else '',
+                    'mobile_label': mobile_item.get('label', '') if mobile_item else '',
+                    'desktop_roles': desktop_item.get('roles', []) if desktop_item else [],
+                    'mobile_roles': mobile_item.get('roles', []) if mobile_item else []
+                }
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            # Analysis summary
+            desktop_has_buy_sell = 'buy' in desktop_menu and 'sell' in desktop_menu
+            mobile_has_buy_sell = 'buy' in mobile_menu and 'sell' in mobile_menu
+            
+            summary = f"✅ MENU COMPARISON COMPLETE: Desktop has {len(desktop_menu)} items, Mobile has {len(mobile_menu)} items"
+            
+            if desktop_has_buy_sell and mobile_has_buy_sell:
+                summary += f" ✅ BUY/SELL IN BOTH: Items present in both desktop and mobile menus"
+            elif desktop_has_buy_sell:
+                summary += f" ⚠️ BUY/SELL DESKTOP ONLY: Items only in desktop menu, missing from mobile"
+            elif mobile_has_buy_sell:
+                summary += f" ⚠️ BUY/SELL MOBILE ONLY: Items only in mobile menu, missing from desktop"
+            else:
+                summary += f" ❌ BUY/SELL MISSING: Items missing from both desktop and mobile menus"
+            
+            self.log_result(
+                "Desktop vs Mobile Menu Comparison", 
+                True, 
+                summary,
+                response_time
+            )
+            
+            return {
+                'success': True,
+                'comparison': comparison,
+                'desktop_has_buy_sell': desktop_has_buy_sell,
+                'mobile_has_buy_sell': mobile_has_buy_sell,
+                'desktop_count': len(desktop_menu),
+                'mobile_count': len(mobile_menu)
+            }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Desktop vs Mobile Menu Comparison", 
+                False, 
+                f"❌ COMPARISON EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def check_menu_permission_filtering(self, token, user):
+        """Check if there are permission or role-based filtering issues"""
+        start_time = datetime.now()
+        
+        try:
+            user_role = user.get('user_role', 'Unknown')
+            user_legacy_role = user.get('role', 'Unknown')
+            
+            # Check if user should have access to Buy/Sell items
+            expected_permissions = {
+                'buy': user_role in ['Admin', 'Admin-Manager', 'User-Buyer'],
+                'sell': user_role in ['Admin', 'Admin-Manager', 'User-Seller'],
+                'buy_management': user_role in ['Admin', 'Admin-Manager']
+            }
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            summary = f"✅ PERMISSION CHECK COMPLETE: User role '{user_role}' (legacy: '{user_legacy_role}')"
+            
+            if expected_permissions['buy'] and expected_permissions['sell']:
+                summary += f" ✅ SHOULD SEE BUY/SELL: User role should have access to both Buy and Sell items"
+            elif expected_permissions['buy']:
+                summary += f" ⚠️ SHOULD SEE BUY ONLY: User role should only have access to Buy items"
+            elif expected_permissions['sell']:
+                summary += f" ⚠️ SHOULD SEE SELL ONLY: User role should only have access to Sell items"
+            else:
+                summary += f" ❌ NO BUY/SELL ACCESS: User role should not have access to Buy/Sell items"
+            
+            self.log_result(
+                "Menu Permission Filtering Check", 
+                True, 
+                summary,
+                response_time
+            )
+            
+            return {
+                'success': True,
+                'user_role': user_role,
+                'legacy_role': user_legacy_role,
+                'expected_permissions': expected_permissions,
+                'should_see_buy': expected_permissions['buy'],
+                'should_see_sell': expected_permissions['sell'],
+                'should_see_inventory': expected_permissions['buy_management']
+            }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Menu Permission Filtering Check", 
+                False, 
+                f"❌ PERMISSION CHECK EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def verify_backend_menu_endpoint(self, token):
+        """Verify backend menu endpoint implementation by checking raw response"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/admin/menu-settings"
+            
+            # Make request and capture all response details
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                # Get response details
+                status_code = response.status
+                response_headers = dict(response.headers)
+                content_type = response_headers.get('content-type', 'unknown')
+                
+                if status_code == 200:
+                    # Get raw response text first
+                    raw_text = await response.text()
+                    
+                    try:
+                        # Try to parse as JSON
+                        data = json.loads(raw_text)
+                        
+                        # Check response structure
+                        has_desktop_menu = 'desktop_menu' in data
+                        has_mobile_menu = 'mobile_menu' in data
+                        
+                        # Check for expected structure
+                        structure_valid = has_desktop_menu and has_mobile_menu
+                        
+                        summary = f"✅ BACKEND ENDPOINT WORKING: Status 200, Content-Type: {content_type}"
+                        
+                        if structure_valid:
+                            summary += f" ✅ VALID STRUCTURE: Response has both desktop_menu and mobile_menu"
+                        else:
+                            summary += f" ❌ INVALID STRUCTURE: Missing desktop_menu or mobile_menu in response"
+                        
+                        self.log_result(
+                            "Backend Menu Endpoint Verification", 
+                            True, 
+                            summary,
+                            response_time
+                        )
+                        
+                        return {
+                            'success': True,
+                            'status_code': status_code,
+                            'content_type': content_type,
+                            'response_size': len(raw_text),
+                            'has_desktop_menu': has_desktop_menu,
+                            'has_mobile_menu': has_mobile_menu,
+                            'structure_valid': structure_valid,
+                            'raw_response_preview': raw_text[:500] + '...' if len(raw_text) > 500 else raw_text
+                        }
+                        
+                    except json.JSONDecodeError as e:
+                        self.log_result(
+                            "Backend Menu Endpoint Verification", 
+                            False, 
+                            f"❌ INVALID JSON: Response is not valid JSON: {str(e)}",
+                            response_time
+                        )
+                        return {
+                            'success': False,
+                            'error': 'Invalid JSON response',
+                            'raw_response': raw_text[:500] + '...' if len(raw_text) > 500 else raw_text
+                        }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Backend Menu Endpoint Verification", 
+                        False, 
+                        f"❌ ENDPOINT ERROR: Status {status_code}: {error_text}",
+                        response_time
+                    )
+                    return {
+                        'success': False,
+                        'status_code': status_code,
+                        'error': error_text
+                    }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Backend Menu Endpoint Verification", 
+                False, 
+                f"❌ ENDPOINT EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    def generate_buy_sell_investigation_report(self, investigation_results):
+        """Generate comprehensive investigation report for Buy/Sell menu items missing issue"""
+        print("📊 BUY/SELL MENU ITEMS MISSING - INVESTIGATION REPORT")
+        print("=" * 80)
+        
+        admin_results = investigation_results.get('Admin User', {}) or investigation_results.get('Admin User (Alt Password)', {})
+        
+        if not admin_results:
+            print("❌ CRITICAL: Could not login with admin credentials")
+            print("🔧 SOLUTION: Check admin credentials (admin@cataloro.com / password123)")
+            return
+        
+        print("🔍 INVESTIGATION FINDINGS:")
+        print("-" * 40)
+        
+        # 1. API Response Analysis
+        api_result = admin_results.get('detailed_api_response', {})
+        if api_result.get('success'):
+            print(f"✅ STEP 1 - API ACCESS: Menu Settings API is accessible")
+            print(f"   📊 Desktop Menu: {api_result.get('desktop_menu_count', 0)} items")
+            print(f"   📱 Mobile Menu: {api_result.get('mobile_menu_count', 0)} items")
+            print(f"   🗂️ Desktop Keys: {', '.join(api_result.get('desktop_menu_keys', []))}")
+            print(f"   📱 Mobile Keys: {', '.join(api_result.get('mobile_menu_keys', []))}")
+            
+            # Buy/Sell presence analysis
+            buy_desktop = api_result.get('buy_in_desktop', False)
+            sell_desktop = api_result.get('sell_in_desktop', False)
+            buy_mobile = api_result.get('buy_in_mobile', False)
+            sell_mobile = api_result.get('sell_in_mobile', False)
+            
+            print(f"   🛒 Buy Item - Desktop: {'✅ FOUND' if buy_desktop else '❌ MISSING'}, Mobile: {'✅ FOUND' if buy_mobile else '❌ MISSING'}")
+            print(f"   🏪 Sell Item - Desktop: {'✅ FOUND' if sell_desktop else '❌ MISSING'}, Mobile: {'✅ FOUND' if sell_mobile else '❌ MISSING'}")
+            
+            # Show item details if found
+            if buy_desktop and api_result.get('buy_details'):
+                buy_details = api_result.get('buy_details')
+                print(f"      Buy Details: enabled={buy_details.get('enabled')}, label='{buy_details.get('label')}', roles={buy_details.get('roles', [])}")
+            
+            if sell_desktop and api_result.get('sell_details'):
+                sell_details = api_result.get('sell_details')
+                print(f"      Sell Details: enabled={sell_details.get('enabled')}, label='{sell_details.get('label')}', roles={sell_details.get('roles', [])}")
+                
+        else:
+            print(f"❌ STEP 1 - API ACCESS: Menu Settings API failed")
+            print(f"   Error: {api_result.get('error', 'Unknown error')}")
+        
+        # 2. Database State Analysis
+        db_result = admin_results.get('database_state', {})
+        if db_result.get('success'):
+            doc_count = db_result.get('document_count', 0)
+            print(f"\n✅ STEP 2 - DATABASE STATE: Successfully checked menu_settings collection")
+            print(f"   📄 Documents Found: {doc_count}")
+            
+            if doc_count > 0:
+                print(f"   ⚠️ DATABASE OVERRIDES DETECTED: {doc_count} documents may be affecting API response")
+                for i, doc in enumerate(db_result.get('documents', [])):
+                    print(f"      Document {i+1}: ID={doc.get('id', 'unknown')[:8]}..., Type={doc.get('type', 'unknown')}")
+                    if doc.get('desktop_has_buy') or doc.get('desktop_has_sell'):
+                        print(f"         Desktop Buy/Sell: Buy={'✅' if doc.get('desktop_has_buy') else '❌'}, Sell={'✅' if doc.get('desktop_has_sell') else '❌'}")
+            else:
+                print(f"   ✅ NO DATABASE OVERRIDES: Collection is empty, backend defaults should be used")
+        else:
+            print(f"\n❌ STEP 2 - DATABASE STATE: Database check failed")
+            print(f"   Error: {db_result.get('error', 'Unknown error')}")
+        
+        # 3. Desktop vs Mobile Comparison
+        comparison_result = admin_results.get('menu_comparison', {})
+        if comparison_result.get('success'):
+            print(f"\n✅ STEP 3 - MENU COMPARISON: Desktop vs Mobile analysis complete")
+            comparison = comparison_result.get('comparison', {})
+            
+            desktop_only = comparison.get('desktop_only', [])
+            mobile_only = comparison.get('mobile_only', [])
+            both_menus = comparison.get('both_menus', [])
+            
+            print(f"   🖥️ Desktop Only: {', '.join(desktop_only) if desktop_only else 'None'}")
+            print(f"   📱 Mobile Only: {', '.join(mobile_only) if mobile_only else 'None'}")
+            print(f"   🔄 Both Menus: {', '.join(both_menus) if both_menus else 'None'}")
+            
+            # Buy/Sell specific analysis
+            buy_sell_analysis = comparison.get('buy_sell_analysis', {})
+            for item in ['buy', 'sell']:
+                item_analysis = buy_sell_analysis.get(item, {})
+                desktop_present = item_analysis.get('in_desktop', False)
+                mobile_present = item_analysis.get('in_mobile', False)
+                print(f"   {item.upper()} Item: Desktop={'✅' if desktop_present else '❌'}, Mobile={'✅' if mobile_present else '❌'}")
+        else:
+            print(f"\n❌ STEP 3 - MENU COMPARISON: Comparison failed")
+            print(f"   Error: {comparison_result.get('error', 'Unknown error')}")
+        
+        # 4. Permission Analysis
+        permission_result = admin_results.get('permission_check', {})
+        if permission_result.get('success'):
+            print(f"\n✅ STEP 4 - PERMISSIONS: Permission analysis complete")
+            user_role = permission_result.get('user_role', 'Unknown')
+            should_see_buy = permission_result.get('should_see_buy', False)
+            should_see_sell = permission_result.get('should_see_sell', False)
+            
+            print(f"   👤 User Role: {user_role}")
+            print(f"   🛒 Should See Buy: {'✅ YES' if should_see_buy else '❌ NO'}")
+            print(f"   🏪 Should See Sell: {'✅ YES' if should_see_sell else '❌ NO'}")
+        else:
+            print(f"\n❌ STEP 4 - PERMISSIONS: Permission check failed")
+            print(f"   Error: {permission_result.get('error', 'Unknown error')}")
+        
+        # 5. Backend Verification
+        backend_result = admin_results.get('backend_verification', {})
+        if backend_result.get('success'):
+            print(f"\n✅ STEP 5 - BACKEND: Backend endpoint verification complete")
+            print(f"   🔧 Status Code: {backend_result.get('status_code', 'Unknown')}")
+            print(f"   📄 Content Type: {backend_result.get('content_type', 'Unknown')}")
+            print(f"   📊 Structure Valid: {'✅ YES' if backend_result.get('structure_valid') else '❌ NO'}")
+        else:
+            print(f"\n❌ STEP 5 - BACKEND: Backend verification failed")
+            print(f"   Error: {backend_result.get('error', 'Unknown error')}")
+        
+        # ROOT CAUSE ANALYSIS
+        print(f"\n🔍 ROOT CAUSE ANALYSIS:")
+        print("-" * 40)
+        
+        # Determine the most likely root cause
+        if not api_result.get('success'):
+            print("❌ CRITICAL ISSUE: Admin Menu Settings API is not accessible")
+            print("🔧 IMMEDIATE ACTION: Fix backend API endpoint or authentication")
+        elif not (api_result.get('buy_in_desktop') and api_result.get('sell_in_desktop')):
+            print("❌ CRITICAL ISSUE: Buy/Sell items are missing from API response")
+            
+            if db_result.get('document_count', 0) > 0:
+                print("🔍 LIKELY CAUSE: Database overrides are preventing Buy/Sell items from appearing")
+                print("🔧 RECOMMENDED FIX: Clear or update menu_settings collection documents")
+            else:
+                print("🔍 LIKELY CAUSE: Backend default menu settings don't include Buy/Sell items")
+                print("🔧 RECOMMENDED FIX: Check backend server.py default menu settings configuration")
+        elif api_result.get('buy_in_desktop') and api_result.get('sell_in_desktop'):
+            print("⚠️ BACKEND API WORKING: Buy/Sell items are present in API response")
+            print("🔍 LIKELY CAUSE: Frontend Menu Settings component is not displaying the items correctly")
+            print("🔧 RECOMMENDED FIX: Check frontend MenuSettings.js component for filtering or display issues")
+        
+        # SPECIFIC RECOMMENDATIONS
+        print(f"\n🎯 SPECIFIC RECOMMENDATIONS:")
+        print("-" * 40)
+        
+        if api_result.get('success'):
+            if api_result.get('buy_in_desktop') and api_result.get('sell_in_desktop'):
+                print("1. ✅ BACKEND API WORKING: Buy/Sell items are in the API response")
+                print("2. 🔍 CHECK FRONTEND: Investigate MenuSettings.js component")
+                print("3. 🔍 CHECK FILTERING: Look for role-based or conditional filtering in frontend")
+                print("4. 🔍 CHECK DISPLAY: Verify frontend is correctly rendering all menu items")
+            else:
+                print("1. ❌ BACKEND ISSUE: Buy/Sell items missing from API response")
+                
+                if db_result.get('document_count', 0) > 0:
+                    print("2. 🧹 CLEAR DATABASE: Remove menu_settings collection documents")
+                    print("3. 🔄 RESTART BACKEND: Restart backend service after database changes")
+                else:
+                    print("2. 🔧 FIX BACKEND: Add Buy/Sell items to default menu settings in server.py")
+                    print("3. 🔄 RESTART BACKEND: Restart backend service after code changes")
+        else:
+            print("1. ❌ CRITICAL: Fix Admin Menu Settings API endpoint")
+            print("2. 🔍 CHECK AUTHENTICATION: Verify admin user permissions")
+            print("3. 🔍 CHECK BACKEND LOGS: Check backend service logs for errors")
+        
+        print(f"\n🚨 URGENT NEXT STEPS:")
+        print("-" * 40)
+        
+        # Determine immediate next steps based on findings
+        if api_result.get('success') and api_result.get('buy_in_desktop') and api_result.get('sell_in_desktop'):
+            print("✅ BACKEND IS WORKING - FRONTEND ISSUE LIKELY")
+            print("🔧 MAIN AGENT SHOULD:")
+            print("   1. Check MenuSettings.js component in frontend")
+            print("   2. Look for any filtering logic that might hide Buy/Sell items")
+            print("   3. Verify that all API response items are being rendered")
+            print("   4. Check browser console for any JavaScript errors")
+        elif db_result.get('document_count', 0) > 0:
+            print("⚠️ DATABASE OVERRIDES DETECTED - CLEAR REQUIRED")
+            print("🔧 MAIN AGENT SHOULD:")
+            print("   1. Clear the menu_settings collection in MongoDB")
+            print("   2. Restart the backend service")
+            print("   3. Test the API response again")
+            print("   4. Verify Buy/Sell items appear in Admin Panel")
+        else:
+            print("❌ BACKEND CONFIGURATION ISSUE")
+            print("🔧 MAIN AGENT SHOULD:")
+            print("   1. Check backend server.py default menu settings")
+            print("   2. Ensure Buy/Sell items are included in default configuration")
+            print("   3. Restart backend service after changes")
+            print("   4. Test API response and Admin Panel")
+        
+        print(f"\n🎉 BUY/SELL MENU ITEMS INVESTIGATION COMPLETED!")
+        print("=" * 80)
+
     async def run_database_menu_settings_fix(self):
         """Run comprehensive database menu settings fix and verification"""
         print("🚀 CATALORO DATABASE MENU SETTINGS FIX")
