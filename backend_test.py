@@ -597,9 +597,9 @@ class BackendTester:
 
 
 
-    async def run_admin_menu_settings_tests(self):
-        """Run comprehensive admin menu settings API tests"""
-        print("🚀 CATALORO ADMIN MENU SETTINGS API TESTING")
+    async def run_database_menu_settings_fix(self):
+        """Run comprehensive database menu settings fix and verification"""
+        print("🚀 CATALORO DATABASE MENU SETTINGS FIX")
         print("=" * 80)
         print()
         
@@ -626,21 +626,75 @@ class BackendTester:
             user_role = user.get('user_role', 'Unknown')
             username = user.get('username', 'unknown')
             
-            # Step 2: Test admin menu settings API
-            print(f"🔍 Testing admin menu settings API for {user_type}...")
-            menu_api_result = await self.test_admin_menu_settings_api(token)
-            user_results['menu_settings_api'] = menu_api_result
+            # Step 2: Test current admin menu settings API (BEFORE fix)
+            print(f"🔍 Testing CURRENT admin menu settings API (before fix)...")
+            menu_api_before = await self.test_admin_menu_settings_api(token)
+            user_results['menu_settings_api_before'] = menu_api_before
             
-            # Step 3: Detailed analysis of menu items if API call was successful
-            if menu_api_result.get('success') and menu_api_result.get('raw_response'):
-                print(f"🔬 Performing detailed analysis of menu items...")
-                analysis_result = await self.test_menu_items_detailed_analysis(menu_api_result['raw_response'])
-                user_results['menu_items_analysis'] = analysis_result
-            
-            # Step 4: Check database settings (informational)
-            print(f"🗄️ Checking database menu settings implications...")
+            # Step 3: Check database menu settings
+            print(f"🗄️ Checking database menu settings for overrides...")
             db_check_result = await self.test_database_menu_settings_check(token)
             user_results['database_check'] = db_check_result
+            
+            # Step 4: Apply fix based on database check results
+            if db_check_result.get('has_overrides'):
+                print(f"⚠️ Database overrides found. Applying fix...")
+                
+                # Option 1: Clear database settings (recommended)
+                print(f"🧹 OPTION 1: Clearing database menu settings...")
+                clear_result = await self.clear_database_menu_settings(token)
+                user_results['database_clear'] = clear_result
+                
+                if clear_result.get('success'):
+                    # Test API after clearing database
+                    print(f"🔍 Testing admin menu settings API AFTER clearing database...")
+                    menu_api_after_clear = await self.test_admin_menu_settings_api(token)
+                    user_results['menu_settings_api_after_clear'] = menu_api_after_clear
+                    
+                    # Check if clearing fixed the issues
+                    if self.is_menu_configuration_correct(menu_api_after_clear):
+                        print(f"✅ SUCCESS: Clearing database fixed the menu configuration!")
+                        user_results['fix_successful'] = True
+                        user_results['fix_method'] = 'database_clear'
+                    else:
+                        print(f"⚠️ Clearing database didn't fully fix the issue. Trying direct update...")
+                        
+                        # Option 2: Update database settings directly
+                        print(f"🔧 OPTION 2: Updating database menu settings directly...")
+                        update_result = await self.update_database_menu_settings(token)
+                        user_results['database_update'] = update_result
+                        
+                        if update_result.get('success'):
+                            # Test API after updating database
+                            print(f"🔍 Testing admin menu settings API AFTER updating database...")
+                            menu_api_after_update = await self.test_admin_menu_settings_api(token)
+                            user_results['menu_settings_api_after_update'] = menu_api_after_update
+                            
+                            # Check if updating fixed the issues
+                            if self.is_menu_configuration_correct(menu_api_after_update):
+                                print(f"✅ SUCCESS: Updating database fixed the menu configuration!")
+                                user_results['fix_successful'] = True
+                                user_results['fix_method'] = 'database_update'
+                            else:
+                                print(f"❌ Database update didn't fix the issue. Manual intervention may be required.")
+                                user_results['fix_successful'] = False
+                        else:
+                            print(f"❌ Failed to update database menu settings.")
+                            user_results['fix_successful'] = False
+                else:
+                    print(f"❌ Failed to clear database menu settings.")
+                    user_results['fix_successful'] = False
+            else:
+                print(f"ℹ️ No database overrides found. Issue may be in backend configuration.")
+                user_results['fix_successful'] = None
+                user_results['fix_method'] = 'no_fix_needed'
+            
+            # Step 5: Final verification
+            print(f"🔬 Performing final detailed analysis...")
+            final_menu_result = user_results.get('menu_settings_api_after_update') or user_results.get('menu_settings_api_after_clear') or menu_api_before
+            if final_menu_result.get('success') and final_menu_result.get('raw_response'):
+                analysis_result = await self.test_menu_items_detailed_analysis(final_menu_result['raw_response'])
+                user_results['final_menu_analysis'] = analysis_result
             
             all_results[user_type] = user_results
             print()
@@ -649,9 +703,188 @@ class BackendTester:
             break
         
         # Generate summary
-        self.generate_menu_settings_summary(all_results)
+        self.generate_database_fix_summary(all_results)
         
         return all_results
+
+    def is_menu_configuration_correct(self, menu_api_result):
+        """Check if menu configuration matches expected values"""
+        if not menu_api_result.get('success'):
+            return False
+        
+        expected_items_check = menu_api_result.get('expected_items_check', {})
+        
+        # Check if all expected items match
+        buy_correct = (
+            expected_items_check.get('buy', {}).get('found') and
+            expected_items_check.get('buy', {}).get('enabled') == True and
+            expected_items_check.get('buy', {}).get('label') == 'Buy' and
+            set(expected_items_check.get('buy', {}).get('roles', [])) == {'admin', 'manager', 'buyer'}
+        )
+        
+        sell_correct = (
+            expected_items_check.get('sell', {}).get('found') and
+            expected_items_check.get('sell', {}).get('enabled') == True and
+            expected_items_check.get('sell', {}).get('label') == 'Sell' and
+            set(expected_items_check.get('sell', {}).get('roles', [])) == {'admin', 'manager', 'seller'}
+        )
+        
+        inventory_correct = (
+            expected_items_check.get('buy_management', {}).get('found') and
+            expected_items_check.get('buy_management', {}).get('enabled') == False and
+            expected_items_check.get('buy_management', {}).get('label') == 'Inventory' and
+            set(expected_items_check.get('buy_management', {}).get('roles', [])) == {'admin', 'manager', 'buyer'}
+        )
+        
+        return buy_correct and sell_correct and inventory_correct
+
+    def generate_database_fix_summary(self, all_results):
+        """Generate comprehensive summary of database menu settings fix"""
+        print("📊 DATABASE MENU SETTINGS FIX SUMMARY")
+        print("=" * 80)
+        
+        total_tests = 0
+        passed_tests = 0
+        critical_issues = []
+        
+        for user_type, results in all_results.items():
+            print(f"\n🔍 {user_type} Results:")
+            print("-" * 30)
+            
+            # Show before/after comparison
+            menu_before = results.get('menu_settings_api_before', {})
+            menu_after_clear = results.get('menu_settings_api_after_clear', {})
+            menu_after_update = results.get('menu_settings_api_after_update', {})
+            
+            print(f"  📊 BEFORE FIX:")
+            if menu_before.get('success'):
+                before_check = menu_before.get('expected_items_check', {})
+                for item_name, item_result in before_check.items():
+                    if item_result.get('found'):
+                        enabled = "✅ ENABLED" if item_result.get('enabled') else "❌ DISABLED"
+                        roles = ', '.join(item_result.get('roles', []))
+                        print(f"    • {item_name}: {enabled} - {item_result.get('label', 'No Label')} - Roles: [{roles}]")
+                        
+                        # Highlight issues
+                        if item_name == 'sell' and 'buyer' in item_result.get('roles', []):
+                            print(f"      ⚠️ ISSUE: Sell item has extra 'buyer' role")
+                        if item_name == 'buy_management' and item_result.get('enabled'):
+                            print(f"      ⚠️ ISSUE: Inventory item is enabled (should be disabled)")
+                    else:
+                        print(f"    • {item_name}: ❌ NOT FOUND")
+            else:
+                print(f"    ❌ API call failed")
+            
+            # Show database check results
+            db_check = results.get('database_check', {})
+            if db_check.get('success'):
+                if db_check.get('has_overrides'):
+                    override_count = db_check.get('override_count', 0)
+                    print(f"  🗄️ DATABASE CHECK: ⚠️ Found {override_count} override documents")
+                else:
+                    print(f"  🗄️ DATABASE CHECK: ✅ No overrides found")
+            
+            # Show fix results
+            fix_successful = results.get('fix_successful')
+            fix_method = results.get('fix_method', 'unknown')
+            
+            if fix_successful == True:
+                print(f"  🔧 FIX RESULT: ✅ SUCCESS via {fix_method}")
+                
+                # Show after results
+                final_menu = menu_after_update if menu_after_update.get('success') else menu_after_clear
+                if final_menu.get('success'):
+                    print(f"  📊 AFTER FIX:")
+                    after_check = final_menu.get('expected_items_check', {})
+                    for item_name, item_result in after_check.items():
+                        if item_result.get('found'):
+                            enabled = "✅ ENABLED" if item_result.get('enabled') else "❌ DISABLED"
+                            roles = ', '.join(item_result.get('roles', []))
+                            print(f"    • {item_name}: {enabled} - {item_result.get('label', 'No Label')} - Roles: [{roles}]")
+                        else:
+                            print(f"    • {item_name}: ❌ NOT FOUND")
+            elif fix_successful == False:
+                print(f"  🔧 FIX RESULT: ❌ FAILED")
+                critical_issues.append(f"{user_type}: Fix failed")
+            else:
+                print(f"  🔧 FIX RESULT: ℹ️ No fix needed (no database overrides)")
+        
+        # Overall summary
+        print(f"\n🎯 OVERALL RESULTS:")
+        
+        # Analyze results to determine success
+        admin_results = all_results.get('Admin User', {}) or all_results.get('Admin User (Alt Password)', {})
+        
+        if admin_results:
+            fix_successful = admin_results.get('fix_successful')
+            fix_method = admin_results.get('fix_method', 'unknown')
+            
+            if fix_successful == True:
+                print(f"   ✅ DATABASE MENU SETTINGS FIX SUCCESSFUL")
+                print(f"   🔧 Fix Method: {fix_method}")
+                print(f"   🎉 Buy/Sell/Inventory items should now be correctly configured")
+                print(f"   💡 Admin Panel Menu Settings should now display the correct items")
+            elif fix_successful == False:
+                print(f"   ❌ DATABASE MENU SETTINGS FIX FAILED")
+                print(f"   🔧 Manual intervention may be required")
+                critical_issues.append("Database fix failed")
+            else:
+                print(f"   ℹ️ NO DATABASE OVERRIDES FOUND")
+                print(f"   💡 Issue may be in backend configuration or frontend parsing")
+        
+        # Key findings and recommendations
+        print(f"\n🔑 KEY FINDINGS:")
+        
+        if admin_results:
+            db_check = admin_results.get('database_check', {})
+            menu_before = admin_results.get('menu_settings_api_before', {})
+            
+            if db_check.get('has_overrides'):
+                print(f"   ⚠️ Database overrides were found and addressed")
+                override_count = db_check.get('override_count', 0)
+                print(f"   📊 {override_count} menu_settings documents were affecting configuration")
+            
+            if menu_before.get('success'):
+                before_check = menu_before.get('expected_items_check', {})
+                issues_found = []
+                
+                sell_item = before_check.get('sell', {})
+                if sell_item.get('found') and 'buyer' in sell_item.get('roles', []):
+                    issues_found.append("Sell item had extra 'buyer' role")
+                
+                inventory_item = before_check.get('buy_management', {})
+                if inventory_item.get('found') and inventory_item.get('enabled'):
+                    issues_found.append("Inventory item was incorrectly enabled")
+                
+                if issues_found:
+                    print(f"   🔍 Issues identified: {'; '.join(issues_found)}")
+                else:
+                    print(f"   ✅ No configuration issues found in API response")
+        
+        print(f"\n🔧 RECOMMENDATIONS:")
+        
+        if admin_results and admin_results.get('fix_successful') == True:
+            print("   ✅ Database fix was successful")
+            print("   🎯 Next steps:")
+            print("     1. Verify Admin Panel Menu Settings now shows correct Buy/Sell items")
+            print("     2. Test that menu items appear correctly for different user roles")
+            print("     3. Confirm frontend is parsing the updated menu configuration")
+        elif admin_results and admin_results.get('fix_successful') == False:
+            print("   ❌ Database fix failed - manual intervention required")
+            print("   🔧 Manual steps:")
+            print("     1. Connect to MongoDB directly")
+            print("     2. Check db.menu_settings collection")
+            print("     3. Remove or update documents with type: 'menu_config'")
+            print("     4. Restart backend service to clear any caches")
+        else:
+            print("   ℹ️ No database overrides found")
+            print("   🔍 Check these areas:")
+            print("     1. Backend default menu settings in server.py")
+            print("     2. Frontend Menu Settings component parsing")
+            print("     3. API endpoint implementation")
+        
+        print(f"\n🎉 DATABASE MENU SETTINGS FIX COMPLETED!")
+        print("=" * 80)
 
     def generate_menu_settings_summary(self, all_results):
         """Generate comprehensive summary of admin menu settings API testing"""
