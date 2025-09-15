@@ -1,5 +1,5 @@
 /**
- * CATALORO - Ultra-Modern Header Navigation - TEST SASCHA
+ * CATALORO - Ultra-Modern Header Navigation - DEPLOYMENT TEST v3.0
  * Sleek header with comprehensive navigation and enhanced notifications
  */
 
