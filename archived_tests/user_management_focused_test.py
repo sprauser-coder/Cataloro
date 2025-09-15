@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 # Test Configuration
-BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
+BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
 
 class UserManagementTester:
     def __init__(self):

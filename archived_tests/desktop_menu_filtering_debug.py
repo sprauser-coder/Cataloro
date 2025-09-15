@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
+BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
 
 # Admin User Configuration
 ADMIN_EMAIL = "admin@cataloro.com"

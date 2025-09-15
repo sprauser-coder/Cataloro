@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
+BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
 
 # Test User Configuration (using demo_user_1 as requested)
 TEST_USER_EMAIL = "demo@cataloro.com"

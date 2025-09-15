@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
+BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
 PERFORMANCE_TARGET_MS = 1000  # All endpoints should respond in <1 second
 CRITICAL_PERFORMANCE_TARGET_MS = 500  # Critical endpoints should respond in <500ms
 ADMIN_CALCULATIONS_TARGET_MS = 1000  # Admin catalyst calculations should be <1s

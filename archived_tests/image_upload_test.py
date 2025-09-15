@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
+BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
 
 # Admin User Configuration
 ADMIN_EMAIL = "admin@cataloro.com"
@@ -370,7 +370,7 @@ class ImageUploadTester:
         
         # Simulate browser CORS preflight request
         cors_headers = {
-            "Origin": "https://self-hosted-shop.preview.emergentagent.com",
+            "Origin": "https://vps-sync.preview.emergentagent.com",
             "Access-Control-Request-Method": "POST",
             "Access-Control-Request-Headers": "authorization,content-type"
         }
@@ -388,7 +388,7 @@ class ImageUploadTester:
         
         cors_working = (
             result["status"] in [200, 204] and
-            cors_analysis["access_control_allow_origin"] in ["*", "https://self-hosted-shop.preview.emergentagent.com"]
+            cors_analysis["access_control_allow_origin"] in ["*", "https://vps-sync.preview.emergentagent.com"]
         )
         
         print(f"  📊 CORS preflight status: {result['status']}")

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://self-hosted-shop.preview.emergentagent.com/api"
+BACKEND_URL = "https://vps-sync.preview.emergentagent.com/api"
 
 # Demo User Configuration (from review request)
 DEMO_USER_ID = "68bfff790e4e46bc28d43631"
