@@ -149,14 +149,6 @@ function MyListingsPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">My Listings</h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Manage your marketplace listings</p>
           </div>
-          <button 
-            onClick={handleCreateListing}
-            className="cataloro-button-primary flex items-center justify-center w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            <span className="hidden sm:inline">Create New Listing</span>
-            <span className="sm:hidden">Create Listing</span>
-          </button>
         </div>
       </div>
 
