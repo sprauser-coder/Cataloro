@@ -406,23 +406,59 @@ class BackendTester:
         start_time = datetime.now()
         
         try:
-            # This would require direct database access, but we can infer from API behavior
-            # For now, we'll make a note that this should be checked
+            # Connect to MongoDB directly to check menu_settings collection
+            import motor.motor_asyncio
+            import os
+            
+            # Get MongoDB URL from environment
+            mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+            client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
+            db = client.cataloro_marketplace
+            
+            # Check if menu_settings collection exists and has documents
+            menu_settings_docs = await db.menu_settings.find({}).to_list(length=None)
             
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             
-            self.log_result(
-                "Database Menu Settings Check", 
-                True, 
-                "ℹ️ DATABASE CHECK NOTED: To fully debug, would need to check if db.menu_settings collection has overrides that might affect the default menu configuration. The API merge logic should handle this correctly.",
-                response_time
-            )
-            
-            return {
-                'success': True,
-                'note': 'Database check would require direct MongoDB access',
-                'recommendation': 'Check db.menu_settings collection for any documents with type: menu_config'
-            }
+            if menu_settings_docs:
+                # Found database overrides
+                override_count = len(menu_settings_docs)
+                override_details = []
+                
+                for doc in menu_settings_docs:
+                    doc_type = doc.get('type', 'unknown')
+                    doc_id = doc.get('_id', 'unknown')
+                    override_details.append(f"Document ID: {doc_id}, Type: {doc_type}")
+                
+                self.log_result(
+                    "Database Menu Settings Check", 
+                    True, 
+                    f"⚠️ DATABASE OVERRIDES FOUND: Found {override_count} menu_settings documents that may be overriding backend defaults. Documents: {'; '.join(override_details)}",
+                    response_time
+                )
+                
+                return {
+                    'success': True,
+                    'has_overrides': True,
+                    'override_count': override_count,
+                    'override_documents': menu_settings_docs,
+                    'recommendation': 'Clear or update these database documents to allow backend defaults to take effect'
+                }
+            else:
+                # No database overrides found
+                self.log_result(
+                    "Database Menu Settings Check", 
+                    True, 
+                    "✅ NO DATABASE OVERRIDES: menu_settings collection is empty, backend defaults should be used",
+                    response_time
+                )
+                
+                return {
+                    'success': True,
+                    'has_overrides': False,
+                    'override_count': 0,
+                    'recommendation': 'No database overrides found, issue may be in backend default configuration'
+                }
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -430,6 +466,125 @@ class BackendTester:
                 "Database Menu Settings Check", 
                 False, 
                 f"❌ DATABASE CHECK EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def clear_database_menu_settings(self, token):
+        """Clear database menu_settings collection to allow backend defaults"""
+        start_time = datetime.now()
+        
+        try:
+            # Connect to MongoDB directly
+            import motor.motor_asyncio
+            import os
+            
+            # Get MongoDB URL from environment
+            mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+            client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
+            db = client.cataloro_marketplace
+            
+            # Count documents before deletion
+            before_count = await db.menu_settings.count_documents({})
+            
+            # Clear all menu_settings documents
+            delete_result = await db.menu_settings.delete_many({})
+            deleted_count = delete_result.deleted_count
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            self.log_result(
+                "Clear Database Menu Settings", 
+                True, 
+                f"✅ DATABASE CLEARED: Removed {deleted_count} documents from menu_settings collection (was {before_count} documents). Backend defaults should now take effect.",
+                response_time
+            )
+            
+            return {
+                'success': True,
+                'documents_before': before_count,
+                'documents_deleted': deleted_count,
+                'message': 'Database menu settings cleared successfully'
+            }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Clear Database Menu Settings", 
+                False, 
+                f"❌ DATABASE CLEAR EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def update_database_menu_settings(self, token):
+        """Update database menu_settings to match intended configuration"""
+        start_time = datetime.now()
+        
+        try:
+            # Connect to MongoDB directly
+            import motor.motor_asyncio
+            import os
+            
+            # Get MongoDB URL from environment
+            mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+            client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
+            db = client.cataloro_marketplace
+            
+            # Define the correct menu configuration
+            correct_menu_config = {
+                "type": "menu_config",
+                "desktop_menu": {
+                    "buy": {"enabled": True, "label": "Buy", "roles": ["admin", "manager", "buyer"]},
+                    "sell": {"enabled": True, "label": "Sell", "roles": ["admin", "manager", "seller"]},
+                    "buy_management": {"enabled": False, "label": "Inventory", "roles": ["admin", "manager", "buyer"]}
+                },
+                "mobile_menu": {
+                    "buy": {"enabled": True, "label": "Buy", "roles": ["admin", "manager", "buyer"]},
+                    "sell": {"enabled": True, "label": "Sell", "roles": ["admin", "manager", "seller"]},
+                    "buy_management": {"enabled": False, "label": "Inventory", "roles": ["admin", "manager", "buyer"]}
+                },
+                "updated_at": datetime.now().isoformat(),
+                "updated_by": "backend_test_fix"
+            }
+            
+            # Update or insert the menu configuration
+            result = await db.menu_settings.replace_one(
+                {"type": "menu_config"},
+                correct_menu_config,
+                upsert=True
+            )
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            if result.upserted_id:
+                action = "INSERTED"
+            elif result.modified_count > 0:
+                action = "UPDATED"
+            else:
+                action = "NO CHANGE"
+            
+            self.log_result(
+                "Update Database Menu Settings", 
+                True, 
+                f"✅ DATABASE {action}: Menu settings document updated with correct Buy/Sell/Inventory configuration. Sell item roles fixed, Inventory disabled.",
+                response_time
+            )
+            
+            return {
+                'success': True,
+                'action': action,
+                'upserted_id': str(result.upserted_id) if result.upserted_id else None,
+                'modified_count': result.modified_count,
+                'message': 'Database menu settings updated with correct configuration'
+            }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Update Database Menu Settings", 
+                False, 
+                f"❌ DATABASE UPDATE EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
