@@ -65,6 +65,7 @@ services:
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt/live/cataloro.com/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - /etc/letsencrypt/live/cataloro.com/privkey.pem:/etc/ssl/private/privkey.pem:ro
+      - frontend_build:/usr/share/nginx/html:ro
     networks:
       - cataloro_network
 
