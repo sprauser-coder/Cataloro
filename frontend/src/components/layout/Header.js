@@ -99,6 +99,7 @@ function Header() {
               <span className="text-white font-bold text-lg">C</span>
             </div>
             <h1 className="text-xl font-bold text-gray-900">{UI_CONFIG.APP_NAME}</h1>
+            <span className="ml-2 px-2 py-1 bg-yellow-400 text-black text-xs font-bold rounded">DEPLOYMENT TEST v2.0</span>
           </Link>
         </div>
 
