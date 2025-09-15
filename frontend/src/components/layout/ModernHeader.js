@@ -1,5 +1,5 @@
 /**
- * CATALORO - Ultra-Modern Header Navigation - DEPLOYMENT TEST v3.0
+ * CATALORO - Ultra-Modern Header Navigation
  * Sleek header with comprehensive navigation and enhanced notifications
  */
 
