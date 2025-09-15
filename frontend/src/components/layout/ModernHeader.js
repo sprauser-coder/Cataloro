@@ -685,6 +685,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 </div>
               </div>
             </Link>
+            <span className="ml-4 px-3 py-1 bg-yellow-400 text-black text-xs font-bold rounded shadow-lg">DEPLOYMENT TEST v3.0</span>
 
             {/* Navigation Links */}
             <nav className="hidden lg:flex space-x-2">
