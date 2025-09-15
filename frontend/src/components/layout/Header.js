@@ -90,7 +90,7 @@ function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40">
+    <header className="fixed top-0 left-0 right-0 bg-red-600 border-b border-gray-200 z-40">
       <div className="flex items-center justify-between px-6 h-16">
         {/* Brand */}
         <div className="flex items-center">
