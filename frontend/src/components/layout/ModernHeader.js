@@ -750,9 +750,9 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                       backdropFilter: 'blur(20px)',
                       boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
                     } : {
-                      background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(37, 99, 235, 0.15) 100%)',
+                      background: 'linear-gradient(135deg, rgba(156, 163, 175, 0.25) 0%, rgba(156, 163, 175, 0.15) 100%)',
                       backdropFilter: 'blur(20px)',
-                      boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)'
+                      boxShadow: '0 4px 15px rgba(156, 163, 175, 0.2)'
                     }) : {}}
                   >
                     <Icon className="w-4 h-4" />
