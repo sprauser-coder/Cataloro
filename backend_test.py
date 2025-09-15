@@ -1,50 +1,46 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - DATABASE MENU SETTINGS RESET TESTING
-Testing and fixing database menu settings override issues
+CATALORO MARKETPLACE - BUY/SELL MENU ITEMS INVESTIGATION
+URGENT: Investigating why Buy and Sell menu items are still not appearing in Admin Panel Menu Settings
 
-SPECIFIC ISSUE IDENTIFIED (Review Request):
-Backend testing confirmed that the database `menu_settings` collection has stored overrides 
-from previous admin panel changes that are overriding the updated backend defaults.
+CURRENT ISSUE (Review Request):
+The Buy and Sell menu items are still not appearing in the Admin Panel Menu Settings interface 
+despite the database fix. User screenshot shows Admin Panel Menu Settings interface with only:
+Browse, Messages, Notifications, Create, Tenders, Listings, Profile, View Public Profile, Admin
 
-**ROOT CAUSE IDENTIFIED**:
-- Backend default settings in server.py are CORRECT
-- Database `menu_settings` collection has stored overrides that take precedence
-- API merge logic is working correctly but database settings override defaults
-- Previous admin panel menu settings changes were saved to database
+**CRITICAL INVESTIGATION REQUIRED:**
 
-**SPECIFIC ISSUES FOUND**:
-- "sell" item has extra "buyer" role: ["admin", "manager", "seller", "buyer"] 
-  (should only have ["admin", "manager", "seller"])
-- "buy_management" (Inventory) is enabled=true (should be enabled=false)
+**1. Re-verify Menu Settings API Response**
+- Login as admin (admin@cataloro.com / password123)
+- Call GET `/api/admin/menu-settings` again
+- Check if Buy/Sell items are actually in the API response
+- Verify the exact structure of the returned data
 
-**REQUIRED ACTIONS**:
+**2. Debug Desktop vs Mobile Menu Structure**  
+- Check if Buy/Sell items exist in desktop_menu vs mobile_menu
+- User mentions they appear in desktop version but not mobile
+- This suggests different configurations for desktop vs mobile menus
 
-**1. Clear Database Menu Settings**
-- Connect to MongoDB and find the `menu_settings` collection
-- Remove or reset the document with `type: "menu_config"`
-- This will allow the backend defaults to take effect
+**3. Investigate Frontend Filtering**
+- Check if frontend MenuSettings.js is filtering out certain items
+- Look for any conditional logic that might hide Buy/Sell items
+- Verify if there are permission checks that could hide these items
 
-**2. Alternative: Update Database Settings**
-- Update the database document directly to match intended configuration
-- Fix "sell" item roles to remove "buyer" 
-- Set "buy_management" enabled=false
+**4. Check Current Database State**
+- Verify the menu_settings collection current state
+- Ensure the database clear operation actually worked
+- Check if new database overrides have been created
 
-**3. Verify After Changes**
-- Test GET `/api/admin/menu-settings` again to confirm correct configuration
-- Verify "Buy" and "Sell" items appear with correct settings
-
-**EXPECTED RESULT AFTER FIX**:
-```
-"buy": {"enabled": true, "label": "Buy", "roles": ["admin", "manager", "buyer"]}
-"sell": {"enabled": true, "label": "Sell", "roles": ["admin", "manager", "seller"]}
-"buy_management": {"enabled": false, "label": "Inventory", "roles": ["admin", "manager", "buyer"]}
-```
+**EXPECTED DEBUG OUTPUT:**
+- Exact API response structure showing whether Buy/Sell items are present
+- Comparison of desktop_menu vs mobile_menu configurations  
+- Current database state of menu_settings collection
+- Any filtering or conditional logic affecting menu item display
 
 **LOGIN CREDENTIALS:** admin@cataloro.com / password123
 
-**GOAL:** Clear/update the database menu_settings to allow the new Buy/Sell menu items 
-to be properly configured and visible in Admin Panel Menu Settings interface.
+**GOAL:** Identify exactly why Buy and Sell menu items are not appearing in the Admin Panel 
+Menu Settings interface and provide specific fix recommendations.
 """
 
 import asyncio
