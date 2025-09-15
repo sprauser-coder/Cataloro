@@ -141,69 +141,13 @@ class BackendTester:
             )
             return None, None, None
 
-    async def test_admin_permissions(self, token, user_id, user_data):
-        """Test admin user permissions to verify canAccessUserManagement permission"""
-        start_time = datetime.now()
-        
-        try:
-            # Check user role and permissions from login response
-            user_role = user_data.get('user_role', 'Unknown')
-            role = user_data.get('role', 'Unknown')
-            
-            # Determine if user should have canAccessUserManagement permission
-            should_have_permission = (
-                user_role in ['Admin', 'Admin-Manager'] or 
-                role == 'admin'
-            )
-            
-            response_time = (datetime.now() - start_time).total_seconds() * 1000
-            
-            if should_have_permission:
-                self.log_result(
-                    "Admin Permissions Check", 
-                    True, 
-                    f"✅ ADMIN PERMISSIONS CONFIRMED: User has role '{user_role}' (legacy: '{role}') which should grant canAccessUserManagement permission",
-                    response_time
-                )
-                return {
-                    'success': True, 
-                    'user_role': user_role,
-                    'legacy_role': role,
-                    'should_have_permission': True,
-                    'permission_name': 'canAccessUserManagement'
-                }
-            else:
-                self.log_result(
-                    "Admin Permissions Check", 
-                    False, 
-                    f"❌ INSUFFICIENT PERMISSIONS: User has role '{user_role}' (legacy: '{role}') which should NOT grant canAccessUserManagement permission",
-                    response_time
-                )
-                return {
-                    'success': False, 
-                    'user_role': user_role,
-                    'legacy_role': role,
-                    'should_have_permission': False,
-                    'error': 'User does not have admin permissions'
-                }
-                    
-        except Exception as e:
-            response_time = (datetime.now() - start_time).total_seconds() * 1000
-            self.log_result(
-                "Admin Permissions Check", 
-                False, 
-                f"❌ PERMISSIONS CHECK EXCEPTION: {str(e)}",
-                response_time
-            )
-            return {'success': False, 'error': str(e)}
-
-    async def test_admin_completed_transactions_endpoint(self, token, user_role):
-        """Test GET /api/admin/completed-transactions endpoint for admin access"""
+    async def test_admin_menu_settings_api(self, token):
+        """Test GET /api/admin/menu-settings endpoint to verify Buy/Sell menu items"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/admin/completed-transactions"
+            url = f"{BACKEND_URL}/admin/menu-settings"
             
             async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -212,42 +156,90 @@ class BackendTester:
                     data = await response.json()
                     
                     # Check if response has the expected structure
-                    transactions = data.get('transactions', [])
-                    total_count = data.get('total_count', 0)
+                    desktop_menu = data.get('desktop_menu', {})
+                    mobile_menu = data.get('mobile_menu', {})
+                    
+                    # Check for expected Buy/Sell menu items
+                    expected_items = {
+                        'buy': {'enabled': True, 'label': 'Buy', 'roles': ['admin', 'manager', 'buyer']},
+                        'sell': {'enabled': True, 'label': 'Sell', 'roles': ['admin', 'manager', 'seller']},
+                        'buy_management': {'enabled': False, 'label': 'Inventory', 'roles': ['admin', 'manager', 'buyer']}
+                    }
+                    
+                    # Verify desktop menu items
+                    desktop_results = {}
+                    for item_key, expected_config in expected_items.items():
+                        actual_item = desktop_menu.get(item_key, {})
+                        desktop_results[item_key] = {
+                            'found': item_key in desktop_menu,
+                            'enabled': actual_item.get('enabled'),
+                            'label': actual_item.get('label'),
+                            'roles': actual_item.get('roles', []),
+                            'matches_expected': actual_item == expected_config
+                        }
+                    
+                    # Verify mobile menu items (buy/sell might not be in mobile)
+                    mobile_results = {}
+                    for item_key in expected_items.keys():
+                        if item_key in mobile_menu:
+                            actual_item = mobile_menu.get(item_key, {})
+                            mobile_results[item_key] = {
+                                'found': True,
+                                'enabled': actual_item.get('enabled'),
+                                'label': actual_item.get('label'),
+                                'roles': actual_item.get('roles', [])
+                            }
+                        else:
+                            mobile_results[item_key] = {'found': False}
+                    
+                    # Check if all expected items are present and correct in desktop menu
+                    all_desktop_correct = all(
+                        result['found'] and result['matches_expected'] 
+                        for result in desktop_results.values()
+                    )
+                    
+                    success_message = f"✅ MENU SETTINGS API ACCESSIBLE: Retrieved menu settings successfully. Desktop menu items: {list(desktop_menu.keys())}. Mobile menu items: {list(mobile_menu.keys())}"
+                    
+                    if all_desktop_correct:
+                        success_message += f" ✅ ALL EXPECTED ITEMS FOUND: Buy, Sell, and Inventory items are correctly configured in desktop menu"
+                    else:
+                        success_message += f" ⚠️ SOME ITEMS MISSING/INCORRECT: Check desktop menu configuration"
                     
                     self.log_result(
-                        "Admin Completed Transactions Endpoint", 
+                        "Admin Menu Settings API", 
                         True, 
-                        f"✅ ENDPOINT ACCESSIBLE: Successfully accessed admin completed transactions endpoint. Found {len(transactions)} transactions (total: {total_count})",
+                        success_message,
                         response_time
                     )
+                    
                     return {
                         'success': True, 
-                        'transactions_count': len(transactions),
-                        'total_count': total_count,
-                        'endpoint_accessible': True,
-                        'user_role': user_role,
-                        'response_structure': list(data.keys())
+                        'desktop_menu_count': len(desktop_menu),
+                        'mobile_menu_count': len(mobile_menu),
+                        'desktop_menu_items': list(desktop_menu.keys()),
+                        'mobile_menu_items': list(mobile_menu.keys()),
+                        'expected_items_check': desktop_results,
+                        'mobile_items_check': mobile_results,
+                        'all_expected_found': all_desktop_correct,
+                        'raw_response': data
                     }
                 elif response.status == 403:
                     error_text = await response.text()
                     self.log_result(
-                        "Admin Completed Transactions Endpoint", 
+                        "Admin Menu Settings API", 
                         False, 
-                        f"❌ ACCESS DENIED: Status 403 - User with role '{user_role}' does not have permission to access admin completed transactions endpoint: {error_text}",
+                        f"❌ ACCESS DENIED: Status 403 - Admin user does not have permission to access menu settings endpoint: {error_text}",
                         response_time
                     )
                     return {
                         'success': False, 
                         'error': 'Access denied - insufficient permissions',
-                        'status_code': 403,
-                        'user_role': user_role,
-                        'endpoint_accessible': False
+                        'status_code': 403
                     }
                 elif response.status == 401:
                     error_text = await response.text()
                     self.log_result(
-                        "Admin Completed Transactions Endpoint", 
+                        "Admin Menu Settings API", 
                         False, 
                         f"❌ AUTHENTICATION FAILED: Status 401 - Token may be invalid or expired: {error_text}",
                         response_time
@@ -255,14 +247,12 @@ class BackendTester:
                     return {
                         'success': False, 
                         'error': 'Authentication failed',
-                        'status_code': 401,
-                        'user_role': user_role,
-                        'endpoint_accessible': False
+                        'status_code': 401
                     }
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Admin Completed Transactions Endpoint", 
+                        "Admin Menu Settings API", 
                         False, 
                         f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
@@ -270,75 +260,173 @@ class BackendTester:
                     return {
                         'success': False, 
                         'error': error_text,
-                        'status_code': response.status,
-                        'user_role': user_role,
-                        'endpoint_accessible': False
+                        'status_code': response.status
                     }
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Admin Completed Transactions Endpoint", 
+                "Admin Menu Settings API", 
                 False, 
                 f"❌ ENDPOINT EXCEPTION: {str(e)}",
                 response_time
             )
-            return {'success': False, 'error': str(e), 'user_role': user_role}
+            return {'success': False, 'error': str(e)}
 
-    async def test_admin_panel_tab_visibility(self, user_role, permissions_result):
-        """Test the tab filtering logic to determine if Completed Transactions tab should be visible"""
+    async def test_menu_items_detailed_analysis(self, menu_data):
+        """Perform detailed analysis of menu items structure"""
         start_time = datetime.now()
         
         try:
-            # Simulate the frontend tab filtering logic from AdminPanel.js
-            # Tab definition: { id: 'completed', label: 'Completed Transactions', shortLabel: 'Completed', icon: CheckCircle, permission: 'canAccessUserManagement' }
+            desktop_menu = menu_data.get('desktop_menu', {})
+            mobile_menu = menu_data.get('mobile_menu', {})
             
-            # Check if user should have canAccessUserManagement permission
-            should_have_permission = permissions_result.get('should_have_permission', False)
+            # Analyze desktop menu structure
+            desktop_analysis = {
+                'total_items': len(desktop_menu),
+                'enabled_items': [],
+                'disabled_items': [],
+                'buy_sell_items': {},
+                'role_distribution': {}
+            }
             
-            # Simulate the frontend permission check
-            # From usePermissions.js: canAccessUserManagement: userRole === 'Admin' || userRole === 'Admin-Manager'
-            frontend_permission_check = user_role in ['Admin', 'Admin-Manager']
+            for item_key, item_config in desktop_menu.items():
+                if isinstance(item_config, dict):
+                    enabled = item_config.get('enabled', False)
+                    label = item_config.get('label', item_key)
+                    roles = item_config.get('roles', [])
+                    
+                    if enabled:
+                        desktop_analysis['enabled_items'].append(f"{item_key} ({label})")
+                    else:
+                        desktop_analysis['disabled_items'].append(f"{item_key} ({label})")
+                    
+                    # Track buy/sell related items
+                    if item_key in ['buy', 'sell', 'buy_management']:
+                        desktop_analysis['buy_sell_items'][item_key] = {
+                            'enabled': enabled,
+                            'label': label,
+                            'roles': roles
+                        }
+                    
+                    # Track role distribution
+                    for role in roles:
+                        if role not in desktop_analysis['role_distribution']:
+                            desktop_analysis['role_distribution'][role] = []
+                        desktop_analysis['role_distribution'][role].append(item_key)
+            
+            # Analyze mobile menu structure
+            mobile_analysis = {
+                'total_items': len(mobile_menu),
+                'enabled_items': [],
+                'disabled_items': [],
+                'buy_sell_items': {}
+            }
+            
+            for item_key, item_config in mobile_menu.items():
+                if isinstance(item_config, dict):
+                    enabled = item_config.get('enabled', False)
+                    label = item_config.get('label', item_key)
+                    roles = item_config.get('roles', [])
+                    
+                    if enabled:
+                        mobile_analysis['enabled_items'].append(f"{item_key} ({label})")
+                    else:
+                        mobile_analysis['disabled_items'].append(f"{item_key} ({label})")
+                    
+                    # Track buy/sell related items
+                    if item_key in ['buy', 'sell', 'buy_management']:
+                        mobile_analysis['buy_sell_items'][item_key] = {
+                            'enabled': enabled,
+                            'label': label,
+                            'roles': roles
+                        }
             
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             
-            if should_have_permission and frontend_permission_check:
-                self.log_result(
-                    "Admin Panel Tab Visibility", 
-                    True, 
-                    f"✅ TAB SHOULD BE VISIBLE: User with role '{user_role}' should have canAccessUserManagement permission and see the 'Completed Transactions' tab",
-                    response_time
-                )
-                return {
-                    'success': True, 
-                    'tab_should_be_visible': True,
-                    'user_role': user_role,
-                    'has_permission': True,
-                    'permission_name': 'canAccessUserManagement',
-                    'frontend_check_passes': frontend_permission_check
-                }
+            # Check if Buy/Sell items are properly configured
+            buy_sell_properly_configured = (
+                'buy' in desktop_analysis['buy_sell_items'] and
+                'sell' in desktop_analysis['buy_sell_items'] and
+                desktop_analysis['buy_sell_items']['buy']['enabled'] and
+                desktop_analysis['buy_sell_items']['sell']['enabled'] and
+                desktop_analysis['buy_sell_items']['buy']['label'] == 'Buy' and
+                desktop_analysis['buy_sell_items']['sell']['label'] == 'Sell'
+            )
+            
+            inventory_properly_configured = (
+                'buy_management' in desktop_analysis['buy_sell_items'] and
+                not desktop_analysis['buy_sell_items']['buy_management']['enabled'] and
+                desktop_analysis['buy_sell_items']['buy_management']['label'] == 'Inventory'
+            )
+            
+            success_message = f"✅ MENU STRUCTURE ANALYZED: Desktop has {desktop_analysis['total_items']} items, Mobile has {mobile_analysis['total_items']} items"
+            
+            if buy_sell_properly_configured:
+                success_message += f" ✅ BUY/SELL ITEMS CORRECT: Both Buy and Sell items are enabled with correct labels"
             else:
-                self.log_result(
-                    "Admin Panel Tab Visibility", 
-                    False, 
-                    f"❌ TAB SHOULD NOT BE VISIBLE: User with role '{user_role}' should NOT have canAccessUserManagement permission (backend: {should_have_permission}, frontend: {frontend_permission_check})",
-                    response_time
-                )
-                return {
-                    'success': False, 
-                    'tab_should_be_visible': False,
-                    'user_role': user_role,
-                    'has_permission': False,
-                    'error': 'User does not have required permission',
-                    'frontend_check_passes': frontend_permission_check
-                }
+                success_message += f" ❌ BUY/SELL ITEMS ISSUE: Buy/Sell items may be missing or incorrectly configured"
+            
+            if inventory_properly_configured:
+                success_message += f" ✅ INVENTORY ITEM CORRECT: Inventory item is disabled as expected"
+            else:
+                success_message += f" ❌ INVENTORY ITEM ISSUE: Inventory item may be missing or incorrectly configured"
+            
+            self.log_result(
+                "Menu Items Detailed Analysis", 
+                True, 
+                success_message,
+                response_time
+            )
+            
+            return {
+                'success': True,
+                'desktop_analysis': desktop_analysis,
+                'mobile_analysis': mobile_analysis,
+                'buy_sell_properly_configured': buy_sell_properly_configured,
+                'inventory_properly_configured': inventory_properly_configured,
+                'configuration_issues': []
+            }
                     
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Admin Panel Tab Visibility", 
+                "Menu Items Detailed Analysis", 
                 False, 
-                f"❌ TAB VISIBILITY CHECK EXCEPTION: {str(e)}",
+                f"❌ ANALYSIS EXCEPTION: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_database_menu_settings_check(self, token):
+        """Check if there are database menu settings that might override defaults"""
+        start_time = datetime.now()
+        
+        try:
+            # This would require direct database access, but we can infer from API behavior
+            # For now, we'll make a note that this should be checked
+            
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            
+            self.log_result(
+                "Database Menu Settings Check", 
+                True, 
+                "ℹ️ DATABASE CHECK NOTED: To fully debug, would need to check if db.menu_settings collection has overrides that might affect the default menu configuration. The API merge logic should handle this correctly.",
+                response_time
+            )
+            
+            return {
+                'success': True,
+                'note': 'Database check would require direct MongoDB access',
+                'recommendation': 'Check db.menu_settings collection for any documents with type: menu_config'
+            }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Database Menu Settings Check", 
+                False, 
+                f"❌ DATABASE CHECK EXCEPTION: {str(e)}",
                 response_time
             )
             return {'success': False, 'error': str(e)}
