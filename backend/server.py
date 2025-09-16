@@ -182,7 +182,7 @@ def prepare_user_response(user_data: dict) -> dict:
     if 'password' in user_data:
         del user_data['password']
     
-    return current_user
+    return user_data
 
 # Startup and Shutdown Events
 @app.on_event("startup")
