@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-uxfixes.preview.emergentagent.com/api"
 BROWSE_RESPONSE_SIZE_TARGET_KB = 15  # Should be under 15KB
 PLACEHOLDER_IMAGE_SIZE_TARGET_BYTES = 1000  # Should be under 1KB
 PERFORMANCE_TARGET_MS = 1000  # Should respond in under 1 second

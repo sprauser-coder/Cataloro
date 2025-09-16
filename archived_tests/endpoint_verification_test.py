@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-uxfixes.preview.emergentagent.com/api"
 DEMO_USER_ID = "68bfff790e4e46bc28d43631"
 
 class EndpointVerificationTester:

@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-uxfixes.preview.emergentagent.com/api"
 
 # Admin credentials for testing
 ADMIN_EMAIL = "admin@cataloro.com"
@@ -317,7 +317,7 @@ class AdminAuthMenuTester:
                 "name": "Bearer Token with CORS",
                 "headers": {
                     "Authorization": f"Bearer {self.admin_token}",
-                    "Origin": "https://marketplace-fix-9.preview.emergentagent.com",
+                    "Origin": "https://cataloro-uxfixes.preview.emergentagent.com",
                     "Content-Type": "application/json"
                 }
             },

@@ -9,7 +9,7 @@ import aiohttp
 import json
 from typing import Dict, List, Any
 
-BACKEND_URL = "https://marketplace-fix-9.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-uxfixes.preview.emergentagent.com/api"
 
 async def test_data_integrity():
     """Test critical data fields as specified in review request"""
