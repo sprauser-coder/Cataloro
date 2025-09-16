@@ -447,10 +447,11 @@ function CreateListingPage() {
       return false;
     }
 
-    if (images.length === 0) {
-      alert('Please add at least one image');
-      return false;
-    }
+    // Allow listings without images for mobile compatibility
+    // if (images.length === 0) {
+    //   alert('Please add at least one image');
+    //   return false;
+    // }
 
     return true;
   };
