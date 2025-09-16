@@ -23,8 +23,8 @@ backup_configs() {
     mkdir -p /tmp/cataloro_backup
     
     # Backup supervisor configuration
-    if [ -f "/etc/supervisord.d/cataloro.conf" ]; then
-        cp /etc/supervisord.d/cataloro.conf /tmp/cataloro_backup/
+    if [ -f "/etc/supervisor/conf.d/supervisord.conf" ]; then
+        cp /etc/supervisor/conf.d/supervisord.conf /tmp/cataloro_backup/supervisord.conf
         echo "✅ Supervisor config backed up"
     fi
     
