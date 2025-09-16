@@ -154,7 +154,7 @@ function SimpleLoginPage() {
     
     try {
       // Call the actual backend API
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://cataloro-uxfixes.preview.emergentagent.com/api';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://cataloro.com';
       // Remove /api if backendUrl already includes it to avoid duplication
       const cleanBackendUrl = backendUrl.endsWith('/api') ? backendUrl.slice(0, -4) : backendUrl;
       const loginUrl = `${cleanBackendUrl}/api/auth/login`;
