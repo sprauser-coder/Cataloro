@@ -144,7 +144,21 @@ setup_nginx() {
     echo "✅ Nginx configured and running"
 }
 
-# Function to build frontend
+# Function to setup environment files
+setup_env_files() {
+    echo "🔧 Setting up environment files..."
+    
+    # Copy .env.example files to .env if they don't exist
+    if [ ! -f "frontend/.env" ] && [ -f "frontend/.env.example" ]; then
+        cp frontend/.env.example frontend/.env
+        echo "✅ Frontend .env created from example"
+    fi
+    
+    if [ ! -f "backend/.env" ] && [ -f "backend/.env.example" ]; then
+        cp backend/.env.example backend/.env
+        echo "✅ Backend .env created from example"
+    fi
+}
 build_frontend() {
     echo "🏗️ Building React frontend..."
     cd frontend
