@@ -375,8 +375,8 @@ function CreateListingPage() {
         return;
       }
 
-      // Stricter file size limit for mobile compatibility (2MB instead of 5MB)
-      const maxSize = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 2 * 1024 * 1024 : 5 * 1024 * 1024;
+      // Increased file size limit for better mobile compatibility (10MB for mobile, 10MB for desktop)
+      const maxSize = 10 * 1024 * 1024; // 10MB for all devices
       if (file.size > maxSize) {
         alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
         return;
