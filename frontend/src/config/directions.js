@@ -17,8 +17,8 @@ export const API_CONFIG = {
   },
   // Production URLs (Your server)
   production: {
-    BACKEND_URL: process.env.REACT_APP_BACKEND_URL || 'http://217.154.0.82/api',
-    FRONTEND_URL: 'http://217.154.0.82'
+    BACKEND_URL: process.env.REACT_APP_BACKEND_URL || 'https://cataloro.com',
+    FRONTEND_URL: 'https://cataloro.com'
   }
 };
 
