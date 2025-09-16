@@ -349,7 +349,7 @@ class MonitoringService:
 class MonitoringMiddleware:
     """FastAPI middleware for request monitoring"""
     
-    def __init__(self, monitoring_service: MonitoringService):
+    def __init__(self, app, monitoring_service: MonitoringService):
         self.monitoring_service = monitoring_service
     
     async def __call__(self, request, call_next):
