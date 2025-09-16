@@ -350,30 +350,32 @@ class MonitoringMiddleware:
     """FastAPI middleware for request monitoring"""
     
     def __init__(self, app, monitoring_service: MonitoringService):
+        self.app = app
         self.monitoring_service = monitoring_service
     
-    async def __call__(self, request, call_next):
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        
         start_time = time.time()
         
-        response = await call_next(request)
+        async def send_wrapper(message):
+            if message["type"] == "http.response.start":
+                process_time = time.time() - start_time
+                
+                # Record metrics
+                self.monitoring_service.record_request(
+                    endpoint=scope["path"],
+                    method=scope["method"],
+                    response_time=process_time,
+                    status_code=message["status"],
+                    user_id=None  # Could extract from scope if available
+                )
+            
+            await send(message)
         
-        process_time = time.time() - start_time
-        
-        # Extract user info if available
-        user_id = None
-        if hasattr(request.state, 'current_user') and request.state.current_user:
-            user_id = request.state.current_user.get('user_id')
-        
-        # Record metrics
-        self.monitoring_service.record_request(
-            endpoint=str(request.url.path),
-            method=request.method,
-            response_time=process_time,
-            status_code=response.status_code,
-            user_id=user_id
-        )
-        
-        return response
+        await self.app(scope, receive, send_wrapper)
 
 # Global monitoring service instance
 monitoring_service = MonitoringService()
