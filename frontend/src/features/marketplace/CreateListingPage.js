@@ -633,13 +633,35 @@ function CreateListingPage() {
       console.error('Failed to create listing:', error);
       
       // More detailed error messages for mobile debugging
+      let errorMessage = 'Please try again.';
+      
       if (error.message && error.message.includes('NetworkError')) {
-        alert('Network error. Please check your connection and try again.');
+        errorMessage = 'Network error. Please check your connection and try again.';
       } else if (error.message && error.message.includes('timeout')) {
-        alert('Request timeout. Please try again with smaller images or check your connection.');
+        errorMessage = 'Request timeout. Please try again with smaller images or check your connection.';
+      } else if (error.message && error.message.includes('CORS')) {
+        errorMessage = 'Connection error. Please refresh the page and try again.';
+      } else if (error.message && error.message.includes('Mixed Content')) {
+        errorMessage = 'Security error. Please ensure you are using HTTPS.';
+      } else if (error.response?.status === 422) {
+        errorMessage = 'Invalid data. Please check all required fields.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Please log in again and try creating the listing.';
       } else {
-        alert(`Failed to create listing: ${error.message || 'Please try again.'}`);
+        errorMessage = error.message || 'Unknown error occurred.';
       }
+      
+      // Log detailed error for debugging
+      console.log('Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        url: error.config?.url,
+        method: error.config?.method,
+        userAgent: navigator.userAgent
+      });
+      
+      alert(`Failed to create listing: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
