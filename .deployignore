@@ -1,0 +1,25 @@
+# PROTECTED FILES - Never overridden by deployment
+# Server Configuration Files
+/etc/nginx/conf.d/cataloro.conf
+/etc/supervisord.d/cataloro.conf
+/etc/supervisor/conf.d/supervisord.conf
+
+# SSL Certificates
+/etc/letsencrypt/
+/etc/ssl/certs/cataloro.pem
+/etc/ssl/private/cataloro.key
+
+# Environment Files (production values)
+frontend/.env
+backend/.env
+
+# System Files
+/var/log/
+/tmp/cataloro_backup/
+
+# Database Files
+/var/lib/mongodb/
+
+# Process Files
+*.pid
+*.sock
