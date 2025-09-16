@@ -258,6 +258,10 @@ async def startup_event():
     ai_recommendation_service = await init_ai_recommendation_service(db)
     logger.info("✅ AI Recommendation service initialized")
     
+    # Start monitoring service
+    await monitoring_service.start_monitoring()
+    logger.info("✅ Monitoring service started")
+    
     # Run database optimization (indexes) on startup
     try:
         from optimize_database import create_database_indexes
