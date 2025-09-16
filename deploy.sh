@@ -177,6 +177,21 @@ case "$1" in
         check_services
         echo "✅ Rebuilt and restarted"
         ;;
+    "setup")
+        pull_changes
+        echo "🚀 Full setup with Nginx and SSL..."
+        # Install dependencies
+        pip install -r backend/requirements.txt
+        cd frontend && yarn install && cd ..
+        # Build frontend
+        build_frontend
+        # Setup Nginx
+        setup_nginx
+        # Restart services
+        restart_services
+        check_services
+        echo "✅ Full setup complete - website should be accessible at https://cataloro.com"
+        ;;
     *)
         pull_changes
         restart_services
