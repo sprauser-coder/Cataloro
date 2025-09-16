@@ -40,7 +40,7 @@ function SimpleLoginPage() {
   useEffect(() => {
     const fetchLogo = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-uxfixes.preview.emergentagent.com/api'}/admin/logo`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro.com'}/api/admin/logo`);
         if (response.ok) {
           const data = await response.json();
           if (data.logo_url) {
