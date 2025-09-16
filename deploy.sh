@@ -101,8 +101,8 @@ restart_services() {
     sudo supervisorctl reread
     sudo supervisorctl update
     
-    sudo supervisorctl restart cataloro-backend
-    sudo supervisorctl restart cataloro-frontend
+    sudo supervisorctl restart backend
+    sudo supervisorctl restart frontend
     echo "✅ Services restarted"
 }
 
