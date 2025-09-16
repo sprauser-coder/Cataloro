@@ -28,9 +28,8 @@ pull_changes() {
 # Function to restart supervisor services
 restart_services() {
     echo "🔄 Restarting services..."
-    sudo supervisorctl restart backend
-    sudo supervisorctl restart frontend
-    sudo supervisorctl restart mongodb
+    sudo supervisorctl restart cataloro-backend
+    sudo supervisorctl restart cataloro-frontend
     echo "✅ Services restarted"
 }
 
