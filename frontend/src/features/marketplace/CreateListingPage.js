@@ -375,15 +375,12 @@ function CreateListingPage() {
         return;
       }
 
-      // File size limit for mobile compatibility (10MB for all devices)
-      const maxSize = 10 * 1024 * 1024; // 10MB for all devices
+      // File size limit (10MB for all devices)
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
-        alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
+        alert(`File size must be less than 10MB`);
         return;
       }
-
-      // Add to images array
-      setImages(prev => [...prev, file]);
 
       // Create preview with error handling for mobile
       const reader = new FileReader();
