@@ -839,7 +839,7 @@ function ModernBrowsePage() {
       </div>
 
       {/* Main Content Container */}
-      <div className="space-y-8 bg-red-500">
+      <div className="space-y-8 bg-gray-50">
 
       {/* Results Count and Filter Controls - INLINE */}
       <div 
