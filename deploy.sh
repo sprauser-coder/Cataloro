@@ -100,6 +100,47 @@ check_services() {
     sudo supervisorctl status
 }
 
+# Function to setup Nginx and SSL
+setup_nginx() {
+    echo "🌐 Setting up Nginx web server..."
+    
+    # Install Nginx if not present
+    if ! command -v nginx &> /dev/null; then
+        echo "Installing Nginx..."
+        apt update && apt install -y nginx
+    fi
+    
+    # Create SSL certificates if they don't exist
+    if [[ ! -f "/etc/ssl/certs/cataloro.pem" ]]; then
+        echo "Creating SSL certificates..."
+        mkdir -p /etc/ssl/private
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout /etc/ssl/private/cataloro.key \
+            -out /etc/ssl/certs/cataloro.pem \
+            -subj "/C=US/ST=State/L=City/O=Organization/CN=cataloro.com"
+    fi
+    
+    # Copy Nginx configuration
+    echo "Configuring Nginx..."
+    cp nginx-cataloro.conf /etc/nginx/sites-available/cataloro
+    ln -sf /etc/nginx/sites-available/cataloro /etc/nginx/sites-enabled/
+    rm -f /etc/nginx/sites-enabled/default
+    
+    # Test and restart Nginx
+    nginx -t
+    service nginx restart
+    echo "✅ Nginx configured and running"
+}
+
+# Function to build frontend
+build_frontend() {
+    echo "🏗️ Building React frontend..."
+    cd frontend
+    yarn build
+    cd ..
+    echo "✅ Frontend built"
+}
+
 case "$1" in
     "start")
         pull_changes
