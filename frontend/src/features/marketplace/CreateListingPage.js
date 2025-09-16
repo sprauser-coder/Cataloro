@@ -375,19 +375,28 @@ function CreateListingPage() {
         return;
       }
 
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+      // Stricter file size limit for mobile compatibility (2MB instead of 5MB)
+      const maxSize = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 2 * 1024 * 1024 : 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
         return;
       }
 
       // Add to images array
       setImages(prev => [...prev, file]);
 
-      // Create preview
+      // Create preview with error handling for mobile
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreviews(prev => [...prev, e.target.result]);
+        try {
+          setImagePreviews(prev => [...prev, e.target.result]);
+        } catch (error) {
+          console.error('Error creating image preview:', error);
+          alert('Error processing image. Please try a smaller file.');
+        }
+      };
+      reader.onerror = () => {
+        alert('Error reading image file. Please try again.');
       };
       reader.readAsDataURL(file);
     });
