@@ -1,4 +1,16 @@
 #!/bin/bash
+
+# Cataloro Marketplace Deployment Script
+# 
+# Usage:
+#   ./deploy.sh           - Standard deploy (pull, restart services)
+#   ./deploy.sh setup     - Full setup with Nginx, SSL, and build
+#   ./deploy.sh restart   - Pull changes and restart services
+#   ./deploy.sh rebuild   - Install dependencies and restart
+#   ./deploy.sh start     - Start all services
+#   ./deploy.sh stop      - Stop all services  
+#   ./deploy.sh logs      - View service logs
+
 set -e
 
 # Repository configuration
