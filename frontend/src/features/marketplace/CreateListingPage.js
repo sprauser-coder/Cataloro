@@ -616,6 +616,11 @@ function CreateListingPage() {
 
       // Create listing with mobile-friendly timeout
       console.log('Creating listing...', listingData);
+      
+      // Add mobile-specific debugging
+      console.log('Mobile detection:', /Mobile|Android|iPhone|iPad/.test(navigator.userAgent));
+      console.log('Backend URL:', process.env.REACT_APP_BACKEND_URL);
+      
       await marketplaceService.createListing(listingData);
 
       // Show success message
