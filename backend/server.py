@@ -107,7 +107,7 @@ class UserBase(BaseModel):
     first_name: str = Field(..., min_length=1, max_length=100)
     last_name: str = Field(..., min_length=1, max_length=100)
     phone: Optional[str] = None
-    user_type: str = Field(default="buyer", regex="^(buyer|seller|admin)$")
+    user_type: str = Field(default="buyer", pattern="^(buyer|seller|admin)$")
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8)
