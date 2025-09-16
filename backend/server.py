@@ -91,7 +91,7 @@ app.add_middleware(
 
 app.add_middleware(
     MonitoringMiddleware,
-    monitoring_service
+    monitoring_service=monitoring_service
 )
 
 # Trusted hosts
