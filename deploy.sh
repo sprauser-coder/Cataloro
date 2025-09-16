@@ -206,6 +206,8 @@ case "$1" in
     "setup")
         pull_changes
         echo "🚀 Full setup with Nginx and SSL..."
+        # Setup environment files
+        setup_env_files
         # Install dependencies
         pip install -r backend/requirements.txt
         cd frontend && yarn install && cd ..
