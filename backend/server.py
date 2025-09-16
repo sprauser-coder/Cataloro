@@ -89,10 +89,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(
-    MonitoringMiddleware,
-    monitoring_service=monitoring_service
-)
+# Temporarily disable monitoring middleware
+# app.add_middleware(
+#     MonitoringMiddleware,
+#     monitoring_service=monitoring_service
+# )
 
 # Trusted hosts
 app.add_middleware(
