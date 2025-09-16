@@ -46,8 +46,8 @@ restore_configs() {
     echo "🔄 Restoring local configuration files..."
     
     # Restore supervisor configuration
-    if [ -f "/tmp/cataloro_backup/cataloro.conf" ]; then
-        sudo cp /tmp/cataloro_backup/cataloro.conf /etc/supervisord.d/
+    if [ -f "/tmp/cataloro_backup/supervisord.conf" ]; then
+        sudo cp /tmp/cataloro_backup/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
         echo "✅ Supervisor config restored"
     fi
     
