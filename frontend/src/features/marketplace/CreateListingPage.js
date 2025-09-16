@@ -564,7 +564,7 @@ function CreateListingPage() {
         return;
       }
 
-      // Prepare listing data
+      // Prepare listing data with mobile-friendly optimizations
       const listingData = {
         ...formData,
         price: parseFloat(formData.price),
@@ -575,12 +575,10 @@ function CreateListingPage() {
           username: user.username || user.name || user.email,
           email: user.email,
           verified: user.verified || false,
-          is_business: user.is_business || false, // Include business account status
+          is_business: user.is_business || false,
           company_name: user.company_name || null,
-          // Format address for seller display
           location: [formData.street, formData.city, formData.country].filter(Boolean).join(', ') || 'Not specified'
         },
-        // Store detailed address information
         address: {
           street: formData.street,
           post_code: formData.post_code,
@@ -588,27 +586,23 @@ function CreateListingPage() {
           country: formData.country,
           use_profile_address: useProfileAddress
         },
-        images: imagePreviews, // Use the base64 previews for demo
+        // Handle images - empty array if no images for mobile compatibility
+        images: imagePreviews.length > 0 ? imagePreviews : [],
         created_at: new Date().toISOString(),
-        // Time limit functionality
         has_time_limit: formData.has_time_limit,
         time_limit_hours: formData.has_time_limit ? formData.time_limit_hours : null,
-        // Partners functionality
         show_partners_first: formData.show_partners_first,
         partners_visibility_hours: formData.show_partners_first ? formData.partners_visibility_hours : null,
-        // Include comprehensive catalyst data from unified calculations (Admin/Admin-Manager only)
+        // Include catalyst data if selected
         ...(selectedCatalyst && {
           catalyst_id: selectedCatalyst.cat_id,
           catalyst_name: selectedCatalyst.name,
           is_catalyst_listing: true,
           calculated_price: selectedCatalyst.total_price,
-          // Weight data
           ceramic_weight: selectedCatalyst.weight,
-          // Content calculations (Pt g, Pd g, Rh g)
           pt_g: selectedCatalyst.pt_g,
           pd_g: selectedCatalyst.pd_g, 
           rh_g: selectedCatalyst.rh_g,
-          // Store comprehensive catalyst specs for inventory management
           catalyst_specs: {
             weight: selectedCatalyst.weight,
             total_price: selectedCatalyst.total_price,
@@ -620,7 +614,8 @@ function CreateListingPage() {
         })
       };
 
-      // Create listing
+      // Create listing with mobile-friendly timeout
+      console.log('Creating listing...', listingData);
       await marketplaceService.createListing(listingData);
 
       // Show success message
@@ -631,7 +626,15 @@ function CreateListingPage() {
 
     } catch (error) {
       console.error('Failed to create listing:', error);
-      alert('Failed to create listing. Please try again.');
+      
+      // More detailed error messages for mobile debugging
+      if (error.message && error.message.includes('NetworkError')) {
+        alert('Network error. Please check your connection and try again.');
+      } else if (error.message && error.message.includes('timeout')) {
+        alert('Request timeout. Please try again with smaller images or check your connection.');
+      } else {
+        alert(`Failed to create listing: ${error.message || 'Please try again.'}`);
+      }
     } finally {
       setIsSubmitting(false);
     }
