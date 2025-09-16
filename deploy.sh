@@ -134,9 +134,7 @@ setup_nginx() {
     
     # Copy Nginx configuration
     echo "Configuring Nginx..."
-    cp nginx-cataloro.conf /etc/nginx/sites-available/cataloro
-    ln -sf /etc/nginx/sites-available/cataloro /etc/nginx/sites-enabled/
-    rm -f /etc/nginx/sites-enabled/default
+    cp nginx-cataloro.conf /etc/nginx/conf.d/cataloro.conf
     
     # Test and restart Nginx
     nginx -t
