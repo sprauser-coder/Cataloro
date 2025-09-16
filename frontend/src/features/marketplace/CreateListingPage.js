@@ -375,7 +375,7 @@ function CreateListingPage() {
         return;
       }
 
-      // Increased file size limit for better mobile compatibility (10MB for mobile, 10MB for desktop)
+      // File size limit for mobile compatibility (10MB for all devices)
       const maxSize = 10 * 1024 * 1024; // 10MB for all devices
       if (file.size > maxSize) {
         alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
